@@ -1,0 +1,6 @@
+_build/
+printbig.o
+microc
+microc.native
+*.ll
+testall.log
