@@ -4,8 +4,10 @@
 
 # Easiest way to build: using ocamlbuild, which in turn uses ocamlfind
 
+.PHONY: all
 all : microc.native printbig.o
 
+.PHONY: microc.native
 microc.native :
 	ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,+a-4 \
 		microc.native
