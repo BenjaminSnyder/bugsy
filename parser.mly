@@ -1,13 +1,15 @@
-/* Ocamlyacc parser for MicroC */
+/* Ocamlyacc parser for bugsy */
 
 %{
 open Ast
 %}
 
-%token SEMI LPAREN RPAREN LBRACE RBRACE COMMA
+%token STRING CHAR CONSTRUCTOR
+%token CONTINUE BREAK CLASS NULL TRY CATCH RAISE
+%token SEMI LPAREN RPAREN LBRACE RBRACE COMMA LSQBRACKET RSQBRACKET
 %token PLUS MINUS TIMES DIVIDE ASSIGN NOT
 %token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR
-%token RETURN IF ELSE FOR WHILE INT BOOL VOID
+%token RETURN IF ELSE FOR WHILE NUM BOOL VOID
 %token <int> LITERAL
 %token <string> ID
 %token EOF
@@ -29,12 +31,27 @@ open Ast
 %%
 
 program:
+  cdecl decls EOF { $1 }
   decls EOF { $1 }
 
 decls:
    /* nothing */ { [], [] }
  | decls vdecl { ($2 :: fst $1), snd $1 }
  | decls fdecl { fst $1, ($2 :: snd $1) }
+ | decls const_decl { fst $1, ($2 :: snd $1) }
+
+cdecl:
+    CLASS ID LBRACE decls RBRACE
+    { {
+    cname = $2;
+    decls = $4; } }
+
+const_decl:
+  CONSTRUCTOR LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
+  { {
+  formals = $3;
+  locals = List.rev $5;
+  body = List.rev $6; } }
 
 fdecl:
    typ ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
@@ -53,9 +70,15 @@ formal_list:
   | formal_list COMMA typ ID { ($3,$4) :: $1 }
 
 typ:
-    INT { Int }
+    NUM { Num }
   | BOOL { Bool }
   | VOID { Void }
+  | STRING { String }
+  | CHAR { Char }
+
+arr:
+  typ LSQBRACKET NUM RSQBRACKET ID ASSIGN LBRACE expr RBRACE
+  { Array($1, $3, $5, $8) }
 
 vdecl_list:
     /* nothing */    { [] }

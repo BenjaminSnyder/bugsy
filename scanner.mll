@@ -1,4 +1,4 @@
-(* Ocamllex scanner for MicroC *)
+(* Ocamllex scanner for bugsy *)
 
 { open Parser }
 
@@ -38,12 +38,15 @@ rule token = parse
 | "bool"   { BOOL }
 | "void"   { VOID }
 | "class"  { CLASS }
+| "constructor" { CONSTRUCTOR }
 | "null"   { NULL }
 | "try"    { TRY  }
 | "catch"  { CATCH }
 | "raise"  { RAISE }
 | "string" { STRING }
 | "char"   { CHAR }
+| "["      { LSQBRACKET }
+| "]"      { RSQBRACKET }
 | ["true", "True"]   { TRUE }
 | ["false", "False"]  { FALSE }
 | ['0'-'9']+ as lxm { LITERAL(int_of_string lxm) }
