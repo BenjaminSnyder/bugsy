@@ -34,7 +34,7 @@ rule token = parse
 | "return" { RETURN }
 | "continue" { CONTINUE }
 | "break"  { BREAK }
-| "num"    { NUM }
+| "num"    as num { NUM(int_of_string num) }
 | "bool"   { BOOL }
 | "void"   { VOID }
 | "class"  { CLASS }
