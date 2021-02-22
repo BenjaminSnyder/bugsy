@@ -5,6 +5,7 @@
 rule token = parse
   [' ' '\t' '\r' '\n'] { token lexbuf } (* Whitespace *)
 | "/*"     { comment lexbuf }           (* Comments *)
+| "//"     { singcomment lexbuf }       (* single line comments *)
 | '('      { LPAREN }
 | ')'      { RPAREN }
 | '{'      { LBRACE }
@@ -16,30 +17,44 @@ rule token = parse
 | '*'      { TIMES }
 | '/'      { DIVIDE }
 | '='      { ASSIGN }
-| "=="     { EQ }
+| "=?"     { EQ }
 | "!="     { NEQ }
 | '<'      { LT }
 | "<="     { LEQ }
 | ">"      { GT }
 | ">="     { GEQ }
-| "&&"     { AND }
-| "||"     { OR }
+| "and"     { AND }
+| "or"     { OR }
 | "!"      { NOT }
 | "if"     { IF }
 | "else"   { ELSE }
+| "elif"   { ELIF }
 | "for"    { FOR }
 | "while"  { WHILE }
 | "return" { RETURN }
-| "int"    { INT }
+| "continue" { CONTINUE }
+| "break"  { BREAK }
+| "num"    { NUM }
 | "bool"   { BOOL }
 | "void"   { VOID }
-| "true"   { TRUE }
-| "false"  { FALSE }
+| "class"  { CLASS }
+| "null"   { NULL }
+| "try"    { TRY  }
+| "catch"  { CATCH }
+| "raise"  { RAISE }
+| "string" { STRING }
+| "char"   { CHAR }
+| ["true", "True"]   { TRUE }
+| ["false", "False"]  { FALSE }
 | ['0'-'9']+ as lxm { LITERAL(int_of_string lxm) }
-| ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
+| ['a'-'z' '_' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
 
 and comment = parse
   "*/" { token lexbuf }
+| _    { comment lexbuf }
+
+and singcomment = parse
+  "\n" { token lexbuf }
 | _    { comment lexbuf }
