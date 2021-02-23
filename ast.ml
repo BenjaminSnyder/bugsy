@@ -43,7 +43,9 @@ type func_decl = {
 
 type cdecl = {
   cname : string;
-  decls : bind list * func_decl list * construct_decl;
+  cdvars : bind list;
+  cdconst: construct_decl;
+  cdfuncs: func_decl list;
   }
 
 type program = bind list * func_decl list
@@ -55,14 +57,14 @@ let string_of_op = function
   | Sub -> "-"
   | Mult -> "*"
   | Div -> "/"
-  | Equal -> "=="
+  | Equal -> "=?"
   | Neq -> "!="
   | Less -> "<"
   | Leq -> "<="
   | Greater -> ">"
   | Geq -> ">="
-  | And -> "&&"
-  | Or -> "||"
+  | And -> "and"
+  | Or -> "or"
 
 let string_of_uop = function
     Neg -> "-"
@@ -121,8 +123,8 @@ let string_of_fdecl fdecl =
 let string_of_cdecl cdecl = 
   cdecl.cname ^ "{" ^
   String.concat "" (List.map string_of_vdecl ((fun (fs,_,_)->fs) cdecl.decls)) ^
-  String.concat "" (List.map string_of_stmt ((fun (_,sn,_)->sn) cdecl.decls)) ^
   String.concat "" (string_of_const_decl ((fun (_,_,tr)->tr) cdecl.decls)) ^
+  String.concat "" (List.map string_of_stmt ((fun (_,sn,_)->sn) cdecl.decls)) ^
   "}\n"
 
 let string_of_program (cdecl, (const, vars, funcs)) = function
