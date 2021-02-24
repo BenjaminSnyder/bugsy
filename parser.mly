@@ -41,7 +41,7 @@ program:
     cdecl decls EOF { $1, $2 }
  |  decls EOF { Nil, $1 }
 
-decls: (* HANS HALP *)
+decls: (* HANS HALP --> is any of this allowed/correct/how to do best *)
   let fst' li = match li with [fs,_,_]->fs in
   let snd' li = match li with [_,sn,_]->sn in
   let trd li = match li with [_,_,tr]->tr in
@@ -54,7 +54,10 @@ cdecl:
     CLASS ID LBRACE decls RBRACE
     { {
     cname = $2;
-    decls = $4; } } (*match $4 with and put them into separate fields *)
+    match $4 with (* CAN WE DO THIS LOL *)
+      cdvars -> vdecl
+    | cdfunc -> fdecl
+    | cdconst -> const_decl; } } (*match $4 with and put them into separate fields *)
 
 const_decl:
   CONSTRUCTOR LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
