@@ -2,6 +2,9 @@
 
 %{
 open Ast
+let fst' = (fs,_,_)->fs
+let snd' = (_,sn,_)->sn
+let trd  = (_,_,tr)->tr
 %}
 
 %token CONSTRUCTOR CLASS NULL 
@@ -15,7 +18,7 @@ open Ast
 %token RETURN IF ELIF ELSE FOR WHILE 
 %token NUM BOOL VOID STRING CHAR 
 %token POINT SHAPE SQUARE RECT CIRCLE ELLIPSE TRIANGLE
-%token POLYGON REGAGON CANVAS LINE SPLINE
+%token POLYGON REGAGON CANVAS LINE SPLINE ARRAY
 %token <int> LITERAL
 %token <string> ID
 %token EOF
@@ -23,14 +26,16 @@ open Ast
 %nonassoc NOELSE
 %nonassoc ELSE
 %right ASSIGN
-%right PLUSEQ MINUSEQ MULTEQ DIVEQ
 %left OR
 %left AND
 %left EQ NEQ
 %left LT GT LEQ GEQ
 %left PLUS MINUS
+%left PLUSEQ MINUSEQ
 %left MULT DIV MODULO
-%right NOT NEG
+%left MULTEQ DIVEQ
+%right NOT NEG 
+%nonassoc INCREMENT DECREMENT
 
 %start program
 %type <Ast.program> program
@@ -38,26 +43,28 @@ open Ast
 %%
 
 program:
-    cdecl decls EOF { $1, $2 }
- |  decls EOF { Nil, $1 }
+  decls EOF { $1 }
 
-decls: (* HANS HALP --> is any of this allowed/correct/how to do best *)
-  let fst' li = match li with [fs,_,_]->fs in
-  let snd' li = match li with [_,sn,_]->sn in
-  let trd li = match li with [_,_,tr]->tr in
+decls:
   /* nothing */ { [], [], [] }
- | decls vdecl { [$2 :: fst' $1], snd' $1, (trd $1)  }
- | decls fdecl { fst' $1, [$2 :: snd' $1], (trd $1)  }
- | decls const_decl { fst' $1, snd' $1, [$1 :: [$2 :: (trd $1)]] }
+  | decls vdecl { ($2 :: fst' $1), snd' $1, trd $1 }
+  | decls fdecl { fst' $1, ($2 :: snd' $1), trd $1 }
+  | decls cdecl { fst' $1, snd' $1, ( $2 :: trd $1) }
+
+cddecls: 
+  /* nothing */ { [], [], [] }
+  | cddecls vdecl { ($2 :: fst' $1), snd' $1, trd $1 }
+  | cddecls const_decl { fst' $1, [$2], trd $1 }
+  | cddecls fdecl { fst' $1, snd' $1, ($2 :: trd $1) }
 
 cdecl:
-    CLASS ID LBRACE decls RBRACE
-    { {
+  CLASS ID LBRACE cddecls RBRACE
+  { {
     cname = $2;
-    match $4 with (* CAN WE DO THIS LOL *)
-      cdvars -> vdecl
-    | cdfunc -> fdecl
-    | cdconst -> const_decl; } } (*match $4 with and put them into separate fields *)
+    cdvars = fst' $4;
+    cdconst = snd' $4;
+    cdfuncs = trd $4;
+  } }
 
 const_decl:
   CONSTRUCTOR LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
@@ -88,28 +95,25 @@ typ:
   | VOID { Void }
   | STRING { String }
   | CHAR { Char }
+  | obj { $1 } 
   | arr { $1 }
-  | obj { $1 }
-
-obj:
-  SHAPE LPAREN NUM RPAREN                            { Shape($3)            }
-  | SQUARE LPAREN POINT COMMA NUM RPAREN             { Square($3, $5)       }
-  | RECT LPAREN POINT COMMA NUM COMMA NUM RPAREN     { Rect($3, $5, $7)     }
-  | TRIANGLE LPAREN POINT COMMA NUM COMMA NUM RPAREN { Triangle($3, $5, $7) }
-  | CIRCLE LPAREN POINT COMMA NUM RPAREN             { Circle($3, $5)       }
-  | ELLIPSE LPAREN POINT COMMA NUM COMMA NUM RPAREN  { Ellipse($3, $5, $7)  }
-  | LINE LPAREN POINT COMMA POINT RPAREN             { Line($3, $5)         }
-  | CANVAS LPAREN 
-      LSQBRACKET POINT COMMA POINT COMMA POINT COMMA POINT COMMA RSQBRACKET
-    COMMA NUM COMMA NUM RPARENT                      { Canvas($4, $6, $8, $10, $14, $16) }
-  | POLYGON LPAREN NUM COMMA ARRAY RPAREN { Polygon($3, $5) }
-  | REGAGON LPAREN NUM COMMA RPAREN { Regagon($3) }
-  | SPLINE LPAREN NUM COMMA ARRAY RPAREN { Spline($3, $5) }
-
 
 arr:
-  typ LSQBRACKET LITERAL RSQBRACKET ID ASSIGN LBRACE expr RBRACE
-  { Array($1, $3, $5, $8) }
+  typ LSQBRACKET NUM RSQBRACKET { Array }
+  
+obj:
+  SHAPE      { () } 
+  | SQUARE   { () }
+  | RECT     { () }
+  | TRIANGLE { () }
+  | CIRCLE   { () }
+  | ELLIPSE  { () }
+  | LINE     { () }
+  | CANVAS   { () }
+  | POLYGON  { () }
+  | REGAGON  { () }
+  | SPLINE   { () }
+  
 
 vdecl_list:
     /* nothing */    { [] }
@@ -137,9 +141,16 @@ expr_opt:
     /* nothing */ { Noexpr }
   | expr          { $1 }
 
-bool_expr:
-    TRUE             { BoolLit(true) }
+li_contents:
+    expr             {$1}
+  | expr COMMA expr  {$3 :: $1}
+
+
+expr:
+    LITERAL          { Literal($1) }
+  | TRUE             { BoolLit(true) }
   | FALSE            { BoolLit(false) }
+  | ID               { Id($1) }
   | expr EQ     expr { Binop($1, Equal, $3) }
   | expr NEQ    expr { Binop($1, Neq,   $3) }
   | expr LT     expr { Binop($1, Less,  $3) }
@@ -149,18 +160,22 @@ bool_expr:
   | expr AND    expr { Binop($1, And,   $3) }
   | expr OR     expr { Binop($1, Or,    $3) }
   | NOT expr         { Unop(Not, $2) }
-  | ID LPAREN actuals_opt RPAREN { Call($1, $3) } (* HANS HELP BOOLEAN EXPR OR NO? *)
-
-expr:
-    LITERAL          { Literal($1) }
-  | ID               { Id($1) }
-  | bool_expr        { $1 }
   | expr PLUS   expr { Binop($1, Add,   $3) }
   | expr MINUS  expr { Binop($1, Sub,   $3) }
-  | expr TIMES  expr { Binop($1, Mult,  $3) }
-  | expr DIVIDE expr { Binop($1, Div,   $3) }
+  | expr MULT  expr { Binop($1, Mult,  $3) }
+  | expr DIV expr { Binop($1, Div,   $3) }
+  | expr MODULO expr { Binop($1, Mod, $3) }
+  | ID PLUSEQ expr   { () }
+  | ID MINUSEQ expr  { () }
+  | ID MULTEQ expr   { () }
+  | ID DIVEQ expr    { () }
+  | expr INCREMENT   { () }
+  | INCREMENT expr   { () }
+  | expr DECREMENT   { () }
+  | DECREMENT expr   { () }
+  | LSQBRACKET li_contents RSQBRACKET { () }
   | MINUS expr %prec NEG { Unop(Neg, $2) }
-  | bool_expr QMARK expr COLON expr { Ternop($1, $3, $5) }
+  | ID LPAREN actuals_opt RPAREN { Call($1, $3) } 
   | ID ASSIGN expr   { Assign($1, $3) }
   | LPAREN expr RPAREN { $2 }
 

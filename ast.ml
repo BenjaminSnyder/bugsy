@@ -43,12 +43,15 @@ type func_decl = {
 
 type cdecl = {
   cname : string;
+  (* decls: bind list * construct_decl * func_decl list; *)
   cdvars : bind list;
   cdconst: construct_decl;
   cdfuncs: func_decl list;
   }
 
-type program = bind list * func_decl list
+type class_decl = bind list * construct_decl * func_decl list
+
+type program = bind list * class_decl list * func_decl list
 
 (* Pretty-printing functions *)
 
@@ -119,18 +122,22 @@ let string_of_fdecl fdecl =
   String.concat "" (List.map string_of_vdecl fdecl.locals) ^
   String.concat "" (List.map string_of_stmt fdecl.body) ^
   "}\n"
-
+(*
 let string_of_cdecl cdecl = 
   cdecl.cname ^ "{" ^
   String.concat "" (List.map string_of_vdecl ((fun (fs,_,_)->fs) cdecl.decls)) ^
   String.concat "" (string_of_const_decl ((fun (_,_,tr)->tr) cdecl.decls)) ^
   String.concat "" (List.map string_of_stmt ((fun (_,sn,_)->sn) cdecl.decls)) ^
   "}\n"
-
+*)
+let string_of_cdecl cdecl = 
+  cdecl.cname ^ "{}\n" 
+(*
 let string_of_program (cdecl, (const, vars, funcs)) = function
-  (Nil, (vars, funcs)) -> String.concat "" (List.map string_of_vdecl vars) ^
+(*  (, (vars, funcs)) -> String.concat "" (List.map string_of_vdecl vars) ^
   "\n" ^ String.concat "\n" (List.map string_of_fdecl funcs)
-
-  | (cdecl, (vars, funcs)) -> String.concat "" (string_of_cdecl cdecl) ^
+*)
+ (decl, (vars, funcs)) -> String.concat "" (string_of_cdecl cdecl) ^
   "\n" String.concat "" (string_of_const_decl const) ^ "\n" ^ String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
   String.concat "\n" (List.map string_of_fdecl funcs)
+  *)
