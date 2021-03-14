@@ -1,8 +1,6 @@
-The MicroC compiler
+The bugsy compiler
 
-Coded in OCaml, this takes a highly stripped-down subset of C (ints,
-bools, and void types, arithmetic, if-else, for, and while statements,
-and user-defined functions) and compiles it into LLVM IR.
+Coded in OCaml, takes a c like language, bugsy, and compiles it into LLVM IR.
 
 It needs the OCaml llvm library, which is most easily installed through opam.
 
@@ -16,7 +14,7 @@ In addition to print, which calls the C library function printf(),
 this gratuitiously includes a primitive function "printbig," which
 prints large ASCII-encoded characters.
 
-The stock C compiler compiles printbig.o.  testall.sh runs the microc
+The stock C compiler compiles printbig.o.  testall.sh runs the bugsy
 executable on each testcase (.mc file) to produce a .ll file, invokes
 "llc" (the LLVM compiler) to produce a .s (assembly) file, then
 invokes "cc" (the stock C compiler) to assemble the .s file, link in
@@ -160,11 +158,11 @@ Installation under OS X
    A third solution is to modify the definition of LLI in testall.sh to
    point to the absolute path, e.g., LLI="/usr/local/opt/llvm/bin/lli"
 
-9. To run and test, navigate to the MicroC folder. Once there, run
+9. To run and test, navigate to the bugsy folder. Once there, run
 
    make ; ./testall.sh
 
-   MicroC should build without any complaints and all tests should
+   bugsy should build without any complaints and all tests should
    pass.
 
    IF RUNNING ./testall.sh FAILS ON SOME TESTS, check to make sure you
@@ -180,7 +178,7 @@ Installation under OS X
 To run and test:
 
 $ make
-ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,+a-4 microc.native
+ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,+a-4 bugsy.native
 Finished, 22 targets (0 cached) in 00:00:01.
 cc    -c -o printbig.o printbig.c
 $ ./testall.sh
