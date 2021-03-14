@@ -4,3 +4,4 @@ microc
 microc.native
 *.ll
 testall.log
+.*~
