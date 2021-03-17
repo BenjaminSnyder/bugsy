@@ -48,8 +48,8 @@ program:
 decls:
   /* nothing */ { [], [], [] }
   | decls vdecl { ($2 :: fst' $1), snd' $1, trd $1 }
-  | decls fdecl { fst' $1, ($2 :: snd' $1), trd $1 }
-  | decls cdecl { fst' $1, snd' $1, ( $2 :: trd $1) }
+  | decls cdecl { fst' $1, ($2 :: snd' $1), trd $1 }
+  | decls fdecl { fst' $1, snd' $1, ( $2 :: trd $1) }
 
 cddecls: 
   /* nothing */ { [], [], [] }
@@ -164,6 +164,7 @@ expr:
   | expr MINUS  expr { Binop($1, Sub,   $3) }
   | expr MULT  expr { Binop($1, Mult,  $3) }
   | expr DIV expr { Binop($1, Div,   $3) }
+  | expr MODULO expr { Binop($1, Mod, $3) }
   | ID PLUSEQ expr   { () }
   | ID MINUSEQ expr  { () }
   | ID MULTEQ expr   { () }
