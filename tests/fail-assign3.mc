@@ -3,9 +3,9 @@ void myvoid()
   return;
 }
 
-int main()
+num main()
 {
-  int i;
+  num i;
 
   i = myvoid(); /* Fail: assigning a void to an integer */
 }

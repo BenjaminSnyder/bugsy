@@ -1,4 +1,4 @@
-int main()
+num main()
 {
-  return true; /* Should return int */
+  return true; /* Should return num */
 }

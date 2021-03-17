@@ -1,4 +1,4 @@
-void foo(int a, bool b)
+void foo(num a, bool b)
 {
 }
 
@@ -6,8 +6,8 @@ void bar()
 {
 }
 
-int main()
+num main()
 {
   foo(42, true);
-  foo(42, bar()); /* int and void, not int and bool */
+  foo(42, bar()); /* num and void, not num and bool */
 }

@@ -1,6 +1,6 @@
-int main()
+num main()
 {
-  if (true) {
+  if(true) {
     42;
   } else {
     bar; /* Error: undeclared variable */

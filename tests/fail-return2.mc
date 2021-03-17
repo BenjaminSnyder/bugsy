@@ -1,10 +1,13 @@
 void foo()
 {
-  if (true) return 42; /* Should return void */
-  else return;
+  if(true) {
+    return 42; /* Should return void */
+  } else {
+    return;
+  }
 }
 
-int main()
+num main()
 {
   return 42;
 }

@@ -1,18 +1,18 @@
-int a;
+num a;
 bool b;
 
-void foo(int c, bool d)    
+void foo(num c, bool d)
 {
-  int dd;
+  num dd;
   bool e;
   a + c;
   c - a;
   a * 3;
   c / 2;
-  d + a; /* Error: bool + int */
+  d + a; /* Error: bool + num */
 }
 
-int main()
+num main()
 {
   return 0;
 }

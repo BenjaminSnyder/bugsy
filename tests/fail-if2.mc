@@ -1,6 +1,6 @@
-int main()
+num main()
 {
-  if (true) {
+  if(true) {
     foo; /* Error: undeclared variable */
   }
 }

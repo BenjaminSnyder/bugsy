@@ -1,9 +1,9 @@
-int b;
+num b;
 bool c;
-int a;
-int b; /* Duplicate global variable */
+num a;
+num b; /* Duplicate global variable */
 
-int main()
+num main()
 {
   return 0;
 }

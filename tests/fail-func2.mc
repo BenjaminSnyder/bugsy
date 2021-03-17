@@ -1,8 +1,8 @@
-int foo(int a, bool b, int c) { }
+num foo(num a, bool b, num c) { }
 
-void bar(int a, bool b, int a) {} /* Error: duplicate formal a in bar */
+void bar(num a, bool b, num a) {} /* Error: duplicate formal a in bar */
 
-int main()
+num main()
 {
   return 0;
 }

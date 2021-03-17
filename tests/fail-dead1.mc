@@ -1,6 +1,6 @@
-int main()
+num main()
 {
-  int i;  
+  num i;  
 
   i = 15;
   return i;

@@ -1,8 +1,8 @@
-int foo(int a, bool b, int c) { }
+num foo(num a, bool b, num c) { }
 
-void bar(int a, void b, int c) {} /* Error: illegal void formal b */
+void bar(num a, void b, num c) {} /* Error: illegal void formal b */
 
-int main()
+num main()
 {
   return 0;
 }

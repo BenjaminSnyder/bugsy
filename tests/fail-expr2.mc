@@ -1,14 +1,14 @@
-int a;
+num a;
 bool b;
 
-void foo(int c, bool d)    
+void foo(num c, bool d)
 {
-  int d;
+  num d;
   bool e;
-  b + a; /* Error: bool + int */
+  b + a; /* Error: bool + num */
 }
 
-int main()
+num main()
 {
   return 0;
 }

@@ -1,12 +1,12 @@
-int main()
+num main()
 {
-  int i;
+  num i;
 
-  while (true) {
+  while(true) {
     i = i + 1;
   }
 
-  while (42) { /* Should be boolean */
+  while (42) { /* Should be bool */
     i = i + 1;
   }
 
