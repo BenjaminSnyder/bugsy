@@ -6,4 +6,5 @@ int main
 	square x = square(pt(0,0), 2);
 	// continually rotates the square
 	x.rotate(degree: 360, rpm: 2, repeating: true)
+	// output something maybe
 }
