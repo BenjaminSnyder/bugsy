@@ -1,13 +1,13 @@
-int add(int a, int b)
+num add(num a, num b)
 {
-  int c;
+  num c;
   c = a + b;
   return c;
 }
 
-int main()
+num main()
 {
-  int d;
+  num d;
   d = add(52, 10);
   print(d);
   return 0;

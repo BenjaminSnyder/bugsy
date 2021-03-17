@@ -1,4 +1,4 @@
-void printem(int a, int b, int c, int d)
+void printem(num a, num b, num c, num d)
 {
   print(a);
   print(b);
@@ -6,7 +6,7 @@ void printem(int a, int b, int c, int d)
   print(d);
 }
 
-int main()
+num main()
 {
   printem(42,17,192,8);
   return 0;

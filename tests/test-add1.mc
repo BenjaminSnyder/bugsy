@@ -1,9 +1,9 @@
-int add(int x, int y)
+num add(num x, num y)
 {
   return x + y;
 }
 
-int main()
+num main()
 {
   print( add(17, 25) );
   return 0;
