@@ -1,4 +1,4 @@
-int main()
+num main()
 {
   print(42);
   print(71);

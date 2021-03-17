@@ -1,9 +1,9 @@
-void foo(int a)
+void foo(num a)
 {
   print(a + 3);
 }
 
-int main()
+num main()
 {
   foo(40);
   return 0;

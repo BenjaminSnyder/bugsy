@@ -1,11 +1,16 @@
-int gcd(int a, int b) {
-  while (a != b)
-    if (a > b) a = a - b;
-    else b = b - a;
+num gcd(num a, num b) {
+  while (a != b) {
+    if (a > b) {
+      a = a - b;
+    }
+    else {
+      b = b - a;
+    }
+  }
   return a;
 }
 
-int main()
+num main()
 {
   print(gcd(14,21));
   print(gcd(8,36));

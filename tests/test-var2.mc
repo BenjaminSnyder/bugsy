@@ -1,11 +1,11 @@
-int a;
+num a;
 
-void foo(int c)
+void foo(num c)
 {
   a = c + 42;
 }
 
-int main()
+num main()
 {
   foo(73);
   print(a);

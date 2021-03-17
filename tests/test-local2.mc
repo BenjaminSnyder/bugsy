@@ -1,6 +1,6 @@
-int foo(int a, bool b)
+num foo(num a, bool b)
 {
-  int c;
+  num c;
   bool d;
 
   c = a;
@@ -8,7 +8,7 @@ int foo(int a, bool b)
   return c + 10;
 }
 
-int main() {
+num main() {
  print(foo(37, false));
  return 0;
 }

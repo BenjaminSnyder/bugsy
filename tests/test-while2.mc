@@ -1,6 +1,6 @@
-int foo(int a)
+num foo(int a)
 {
-  int j;
+  num j;
   j = 0;
   while (a > 0) {
     j = j + 2;
@@ -9,7 +9,7 @@ int foo(int a)
   return j;
 }
 
-int main()
+num main()
 {
   print(foo(7));
   return 0;

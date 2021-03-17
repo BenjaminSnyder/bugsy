@@ -1,6 +1,6 @@
-int main()
+num main()
 {
-  int a;
+  num a;
   a = 42;
   print(a);
   return 0;

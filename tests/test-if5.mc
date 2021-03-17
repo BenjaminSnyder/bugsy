@@ -1,14 +1,17 @@
-int cond(bool b)
+num cond(bool b)
 {
-  int x;
-  if (b)
+  num x;
+  if (b) {
     x = 42;
-  else
+  }
+  
+  else {
     x = 17;
+  }
   return x;
 }
 
-int main()
+num main()
 {
  print(cond(true));
  print(cond(false));

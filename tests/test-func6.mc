@@ -1,8 +1,8 @@
 void foo() {}
 
-int bar(int a, bool b, int c) { return a + c; }
+num bar(num a, bool b, num c) { return a + c; }
 
-int main()
+num main()
 {
   print(bar(17, false, 25));
   return 0;
