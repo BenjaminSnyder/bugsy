@@ -5,7 +5,7 @@ type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
 
 type uop = Neg | Not
 
-type typ = Num | Bool | Void | String | Char 
+type typ = Num | Bool | Void | String | Char
 
 type bind = typ * string
 
@@ -48,7 +48,7 @@ type cdecl = {
   cdfuncs: func_decl list;
   }
 
-type program = bind list * func_decl list * cdecl list 
+type program = bind list * cdecl list * func_decl list
 
 (* Pretty-printing functions *)
 
@@ -105,7 +105,7 @@ let string_of_typ = function
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 
-let string_of_const_decl const_decl = 
+let string_of_const_decl const_decl =
   "constructor(" ^ String.concat ", " (List.map snd const_decl.ctformals) ^
   ")\n{\n" ^
   String.concat "" (List.map string_of_vdecl const_decl.ctlocals) ^
@@ -120,15 +120,15 @@ let string_of_fdecl fdecl =
   String.concat "" (List.map string_of_stmt fdecl.body) ^
   "}\n"
 
-let string_of_cdecl cdecl = 
+let string_of_cdecl cdecl =
   cdecl.cname ^ "{" ^
   String.concat "" (List.map string_of_vdecl cdecl.cdvars) ^
   (string_of_const_decl cdecl.cdconst) ^
   String.concat "" (List.map string_of_fdecl cdecl.cdfuncs) ^
   "}\n"
 
-let string_of_program (vars, funcs, classes) = 
+let string_of_program (vars, classes, funcs) =
   String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
-  String.concat "\n" (List.map string_of_fdecl funcs) ^ "\n" ^
-  String.concat "\n" (List.map string_of_cdecl classes)
+  String.concat "" (List.map string_of_cdecl classes) ^ "\n" ^
+  String.concat "\n" (List.map string_of_fdecl funcs)
 

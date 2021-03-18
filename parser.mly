@@ -7,16 +7,16 @@ let snd' = (_,sn,_)->sn
 let trd  = (_,_,tr)->tr
 %}
 
-%token CONSTRUCTOR CLASS NULL 
+%token CONSTRUCTOR CLASS NULL
 %token CONTINUE BREAK TRY CATCH RAISE
 %token LPAREN RPAREN LBRACE RBRACE LSQBRACKET RSQBRACKET
 %token COLON SEMI COMMA QMARK
 %token PLUS MINUS MULT DIV ASSIGN MODULO
 %token INCREMENT DECREMENT
-%token PLUSEQ MINUSEQ MULTEQ DIVEQ 
+%token PLUSEQ MINUSEQ MULTEQ DIVEQ
 %token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR NOT
-%token RETURN IF ELIF ELSE FOR WHILE 
-%token NUM BOOL VOID STRING CHAR 
+%token RETURN IF ELIF ELSE FOR WHILE
+%token NUM BOOL VOID STRING CHAR
 %token POINT SHAPE SQUARE RECT CIRCLE ELLIPSE TRIANGLE
 %token POLYGON REGAGON CANVAS LINE SPLINE ARRAY
 %token <int> LITERAL
@@ -34,7 +34,7 @@ let trd  = (_,_,tr)->tr
 %left PLUSEQ MINUSEQ
 %left MULT DIV MODULO
 %left MULTEQ DIVEQ
-%right NOT NEG 
+%right NOT NEG
 %nonassoc INCREMENT DECREMENT
 
 %start program
@@ -51,11 +51,11 @@ decls:
   | decls fdecl { fst' $1, ($2 :: snd' $1), trd $1 }
   | decls cdecl { fst' $1, snd' $1, ( $2 :: trd $1) }
 
-cddecls: 
+cddecls:
   /* nothing */ { [], [], [] }
   | cddecls vdecl { ($2 :: fst' $1), snd' $1, trd $1 }
-  | cddecls const_decl { fst' $1, [$2], trd $1 }
   | cddecls fdecl { fst' $1, snd' $1, ($2 :: trd $1) }
+  | cddecls const_decl { fst' $1, [$2], trd $1 }
 
 cdecl:
   CLASS ID LBRACE cddecls RBRACE
@@ -95,14 +95,14 @@ typ:
   | VOID { Void }
   | STRING { String }
   | CHAR { Char }
-  | obj { $1 } 
+  | obj { $1 }
   | arr { $1 }
 
 arr:
   typ LSQBRACKET NUM RSQBRACKET { Array }
-  
+
 obj:
-  SHAPE      { () } 
+  SHAPE      { () }
   | SQUARE   { () }
   | RECT     { () }
   | TRIANGLE { () }
@@ -113,7 +113,7 @@ obj:
   | POLYGON  { () }
   | REGAGON  { () }
   | SPLINE   { () }
-  
+
 
 vdecl_list:
     /* nothing */    { [] }
@@ -175,7 +175,7 @@ expr:
   | DECREMENT expr   { () }
   | LSQBRACKET li_contents RSQBRACKET { () }
   | MINUS expr %prec NEG { Unop(Neg, $2) }
-  | ID LPAREN actuals_opt RPAREN { Call($1, $3) } 
+  | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | ID ASSIGN expr   { Assign($1, $3) }
   | LPAREN expr RPAREN { $2 }
 

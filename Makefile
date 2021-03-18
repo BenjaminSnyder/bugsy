@@ -20,6 +20,7 @@ clean :
 	rm -rf testall.log *.diff microc scanner.ml parser.ml parser.mli
 	rm -rf printbig
 	rm -rf *.cmx *.cmi *.cmo *.cmx *.o *.s *.ll *.out *.exe
+	rm -rf _build
 
 # More detailed: build using ocamlc/ocamlopt + ocamlfind to locate LLVM
 
