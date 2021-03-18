@@ -48,7 +48,7 @@ type cdecl = {
   cdfuncs: func_decl list;
   }
 
-type program = bind list * func_decl list * cdecl list 
+type program = bind list * cdecl list * func_decl list
 
 (* Pretty-printing functions *)
 
@@ -129,6 +129,6 @@ let string_of_cdecl cdecl =
 
 let string_of_program (vars, classes, funcs) = 
   String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
-  String.concat "\n" (List.map string_of_fdecl funcs) ^ "\n" ^
-  String.concat "\n" (List.map string_of_cdecl classes)
+  String.concat "" (List.map string_of_cdecl classes) ^ "\n" ^
+  String.concat "\n" (List.map string_of_fdecl funcs)
 

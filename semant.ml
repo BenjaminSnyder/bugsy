@@ -9,7 +9,7 @@ module StringMap = Map.Make(String)
 
    Check each global variable, then check each function *)
 
-let check (globals, classes, functions) =
+let check (globals, functions) =
 
   (* Raise an exception if the given list has a duplicate *)
   let report_duplicate exceptf list =
