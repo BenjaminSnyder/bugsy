@@ -127,7 +127,7 @@ let string_of_cdecl cdecl =
   String.concat "" (List.map string_of_fdecl cdecl.cdfuncs) ^
   "}\n"
 
-let string_of_program (vars, funcs, classes) = 
+let string_of_program (vars, classes, funcs) = 
   String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
   String.concat "" (List.map string_of_cdecl classes) ^ "\n" ^
   String.concat "\n" (List.map string_of_fdecl funcs)
