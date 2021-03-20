@@ -16,9 +16,7 @@ let trd  (_,_,tr)=tr
 %token PLUSEQ MINUSEQ MULTEQ DIVEQ
 %token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR NOT
 %token RETURN IF ELIF ELSE FOR WHILE
-%token NUM BOOL VOID STRING CHAR ARRAY
-%token POINT SHAPE SQUARE RECT CIRCLE ELLIPSE TRIANGLE
-%token POLYGON REGAGON CANVAS LINE SPLINE 
+%token NUM BOOL VOID STRING CHAR
 %token <int> LITERAL
 %token <string> ID
 %token EOF
@@ -98,26 +96,6 @@ typ:
   | VOID { Void }
   | STRING { String }
   | CHAR { Char }
-  | obj { $1 }
-  | arr { $1 }
-
-arr:
-  typ LSQBRACKET LITERAL RSQBRACKET { Array($1,$3) }
-  | typ LSQBRACKET RSQBRACKET   { Array($1)    }
-
-obj:
-  SHAPE      { () }
-  | SQUARE   { () }
-  | RECT     { () }
-  | TRIANGLE { () }
-  | CIRCLE   { () }
-  | ELLIPSE  { () }
-  | LINE     { () }
-  | CANVAS   { () }
-  | POLYGON  { () }
-  | REGAGON  { () }
-  | SPLINE   { () }
-
 
 vdecl_list:
     /* nothing */    { [] }
@@ -145,11 +123,6 @@ expr_opt:
     /* nothing */ { Noexpr }
   | expr          { $1 }
 
-li_contents:
-    expr             {$1}
-  | expr COMMA expr  {$3 :: $1}
-
-
 expr:
     LITERAL          { Literal($1) }
   | TRUE             { BoolLit(true) }
@@ -169,15 +142,14 @@ expr:
   | expr MULT  expr { Binop($1, Mult,  $3) }
   | expr DIV expr { Binop($1, Div,   $3) }
   | expr MODULO expr { Binop($1, Mod, $3) }
-  | ID PLUSEQ expr   { () }
-  | ID MINUSEQ expr  { () }
-  | ID MULTEQ expr   { () }
-  | ID DIVEQ expr    { () }
-  | expr INCREMENT   { () }
-  | INCREMENT expr   { () }
-  | expr DECREMENT   { () }
-  | DECREMENT expr   { () }
-  | LSQBRACKET li_contents RSQBRACKET { () }
+  | expr PLUSEQ expr   { Binop($1, Pluseq, $3) }
+  | expr MINUSEQ expr  { Binop($1, Mineq, $3) }
+  | expr MULTEQ expr   { Binop($1, Multeq, $3) }
+  | expr DIVEQ expr    { Binop($1, Diveq, $3) }
+  | expr INCREMENT   { Binop($1, Incr, 1) }
+  | INCREMENT expr   { Binop($2, Incr, 1) } /* Todo: Think about post vs pre increment */
+  | expr DECREMENT   { Binop($1, Decr, 1) }
+  | DECREMENT expr   { Binop($2, Decr, 1) }
   | MINUS expr %prec NEG { Unop(Neg, $2) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | ID ASSIGN expr   { Assign($1, $3) }

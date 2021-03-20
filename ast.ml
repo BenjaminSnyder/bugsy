@@ -1,11 +1,11 @@
 (* Abstract Syntax Tree and functions for printing it *)
 
 type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
-          And | Or
+          And | Or  | Mod | Pluseq | Mineq | Multeq | Diveq | Incr | Decr
 
 type uop = Neg | Not
 
-type typ = Num | Bool | Void | String | Char | Array
+type typ = Num | Bool | Void | String | Char
 
 (* type arr = typ * literal *)
 
@@ -59,6 +59,7 @@ let string_of_op = function
   | Sub -> "-"
   | Mult -> "*"
   | Div -> "/"
+  | Mod -> "%"
   | Equal -> "=?"
   | Neq -> "!="
   | Less -> "<"
@@ -67,6 +68,12 @@ let string_of_op = function
   | Geq -> ">="
   | And -> "and"
   | Or -> "or"
+  | Pluseq -> "+="
+  | Mineq -> "-="
+  | Multeq -> "*="
+  | Diveq -> "/="
+  | Incr -> "++"
+  | Decr -> "--"
 
 let string_of_uop = function
     Neg -> "-"
@@ -104,7 +111,6 @@ let string_of_typ = function
   | Void -> "void"
   | String -> "string"
   | Char -> "char"
-  | Array -> "array"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 

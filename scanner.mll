@@ -58,18 +58,6 @@ rule token = parse
 | "char"   { CHAR   }
 | "True" |"true"   { TRUE  }
 | "False"|"false"  { FALSE }
-| "pt"     { POINT  }
-| "shape"  { SHAPE  }
-| "square" { SQUARE }
-| "rect"   { RECT   }
-| "circle" { CIRCLE }
-| "ellipse"  { ELLIPSE  }
-| "triangle" { TRIANGLE }
-| "polygon"  { POLYGON  }
-| "regagon"  { REGAGON  }
-| "canvas" { CANVAS }
-| "line"   { LINE   }
-| "spline" { SPLINE }
 | ['0'-'9']+ as lxm { LITERAL(int_of_string lxm) }
 | ['a'-'z' '_' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
 | eof { EOF }
