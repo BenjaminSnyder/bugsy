@@ -18,7 +18,8 @@ let trd  (_,_,tr)=tr
 %token RETURN IF ELIF ELSE FOR WHILE
 %token NUM BOOL VOID STRING CHAR
 %token <int> LITERAL
-%token <string> ID
+%token <bool> BLIT
+%token <string> ID FLIT
 %token EOF
 
 %nonassoc NOELSE
@@ -77,17 +78,17 @@ fdecl:
   { { 
     typ = $1;
 	  fname = $2;
-	  formals = $4;
+	  formals = List.rev $4;
 	  locals = List.rev $7;
 	  body = List.rev $8 
   } }
 
 formals_opt:
     /* nothing */ { [] }
-  | formal_list   { List.rev $1 }
+  | formal_list   { $1 }
 
 formal_list:
-    typ ID                   { [($1,$2)] }
+    typ ID                   { [($1,$2)]     }
   | formal_list COMMA typ ID { ($3,$4) :: $1 }
 
 typ:
