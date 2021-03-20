@@ -102,7 +102,7 @@ typ:
   | arr { $1 }
 
 arr:
-  typ LSQBRACKET NUM RSQBRACKET { Array($1,$3) }
+  typ LSQBRACKET LITERAL RSQBRACKET { Array($1,$3) }
   | typ LSQBRACKET RSQBRACKET   { Array($1)    }
 
 obj:
