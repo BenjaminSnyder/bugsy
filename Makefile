@@ -23,8 +23,8 @@ clean :
 
 # More detailed: build using ocamlc/ocamlopt + ocamlfind to locate LLVM
 
-#OBJS = ast.cmx codegen.cmx parser.cmx scanner.cmx semant.cmx microc.cmx
-OBJS = ast.cmx parser.cmx scanner.cmx microc.cmx
+OBJS = ast.cmx codegen.cmx parser.cmx scanner.cmx semant.cmx microc.cmx
+#OBJS = ast.cmx parser.cmx scanner.cmx microc.cmx
 
 microc : $(OBJS)
 	ocamlfind ocamlopt -linkpkg -package llvm -package llvm.analysis $(OBJS) -o microc
