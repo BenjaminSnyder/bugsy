@@ -146,10 +146,10 @@ expr:
   | expr MINUSEQ expr  { Binop($1, Mineq, $3) }
   | expr MULTEQ expr   { Binop($1, Multeq, $3) }
   | expr DIVEQ expr    { Binop($1, Diveq, $3) }
-  | expr INCREMENT   { Binop($1, Incr, 1) }
-  | INCREMENT expr   { Binop($2, Incr, 1) } /* Todo: Think about post vs pre increment */
-  | expr DECREMENT   { Binop($1, Decr, 1) }
-  | DECREMENT expr   { Binop($2, Decr, 1) }
+  | expr INCREMENT   { Unop(Incr, $1) }
+  | INCREMENT expr   { Unop(Incr, $2) } /* Todo: Think about post vs pre increment */
+  | expr DECREMENT   { Unop(Decr, $1) }
+  | DECREMENT expr   { Unop(Decr, $2) }
   | MINUS expr %prec NEG { Unop(Neg, $2) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | ID ASSIGN expr   { Assign($1, $3) }
