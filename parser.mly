@@ -54,7 +54,7 @@ decls:
 cddecls:
   /* nothing */ { [], [], [] }
   | cddecls vdecl { ($2 :: fst' $1), snd' $1, trd $1 }
-  | cddecls const_decl { fst' $1, [$2], trd $1 }
+  | cddecls const_decl { fst' $1, ($2 :: snd' $1), trd $1 }
   | cddecls fdecl { fst' $1, snd' $1, ($2 :: trd $1) }
 
 cdecl:
@@ -76,11 +76,13 @@ const_decl:
 
 fdecl:
    typ ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
-     { { typ = $1;
-	 fname = $2;
-	 formals = $4;
-	 locals = List.rev $7;
-	 body = List.rev $8 } }
+  { { 
+    typ = $1;
+	  fname = $2;
+	  formals = $4;
+	  locals = List.rev $7;
+	  body = List.rev $8 
+  } }
 
 formals_opt:
     /* nothing */ { [] }
