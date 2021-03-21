@@ -1,0 +1,8 @@
+1. ./microc.native -c ---> initial.ll #gives us llvm
+2. llc initial.ll -o initial.s --> initial.s #gives us assembly
+3. gcc initial.s -o a.out --> a.out #gives us an executable which can be run 
+
+note: to link -o files (i.e. print big) do the following:
+gcc initial.s printbig.o
+
+(this gives you a.out but you can rename it with -o if u want to)
