@@ -3,7 +3,7 @@ open Ast
 type sexpr = typ * sx
 and sx =
     SLiteral of int
-  | SNumLit of string 
+  | SNumLit of string
   | SBoolLit of bool
   | SId of string
   | SBinop of sexpr * op * sexpr
@@ -41,7 +41,7 @@ type sfunc_decl = {
     scdfuncs: sfunc_decl list;
     }
 
-type sprogram = bind list * sfunc_decl list
+type sprogram = bind list * sfunc_decl list * scdecl list
 
 (* Pretty-printing functions *)
 

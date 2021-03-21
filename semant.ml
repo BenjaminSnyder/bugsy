@@ -40,7 +40,7 @@ let check (globals, functions, classes) =
       locals = []; body = [] } map
     in List.fold_left add_bind StringMap.empty [ ("print", Num);
 			                         ("printb", Bool);
-			                        (* ("printf", Float); *)
+			                         ("printf", Num); 
 			                         ("printbig", Num) ]
   in
 
@@ -94,7 +94,7 @@ let check (globals, functions, classes) =
     (* Return a semantically-checked expression, i.e., with a type *)
     let rec expr = function
         Literal  l -> (Num, SLiteral l)
-     (* | Fliteral l -> (Float, SFliteral l) *)
+      | NumLit l -> (Num, SNumLit l)
       | BoolLit l  -> (Bool, SBoolLit l)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
@@ -189,7 +189,7 @@ let check (globals, functions, classes) =
 	SBlock(sl) -> sl
       | _ -> raise (Failure ("internal error: block didn't become a block?"))
     }
-  in (globals, List.map check_function functions);
+  in
 
   (**** Check Classes ****)
 
@@ -464,4 +464,4 @@ let check (globals, functions, classes) =
       scdconst = List.map check_constructor _class.cdconst;
       scdfuncs = List.map check_function _class.cdfuncs
     }
-  in (globals, List.map check_class classes)
+  in (globals, List.map check_function functions, List.map check_class classes)

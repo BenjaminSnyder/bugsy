@@ -1,5 +1,3 @@
-num main(){
-	num x;
-	x = 7.5;
-	return x;
+num main() {
+    return 0.0;
 }
