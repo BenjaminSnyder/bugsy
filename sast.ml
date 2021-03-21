@@ -1,11 +1,9 @@
-(* Semantically-checked Abstract Syntax Tree and functions for printing it *)
-
 open Ast
 
 type sexpr = typ * sx
 and sx =
     SLiteral of int
-  | SFliteral of string
+  | SNumLit of string 
   | SBoolLit of bool
   | SId of string
   | SBinop of sexpr * op * sexpr
@@ -22,6 +20,12 @@ type sstmt =
   | SFor of sexpr * sexpr * sexpr * sstmt
   | SWhile of sexpr * sstmt
 
+  type sconstruct_decl = {
+    sctformals : bind list;
+    sctlocals : bind list;
+    sctbody : sstmt list;
+  }
+
 type sfunc_decl = {
     styp : typ;
     sfname : string;
@@ -29,6 +33,13 @@ type sfunc_decl = {
     slocals : bind list;
     sbody : sstmt list;
   }
+
+  type scdecl = {
+    scname : string;
+    scdvars : bind list;
+    scdconst: sconstruct_decl list;
+    scdfuncs: sfunc_decl list;
+    }
 
 type sprogram = bind list * sfunc_decl list
 
@@ -39,7 +50,7 @@ let rec string_of_sexpr (t, e) =
     SLiteral(l) -> string_of_int l
   | SBoolLit(true) -> "true"
   | SBoolLit(false) -> "false"
-  | SFliteral(l) -> l
+  | SNumLit(l) -> l
   | SId(s) -> s
   | SBinop(e1, o, e2) ->
       string_of_sexpr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_sexpr e2
@@ -48,7 +59,7 @@ let rec string_of_sexpr (t, e) =
   | SCall(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
   | SNoexpr -> ""
-				  ) ^ ")"				     
+				  ) ^ ")"
 
 let rec string_of_sstmt = function
     SBlock(stmts) ->
@@ -64,6 +75,14 @@ let rec string_of_sstmt = function
       string_of_sexpr e3  ^ ") " ^ string_of_sstmt s
   | SWhile(e, s) -> "while (" ^ string_of_sexpr e ^ ") " ^ string_of_sstmt s
 
+
+  let string_of_sconst_decl const_decl =
+    "constructor(" ^ String.concat ", " (List.map snd const_decl.sctformals) ^
+    ")\n{\n" ^
+    String.concat "" (List.map string_of_vdecl const_decl.sctlocals) ^
+    String.concat "" (List.map string_of_sstmt const_decl.sctbody) ^
+    "}\n"
+
 let string_of_sfdecl fdecl =
   string_of_typ fdecl.styp ^ " " ^
   fdecl.sfname ^ "(" ^ String.concat ", " (List.map snd fdecl.sformals) ^
@@ -72,6 +91,14 @@ let string_of_sfdecl fdecl =
   String.concat "" (List.map string_of_sstmt fdecl.sbody) ^
   "}\n"
 
-let string_of_sprogram (vars, funcs) =
+  let string_of_scdecl cdecl =
+    cdecl.scname ^ "{" ^
+    String.concat "" (List.map string_of_vdecl cdecl.scdvars) ^
+    String.concat "" (List.map string_of_sconst_decl cdecl.scdconst) ^
+    String.concat "" (List.map string_of_sfdecl cdecl.scdfuncs) ^
+    "}\n"
+
+let string_of_sprogram (vars, funcs, _classes) =
   String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
+  String.concat "" (List.map string_of_scdecl _classes) ^ "\n" ^
   String.concat "\n" (List.map string_of_sfdecl funcs)

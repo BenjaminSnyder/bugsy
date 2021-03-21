@@ -1,3 +1,5 @@
 num main(){
-	return 0;
+	num x;
+	x = 7.5;
+	return x;
 }

@@ -16,10 +16,10 @@ let trd  (_,_,tr)=tr
 %token PLUSEQ MINUSEQ MULTEQ DIVEQ
 %token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR NOT
 %token RETURN IF ELIF ELSE FOR WHILE
-%token NUM BOOL VOID STRING CHAR
+%token BOOL VOID STRING CHAR NUM
 %token <int> LITERAL
 %token <bool> BLIT
-%token <string> ID FLIT
+%token <string> ID NLIT
 %token EOF
 
 %nonassoc NOELSE
@@ -92,7 +92,7 @@ formal_list:
   | formal_list COMMA typ ID { ($3,$4) :: $1 }
 
 typ:
-    NUM { Num }
+    NUM { Num  }
   | BOOL { Bool }
   | VOID { Void }
   | STRING { String }
@@ -125,7 +125,8 @@ expr_opt:
   | expr          { $1 }
 
 expr:
-    LITERAL          { Literal($1) }
+    NLIT              { NumLit($1) }      
+  | LITERAL          { Literal($1) }
   | TRUE             { BoolLit(true) }
   | FALSE            { BoolLit(false) }
   | ID               { Id($1) }
