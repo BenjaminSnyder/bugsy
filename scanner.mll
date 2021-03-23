@@ -64,7 +64,7 @@ rule token = parse
 | digits as lxm { LITERAL(int_of_string lxm) }
 | digits '.'  digit* ( ['e' 'E'] ['+' '-']? digits )? as lxm { NLIT(lxm) }
 | ['a'-'z' '_' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
-| '\"' [^ '\"']* '\"' as lxm { STRLIT(lxm) }
+|'\"' ([^ '\"']* as lxm)  '\"' { STRLIT(lxm) } 
 
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
