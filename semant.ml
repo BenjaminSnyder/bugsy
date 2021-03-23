@@ -96,7 +96,7 @@ let check (globals, functions, classes) =
         Literal  l -> (Num, SLiteral l)
       | NumLit l   -> (Num, SNumLit l)
       | BoolLit l  -> (Bool, SBoolLit l)
-      | StrLit l   -> (StrLit, SStrLit l)
+      | StrLit l   -> (String, SStrLit l)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
       | Assign(var, e) as ex ->
@@ -255,7 +255,7 @@ let check (globals, functions, classes) =
         Literal  l -> (Num, SLiteral l)
       | NumLit l   -> (Num, SNumLit l)
       | BoolLit l  -> (Bool, SBoolLit l)
-      | StrLit l   -> (StrLit, SStrLit l)
+      | StrLit l   -> (String, SStrLit l)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
       | Assign(var, e) as ex ->
@@ -363,7 +363,7 @@ let check (globals, functions, classes) =
           Literal  l -> (Num, SLiteral l)
         | NumLit l   -> (Num, SNumLit l)
         | BoolLit l  -> (Bool, SBoolLit l)
-        | StrLit l   -> (StrLit, SStrLit l)
+        | StrLit l   -> (String, SStrLit l)
         | Noexpr     -> (Void, SNoexpr)
         | Id s       -> (type_of_identifier s, SId s)
         | Assign(var, e) as ex ->

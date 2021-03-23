@@ -21,7 +21,7 @@ type sstmt =
   | SFor of sexpr * sexpr * sexpr * sstmt
   | SWhile of sexpr * sstmt
 
-  type sconstruct_decl = {
+type sconstruct_decl = {
     sctformals : bind list;
     sctlocals : bind list;
     sctbody : sstmt list;
@@ -35,7 +35,7 @@ type sfunc_decl = {
     sbody : sstmt list;
   }
 
-  type scdecl = {
+type scdecl = {
     scname : string;
     scdvars : bind list;
     scdconst: sconstruct_decl list;
