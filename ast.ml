@@ -11,8 +11,9 @@ type typ = Num | Bool | Void | String | Char
 type bind = typ * string
 
 type expr =
-   NumLit of string
+    NumLit of string
   | Literal of int
+  | StrLit of string
   | BoolLit of bool
   | Id of string
   | Binop of expr * op * expr
@@ -80,8 +81,9 @@ let string_of_uop = function
   | Decr -> "--"
 
 let rec string_of_expr = function
-    NumLit(nl) -> nl 
-  | Literal(l) -> string_of_int l
+    NumLit(nl)  -> nl 
+  | Literal(l)  -> string_of_int l
+  | StrLit(str) -> str
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"
   | Id(s) -> s

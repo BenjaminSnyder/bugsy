@@ -5,7 +5,7 @@
 # Easiest way to build: using ocamlbuild, which in turn uses ocamlfind
 
 .PHONY: all
-all : microc.native printbig.o
+all : clean microc.native printbig.o
 
 .PHONY: microc.native
 microc.native :
@@ -17,7 +17,7 @@ microc.native :
 .PHONY : clean
 clean :
 	ocamlbuild -clean
-	rm -rf testall.log *.diff scanner.ml parser.ml parser.mli
+	rm -rf testall.log *.diff microc scanner.ml parser.ml parser.mli
 	rm -rf printbig
 	rm -rf *.cmx *.cmi *.cmo *.cmx *.o *.s *.ll *.out *.exe
 	rm -rf _build

@@ -19,7 +19,7 @@ let trd  (_,_,tr)=tr
 %token BOOL VOID STRING CHAR NUM
 %token <int> LITERAL
 %token <bool> BLIT
-%token <string> ID NLIT
+%token <string> ID NLIT STRLIT
 %token EOF
 
 %nonassoc NOELSE
@@ -96,7 +96,6 @@ typ:
   | BOOL { Bool }
   | VOID { Void }
   | STRING { String }
-  | CHAR { Char }
 
 vdecl_list:
     /* nothing */    { [] }
@@ -125,9 +124,10 @@ expr_opt:
   | expr          { $1 }
 
 expr:
-    NLIT              { NumLit($1) }      
+    NLIT             { NumLit($1)  }      
   | LITERAL          { Literal($1) }
-  | TRUE             { BoolLit(true) }
+  | STRLIT           { StrLit($1)  }
+  | TRUE             { BoolLit(true)  }
   | FALSE            { BoolLit(false) }
   | ID               { Id($1) }
   | expr EQ     expr { Binop($1, Equal, $3) }
