@@ -10,6 +10,7 @@ and sx =
   | SUnop of uop * sexpr
   | SAssign of string * sexpr
   | SCall of string * sexpr list
+  | SStrLit of string
   | SNoexpr
 
 type sstmt =
@@ -51,6 +52,7 @@ let rec string_of_sexpr (t, e) =
   | SBoolLit(true) -> "true"
   | SBoolLit(false) -> "false"
   | SNumLit(l) -> l
+  | SStrLit(l) -> l
   | SId(s) -> s
   | SBinop(e1, o, e2) ->
       string_of_sexpr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_sexpr e2

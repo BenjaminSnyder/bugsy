@@ -40,7 +40,7 @@ let check (globals, functions, classes) =
       locals = []; body = [] } map
     in List.fold_left add_bind StringMap.empty [ ("print", Num);
 			                         ("printb", Bool);
-			                         ("printf", Num); 
+			                         ("printf", Num);
 			                         ("printbig", Num) ]
   in
 
@@ -94,8 +94,9 @@ let check (globals, functions, classes) =
     (* Return a semantically-checked expression, i.e., with a type *)
     let rec expr = function
         Literal  l -> (Num, SLiteral l)
-      | NumLit l -> (Num, SNumLit l)
+      | NumLit l   -> (Num, SNumLit l)
       | BoolLit l  -> (Bool, SBoolLit l)
+      | StrLit l   -> (StrLit, SStrLit l)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
       | Assign(var, e) as ex ->
@@ -252,8 +253,9 @@ let check (globals, functions, classes) =
     (* Return a semantically-checked expression, i.e., with a type *)
     let rec expr = function
         Literal  l -> (Num, SLiteral l)
-     (* | Fliteral l -> (Float, SFliteral l) *)
+      | NumLit l   -> (Num, SNumLit l)
       | BoolLit l  -> (Bool, SBoolLit l)
+      | StrLit l   -> (StrLit, SStrLit l)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
       | Assign(var, e) as ex ->
@@ -359,8 +361,9 @@ let check (globals, functions, classes) =
       (* Return a semantically-checked expression, i.e., with a type *)
       let rec expr = function
           Literal  l -> (Num, SLiteral l)
-       (* | Fliteral l -> (Float, SFliteral l) *)
+        | NumLit l   -> (Num, SNumLit l)
         | BoolLit l  -> (Bool, SBoolLit l)
+        | StrLit l   -> (StrLit, SStrLit l)
         | Noexpr     -> (Void, SNoexpr)
         | Id s       -> (type_of_identifier s, SId s)
         | Assign(var, e) as ex ->
