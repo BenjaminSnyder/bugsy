@@ -127,8 +127,7 @@ expr:
     NLIT             { NumLit($1)  }      
   | LITERAL          { Literal($1) }
   | STRLIT           { StrLit($1)  }
-  | TRUE             { BoolLit(true)  }
-  | FALSE            { BoolLit(false) }
+  | BLIT            { BoolLit($1) }
   | ID               { Id($1) }
   | expr EQ     expr { Binop($1, Equal, $3) }
   | expr NEQ    expr { Binop($1, Neq,   $3) }
