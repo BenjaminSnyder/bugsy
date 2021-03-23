@@ -4,7 +4,7 @@ type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
           And | Or  | Mod | Pluseq | Mineq | Multeq | Diveq 
 type uop = Neg | Not | Incr | Decr
 
-type typ = Num | Bool | Void | String | Char
+type typ = Num | Bool | Void | String
 
 (* type arr = typ * literal *)
 
@@ -113,7 +113,6 @@ let string_of_typ = function
   | Bool -> "bool"
   | Void -> "void"
   | String -> "string"
-  | Char -> "char"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 
