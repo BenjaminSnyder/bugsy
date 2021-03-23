@@ -31,6 +31,7 @@ let translate (globals, functions, classes) =
   and i8_t       = L.i8_type     context
   and i1_t       = L.i1_type     context
   and float_t    = L.double_type context
+  and string_t   = L.pointer_type (L.i8_type context) (*new string type *)
   and void_t     = L.void_type   context in
 
   (* Return the LLVM type for a MicroC type *)
@@ -38,6 +39,7 @@ let translate (globals, functions, classes) =
       A.Num   -> float_t
     | A.Bool  -> i1_t
     | A.Void  -> void_t
+    | A.StrLit -> string_t
   in
 
   (* Create a map of global variables after creating each *)
@@ -77,7 +79,7 @@ let translate (globals, functions, classes) =
 
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder
     and float_format_str = L.build_global_stringptr "%g\n" "fmt" builder in
-
+    (*add string formatting here too stuff like %s *)
     (* Construct the function's "locals": formal arguments and locally
        declared variables.  Allocate each on the stack, initialize their
        value, if appropriate, and remember their values in the "locals" map *)
@@ -108,7 +110,8 @@ let translate (globals, functions, classes) =
 
     (* Construct code for an expression; return its value *)
     let rec expr builder ((_, e) : sexpr) = match e with
-	SLiteral i  -> L.const_int i32_t i
+        StrLit -> L.build_global_stringptr s "str" builder
+      |	SLiteral i  -> L.const_int i32_t i
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SNumLit nl -> L.const_float_of_string float_t nl
       | SNoexpr     -> L.const_int i32_t 0
