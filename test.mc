@@ -2,6 +2,7 @@ num main() {
     num x;
     num y;
     num z;
+    string x;
     x = 4.7;
     y = 5.6;
     z = 8.0;

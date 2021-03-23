@@ -39,7 +39,7 @@ let translate (globals, functions, classes) =
       A.Num   -> float_t
     | A.Bool  -> i1_t
     | A.Void  -> void_t
-    | A.StrLit -> string_t
+    | A.String -> string_t
   in
 
   (* Create a map of global variables after creating each *)
@@ -110,7 +110,7 @@ let translate (globals, functions, classes) =
 
     (* Construct code for an expression; return its value *)
     let rec expr builder ((_, e) : sexpr) = match e with
-        StrLit -> L.build_global_stringptr s "str" builder
+        SStrLit s -> L.build_global_stringptr s "str" builder
       |	SLiteral i  -> L.const_int i32_t i
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SNumLit nl -> L.const_float_of_string float_t nl
