@@ -3,7 +3,7 @@ num main() {
     num y;
     num z;
     string a;
-    a = "hello world";
+    a = " beans  ";
     printf(a);
     x = 4.7;
     y = 5.6;
