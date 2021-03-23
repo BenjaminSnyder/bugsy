@@ -19,9 +19,9 @@ function yellow {
 
 echo "Starting tests"
 cd hello_tests
-for i in *.mc; do
-    filename=$(basename $i .mc)
-    ../microc.native $i > "$i.ll"
+for i in *.bug; do
+    filename=$(basename $i .bug)
+    ../bugsy.native $i > "$i.ll"
     llc "$i.ll" -o "$i.s"
     gcc "$i.s" -no-pie
     rm "$i.ll" "$i.s"
