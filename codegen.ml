@@ -39,7 +39,7 @@ let translate (globals, functions, classes) =
       A.Num   -> float_t
     | A.Bool  -> i1_t
     | A.Void  -> void_t
-    | A.StrLit -> string_t
+    | A.String -> string_t
   in
 
   (* Create a map of global variables after creating each *)
@@ -78,7 +78,8 @@ let translate (globals, functions, classes) =
     let builder = L.builder_at_end context (L.entry_block the_function) in
 
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder
-    and float_format_str = L.build_global_stringptr "%g\n" "fmt" builder in
+    and float_format_str = L.build_global_stringptr "%g\n" "fmt" builder 
+    and string_format_str = L.build_global_stringptr "%s\n" "fmt" builder in
     (*add string formatting here too stuff like %s *)
     (* Construct the function's "locals": formal arguments and locally
        declared variables.  Allocate each on the stack, initialize their
@@ -110,7 +111,7 @@ let translate (globals, functions, classes) =
 
     (* Construct code for an expression; return its value *)
     let rec expr builder ((_, e) : sexpr) = match e with
-        StrLit -> L.build_global_stringptr s "str" builder
+        SStrLit s -> L.build_global_stringptr s "str" builder
       |	SLiteral i  -> L.const_int i32_t i
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SNumLit nl -> L.const_float_of_string float_t nl
@@ -164,7 +165,7 @@ let translate (globals, functions, classes) =
       | SCall ("printbig", [e]) ->
 	  L.build_call printbig_func [| (expr builder e) |] "printbig" builder
       | SCall ("printf", [e]) ->
-	  L.build_call printf_func [| float_format_str ; (expr builder e) |]
+	  L.build_call printf_func [| string_format_str ; (expr builder e) |]
 	    "printf" builder
       | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
