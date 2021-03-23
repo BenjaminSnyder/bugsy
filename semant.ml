@@ -41,6 +41,7 @@ let check (globals, functions, classes) =
     in List.fold_left add_bind StringMap.empty [ ("print", Num);
 			                         ("printb", Bool);
 			                         ("printf", Num);
+                                     ("print", String)
 			                         ("printbig", Num) ]
   in
 
