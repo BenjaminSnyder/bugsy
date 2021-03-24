@@ -38,13 +38,33 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [(ty, "x")];
       locals = []; body = [] } map
-    in List.fold_left add_bind StringMap.empty [ 
+    in List.fold_left add_bind StringMap.empty [
 			                         ("printb", Bool);
 			                         ("print", Num);
                                      ("printf", String);
 			                         ("printbig", Num) ]
   in
+  let built_in_decls =
+    let add_bind map (name, ty) = StringMap.add name {
+      typ = Void;
+      fname = name;
+      formals = [(ty, "x")];
+      locals = []; body = [] } map
+    in let func_map = List.fold_left add_bind StringMap.empty [
+			                         ("printb", Bool);
+			                         ("print", Num);
+                                     ("printf", String);
+			                         ("printbig", Num);]
 
+    in
+    let add_bind2 map (name) = StringMap.add name {
+      typ = Void;
+      fname = name;
+      formals = [];
+      locals = []; body = [] } map
+    in List.fold_left add_bind2 func_map [("demo");]
+
+  in
   (* Add function name to symbol table *)
   let add_func map fd =
     let built_in_err = "function " ^ fd.fname ^ " may not be defined"

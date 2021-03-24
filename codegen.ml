@@ -61,6 +61,11 @@ let translate (globals, functions, classes) =
   let printbig_func : L.llvalue =
       L.declare_function "printbig" printbig_t the_module in
 
+  let demo_t : L.lltype =
+      L.function_type float_t [||] in
+  let demo_func : L.llvalue =
+      L.declare_function "demo" demo_t the_module in
+
   (* Define each function (arguments and return type) so we can
      call it even before we've created its body *)
   let function_decls : (L.llvalue * sfunc_decl) StringMap.t =
@@ -78,7 +83,7 @@ let translate (globals, functions, classes) =
     let builder = L.builder_at_end context (L.entry_block the_function) in
 
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder
-    and float_format_str = L.build_global_stringptr "%g\n" "fmt" builder 
+    and float_format_str = L.build_global_stringptr "%g\n" "fmt" builder
     and string_format_str = L.build_global_stringptr "%s\n" "fmt" builder in
     (*add string formatting here too stuff like %s *)
     (* Construct the function's "locals": formal arguments and locally
@@ -162,6 +167,8 @@ let translate (globals, functions, classes) =
       | SCall ("print", [e]) | SCall ("printb", [e]) ->
 	  L.build_call printf_func [| float_format_str ; (expr builder e) |]
 	    "printf" builder
+      | SCall ("demo", []) ->
+  	  L.build_call demo_func [||] "demo" builder
       | SCall ("printbig", [e]) ->
 	  L.build_call printbig_func [| (expr builder e) |] "printbig" builder
       | SCall ("printf", [e]) ->
