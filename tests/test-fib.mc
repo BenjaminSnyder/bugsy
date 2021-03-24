@@ -1,10 +1,12 @@
-int fib(int x)
+num fib(num x)
 {
-  if (x < 2) return 1;
+  if(x < 2) {
+    return 1;
+  }
   return fib(x-1) + fib(x-2);
 }
 
-int main()
+num main()
 {
   print(fib(0));
   print(fib(1));

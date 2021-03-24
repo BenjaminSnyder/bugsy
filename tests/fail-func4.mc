@@ -1,12 +1,12 @@
-int foo() {}
+num foo() {}
 
 void bar() {}
 
-int print() {} /* Should not be able to define print */
+num print() {} /* Should not be able to define print */
 
 void baz() {}
 
-int main()
+num main()
 {
   return 0;
 }

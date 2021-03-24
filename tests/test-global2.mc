@@ -1,8 +1,8 @@
 bool i;
 
-int main()
+num main()
 {
-  int i; /* Should hide the global i */
+  num i; /* Should hide the global i */
 
   i = 42;
   print(i + i);

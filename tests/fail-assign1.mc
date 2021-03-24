@@ -1,11 +1,11 @@
-int main()
+num main()
 {
-  int i;
+  num i;
   bool b;
 
   i = 42;
   i = 10;
   b = true;
   b = false;
-  i = false; /* Fail: assigning a bool to an integer */
+  i = false; /* Fail: assigning a bool to a num */
 }

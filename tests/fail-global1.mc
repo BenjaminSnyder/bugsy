@@ -1,9 +1,9 @@
-int c;
+num c;
 bool b;
 void a; /* global variables should not be void */
 
 
-int main()
+num main()
 {
   return 0;
 }

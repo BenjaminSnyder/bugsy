@@ -1,12 +1,12 @@
-int foo() {}
+num foo() {}
 
-int bar() {}
+num bar() {}
 
-int baz() {}
+num baz() {}
 
 void bar() {} /* Error: duplicate function bar */
 
-int main()
+num main()
 {
   return 0;
 }

@@ -1,9 +1,9 @@
-int foo(int a)
+num foo(num a)
 {
   return a;
 }
 
-int main()
+num main()
 {
   return 0;
 }

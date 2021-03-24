@@ -1,11 +1,11 @@
-int foo(int a)
+num foo(num a)
 {
   return a;
 }
 
-int main()
+num main()
 {
-  int a;
+  num a;
   a = 42;
   a = a + 5;
   print(a);

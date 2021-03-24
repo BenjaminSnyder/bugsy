@@ -1,18 +1,15 @@
-/* Bug noticed by Pin-Chin Huang */
-
-int fun(int x, int y)
+num fun(num x, num y)
 {
   return 0;
 }
 
-int main()
+num main()
 {
-  int i;
+  num i;
   i = 1;
 
-  fun(i = 2, i = i+1);
+  fun(2, i+1);
 
   print(i);
   return 0;
 }
-

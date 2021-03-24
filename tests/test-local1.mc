@@ -1,12 +1,12 @@
 void foo(bool i)
 {
-  int i; /* Should hide the formal i */
+  num i; /* Should hide the formal i */
 
   i = 42;
   print(i + i);
 }
 
-int main()
+int num()
 {
   foo(true);
   return 0;

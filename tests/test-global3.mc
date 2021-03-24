@@ -1,8 +1,8 @@
-int i;
+num i;
 bool b;
-int j;
+num j;
 
-int main()
+num main()
 {
   i = 42;
   j = 10;

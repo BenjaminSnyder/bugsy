@@ -1,8 +1,8 @@
-void foo(int a, bool b)
+void foo(num a, bool b)
 {
 }
 
-int main()
+num main()
 {
   foo(42, true);
   foo(42, true, false); /* Wrong number of arguments */
