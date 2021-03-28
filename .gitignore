@@ -1,6 +1,7 @@
 _build/
-printbig.o
-microc.native
+builtins.o
+bugsy.native
 *.ll
 testall.log
 .*~
+
