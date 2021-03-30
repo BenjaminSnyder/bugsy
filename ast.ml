@@ -109,12 +109,12 @@ let rec add_level (listy, level) = match listy with
 
 let rec string_of_stmt (stmt,level) = match stmt with
     Block(stmts) ->
-      "{\n" ^ (String.make level '\t') ^ String.concat (String.make level '\t') (List.map string_of_stmt (add_level (stmts, level))) ^ "}\n"
+      "{\n" ^ (String.make level '\t') ^ String.concat (String.make level '\t') (List.map string_of_stmt (add_level (stmts, level))) ^ (String.make (level-1) '\t') ^ "}\n"
   | Expr(expr) -> string_of_expr expr ^ ";\n";
   | Return(expr) -> "return " ^ string_of_expr expr ^ ";\n";
   | If(e, s, Block([])) -> "if (" ^ string_of_expr e ^ ")" ^ string_of_stmt (s, (level))
   | If(e, s1, s2) -> "if (" ^ string_of_expr e ^ ")" ^
-      string_of_stmt (s1, (level)) ^ "else" ^ string_of_stmt (s2, (level))
+      string_of_stmt (s1, (level)) ^ (String.make (level-1) '\t') ^ "else" ^ string_of_stmt (s2, (level))
   | For(e1, e2, e3, s) -> "for (" ^ string_of_expr e1  ^ " ; " ^ string_of_expr e2 ^ " ; " ^
       string_of_expr e3  ^ ") " ^ string_of_stmt (s, (level+1))
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt (s, (level+1))
@@ -133,9 +133,9 @@ let rec add_tplevel (listy, level) = match listy with
 
 let string_of_const_decl const_decl =
   "constructor(" ^ String.concat ", " (List.map snd const_decl.ctformals) ^
-  ") {\n\t" ^
-  String.concat "\t" (List.map string_of_vdecl (add_tplevel (const_decl.ctlocals, 1))) ^ "\t" ^
-  String.concat "\t" (List.map string_of_stmt (add_level (const_decl.ctbody, 1))) ^ "\t" ^
+  ") {\n\t\t" ^
+  String.concat "\t\t" (List.map string_of_vdecl (add_tplevel (const_decl.ctlocals, 1))) ^ "\t\t" ^
+  String.concat "\t\t" (List.map string_of_stmt (add_level (const_decl.ctbody, 1))) ^ "\t" ^
   "}\n"
 
 let string_of_fdecl (fdecl, level) =
@@ -143,14 +143,14 @@ let string_of_fdecl (fdecl, level) =
   fdecl.fname ^ "(" ^ String.concat ", " (List.map snd fdecl.formals) ^
   ") {\n" ^ (String.make (level) '\t') ^
   String.concat (String.make level '\t') (List.map string_of_vdecl (add_tplevel (fdecl.locals, level+1))) ^ (String.make level '\t') ^
-  String.concat (String.make level '\t') (List.map string_of_stmt (add_level (fdecl.fbody, (level+1)))) ^ (String.make level '\t') ^
+  String.concat (String.make level '\t') (List.map string_of_stmt (add_level (fdecl.fbody, (level+1)))) ^ (String.make (level-1) '\t') ^
   "}\n"
 
 let string_of_cdecl (cdecl, level) =
   "class " ^ cdecl.cname ^ " {" ^ "\n" ^ "\t" ^
   String.concat "\t" (List.map string_of_vdecl (add_tplevel (cdecl.cdvars,level+1))) ^ "\t" ^
   String.concat "\t" (List.map string_of_const_decl cdecl.cdconst) ^ "\t" ^
-  String.concat "\t" (List.map string_of_fdecl (add_level (cdecl.cdfuncs, (level+1)))) ^ (String.make level '\t') ^
+  String.concat "\t" (List.map string_of_fdecl (add_level (cdecl.cdfuncs, (level+1)))) ^ (String.make (level-1) '\t') ^
   "}\n"
 
 let string_of_program (vars, funcs, classes) =
