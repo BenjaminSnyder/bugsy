@@ -102,6 +102,25 @@ typ:
   | BOOL { Bool }
   | VOID { Void }
   | STRING { String }
+  | shape { $1 }
+  | array_t { $1 }
+
+shape:
+    POINT      { Pt       }
+  | SHAPE      { Shape    }
+  | SQUARE     { Square   }
+  | RECT       { Rect     }
+  | TRIANGLE   { Triangle }
+  | CIRCLE     { Circle   }
+  | ELLIPSE    { Ellipse  }
+  | LINE       { Line     }
+  | CANVAS     { Canvas   }
+  | POLYGON    { Polygon  }
+  | REGAGON    { Regagon  }
+  | SPLINE     { Spline   }
+
+array_t:
+  typ LSQBRACKET expr RSQBRACKET { Array($1, $3) }
 
 vdecl:
     typ ID SEMI { ($1, $2) }
@@ -127,11 +146,14 @@ expr_opt:
 
 expr:
     ID               { Id($1) }
+  | ID DOT ID        { Access($1, $3) }
   | literal          { $1 }
   | bool_expr        { $1 }
   | arithmetic       { $1 }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | ID ASSIGN expr   { Assign($1, $3) }
+  | ID LSQBRACKET expr RSQBRACKET ASSIGN expr   { ArrayAssign($1, $3, $6) }
+  | ID LSQBRACKET expr RSQBRACKET               { ArrayAccess($1, $3) }
   | LPAREN expr RPAREN { $2 } /* allow parentheses in arithmetic */
 
 literal:

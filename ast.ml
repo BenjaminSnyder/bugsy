@@ -6,23 +6,29 @@ type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
 
 type uop = Neg | Not
 
-type typ = Num | Bool | Void | String
-
 (* type arr = typ * literal *)
 
-type bind = typ * string
 
 type expr =
     NumLit of string
   | StrLit of string
   | BoolLit of bool
   | Id of string
+  | Access of string * string
   | Binop of expr * op * expr
   | Unop of uop * expr
   | Assign of string * expr
+  | ArrayAssign of string * expr * expr
+  | ArrayAccess of string * expr
   | Crementop of expr * op
   | Call of string * expr list
   | Noexpr
+
+type typ = Num | Bool | Void | String | Pt | Shape | Square | Rect |
+           Triangle | Circle | Ellipse | Regagon | Polygon |
+           Canvas | Line | Spline | Array of typ * expr
+
+type bind = typ * string
 
 type stmt =
     Block of stmt list
