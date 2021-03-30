@@ -160,6 +160,11 @@ literal:
     NUMLIT           { NumLit($1)  }
   | STRLIT           { StrLit($1)  }
   | BLIT             { BoolLit($1) }
+  | LSQBRACKET arr_contents RSQBRACKET { ArrayLit($2) }
+
+arr_contents:
+    expr            { [$1] }
+  | arr_contents COMMA expr { $3 :: $1 }
 
 bool_expr:
     expr EQ     expr { Binop($1, Equal, $3) }

@@ -5,18 +5,18 @@ num foo(){
 	num y;
 	num f;
 	num g;
-	num h;
+	num[5] h;
 	x=0.0;
 	y=1.0;
 	f=4.2;
-	h=2.4;
+	h = [5.3, 3.2, 2.3, 6.6];
 	if(true){
 		x=5.0;
 		print(x);
 	}
 	if(false){
 		x+y;
-		return h;
+		return h[2];
 	}
 	else{
 		y-x;
