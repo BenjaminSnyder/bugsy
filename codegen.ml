@@ -117,7 +117,6 @@ let translate (globals, functions, classes) =
     (* Construct code for an expression; return its value *)
     let rec expr builder ((_, e) : sexpr) = match e with
         SStrLit s -> L.build_global_stringptr s "str" builder
-      |	SLiteral i  -> L.const_int i32_t i
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SNumLit nl -> L.const_float_of_string float_t nl
       | SNoexpr     -> L.const_int i32_t 0
@@ -242,7 +241,7 @@ let translate (globals, functions, classes) =
     in
 
     (* Build the code for each statement in the function *)
-    let builder = stmt builder (SBlock fdecl.sbody) in
+    let builder = stmt builder (SBlock fdecl.sfbody) in
 
     (* Add a return if the last block falls off the end *)
     add_terminal builder (match fdecl.styp with

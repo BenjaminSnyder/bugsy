@@ -1,8 +1,10 @@
 (* Abstract Syntax Tree and functions for printing it *)
 
 type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
-          And | Or  | Mod | Pluseq | Mineq | Multeq | Diveq 
-type uop = Neg | Not | Incr | Decr
+          And | Or  | Mod | Pluseq | Mineq | Multeq | Diveq |
+          PreInc | PostInc | PreDec | PostDec
+
+type uop = Neg | Not
 
 type typ = Num | Bool | Void | String
 
@@ -12,13 +14,13 @@ type bind = typ * string
 
 type expr =
     NumLit of string
-  | Literal of int
   | StrLit of string
   | BoolLit of bool
   | Id of string
   | Binop of expr * op * expr
   | Unop of uop * expr
   | Assign of string * expr
+  | Crementop of expr * op
   | Call of string * expr list
   | Noexpr
 
@@ -41,17 +43,17 @@ type func_decl = {
     fname : string;
     formals : bind list;
     locals : bind list;
-    body : stmt list;
-  }
+    fbody : stmt list;
+}
 
 type cdecl = {
   cname : string;
   cdvars : bind list;
   cdconst: construct_decl list;
   cdfuncs: func_decl list;
-  }
+}
 
-type program = bind list * func_decl list * cdecl list 
+type program = bind list * func_decl list * cdecl list
 
 (* Pretty-printing functions *)
 
@@ -73,40 +75,49 @@ let string_of_op = function
   | Mineq -> "-="
   | Multeq -> "*="
   | Diveq -> "/="
+  | PreInc | PostInc -> "++"
+  | PreDec | PostDec -> "--"
 
 let string_of_uop = function
     Neg -> "-"
   | Not -> "!"
-  | Incr -> "++"
-  | Decr -> "--"
 
 let rec string_of_expr = function
-    NumLit(nl)  -> nl 
-  | Literal(l)  -> string_of_int l
-  | StrLit(str) -> str
+    NumLit(nl)  -> nl
+  | StrLit(str) -> "\"" ^ str ^ "\""
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"
   | Id(s) -> s
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Unop(o, e) -> string_of_uop o ^ string_of_expr e
+  | Crementop(e, o) -> (match o with
+      PreInc -> string_of_op o ^ string_of_expr e
+    | PostInc -> string_of_expr e ^ string_of_op o
+    | PreDec -> string_of_op o ^ string_of_expr e
+    | PostDec -> string_of_expr e ^ string_of_op o
+    | _ -> "ERROR")
+
   | Assign(v, e) -> v ^ " = " ^ string_of_expr e
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | Noexpr -> ""
 
-let rec string_of_stmt = function
+let rec add_level (listy, level) = match listy with
+  [] -> []
+  | hd::li' -> (hd,level):: add_level (li', level)
+
+let rec string_of_stmt (stmt,level) = match stmt with
     Block(stmts) ->
-      "{\n" ^ String.concat "" (List.map string_of_stmt stmts) ^ "}\n"
+      "{\n" ^ (String.make level '\t') ^ String.concat (String.make level '\t') (List.map string_of_stmt (add_level (stmts, level))) ^ "}\n"
   | Expr(expr) -> string_of_expr expr ^ ";\n";
   | Return(expr) -> "return " ^ string_of_expr expr ^ ";\n";
-  | If(e, s, Block([])) -> "if (" ^ string_of_expr e ^ ")\n" ^ string_of_stmt s
-  | If(e, s1, s2) ->  "if (" ^ string_of_expr e ^ ")\n" ^
-      string_of_stmt s1 ^ "else\n" ^ string_of_stmt s2
-  | For(e1, e2, e3, s) ->
-      "for (" ^ string_of_expr e1  ^ " ; " ^ string_of_expr e2 ^ " ; " ^
-      string_of_expr e3  ^ ") " ^ string_of_stmt s
-  | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
+  | If(e, s, Block([])) -> "if (" ^ string_of_expr e ^ ")" ^ string_of_stmt (s, (level))
+  | If(e, s1, s2) -> "if (" ^ string_of_expr e ^ ")" ^
+      string_of_stmt (s1, (level)) ^ "else" ^ string_of_stmt (s2, (level))
+  | For(e1, e2, e3, s) -> "for (" ^ string_of_expr e1  ^ " ; " ^ string_of_expr e2 ^ " ; " ^
+      string_of_expr e3  ^ ") " ^ string_of_stmt (s, (level+1))
+  | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt (s, (level+1))
 
 let string_of_typ = function
     Num -> "num"
@@ -114,32 +125,36 @@ let string_of_typ = function
   | Void -> "void"
   | String -> "string"
 
-let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
+let string_of_vdecl (t, id, level) = string_of_typ t ^ " " ^ id ^ ";\n"
 
-let string_of_const_decl const_decl = 
+let rec add_tplevel (listy, level) = match listy with
+  [] -> []
+  | hd::li' -> (fst hd, snd hd, level):: add_tplevel (li', level)
+
+let string_of_const_decl const_decl =
   "constructor(" ^ String.concat ", " (List.map snd const_decl.ctformals) ^
-  ")\n{\n" ^
-  String.concat "" (List.map string_of_vdecl const_decl.ctlocals) ^
-  String.concat "" (List.map string_of_stmt const_decl.ctbody) ^
+  ") {\n\t" ^
+  String.concat "\t" (List.map string_of_vdecl (add_tplevel (const_decl.ctlocals, 1))) ^ "\t" ^
+  String.concat "\t" (List.map string_of_stmt (add_level (const_decl.ctbody, 1))) ^ "\t" ^
   "}\n"
 
-let string_of_fdecl fdecl =
+let string_of_fdecl (fdecl, level) =
   string_of_typ fdecl.typ ^ " " ^
   fdecl.fname ^ "(" ^ String.concat ", " (List.map snd fdecl.formals) ^
-  ")\n{\n" ^
-  String.concat "" (List.map string_of_vdecl fdecl.locals) ^
-  String.concat "" (List.map string_of_stmt fdecl.body) ^
+  ") {\n" ^ (String.make (level) '\t') ^
+  String.concat (String.make level '\t') (List.map string_of_vdecl (add_tplevel (fdecl.locals, level+1))) ^ (String.make level '\t') ^
+  String.concat (String.make level '\t') (List.map string_of_stmt (add_level (fdecl.fbody, (level+1)))) ^ (String.make level '\t') ^
   "}\n"
 
-let string_of_cdecl cdecl = 
-  cdecl.cname ^ "{" ^
-  String.concat "" (List.map string_of_vdecl cdecl.cdvars) ^
-  String.concat "" (List.map string_of_const_decl cdecl.cdconst) ^
-  String.concat "" (List.map string_of_fdecl cdecl.cdfuncs) ^
+let string_of_cdecl (cdecl, level) =
+  "class " ^ cdecl.cname ^ " {" ^ "\n" ^ "\t" ^
+  String.concat "\t" (List.map string_of_vdecl (add_tplevel (cdecl.cdvars,level+1))) ^ "\t" ^
+  String.concat "\t" (List.map string_of_const_decl cdecl.cdconst) ^ "\t" ^
+  String.concat "\t" (List.map string_of_fdecl (add_level (cdecl.cdfuncs, (level+1)))) ^ (String.make level '\t') ^
   "}\n"
 
-let string_of_program (vars, funcs, classes) = 
-  String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
-  String.concat "" (List.map string_of_cdecl classes) ^ "\n" ^
-  String.concat "\n" (List.map string_of_fdecl funcs)
+let string_of_program (vars, funcs, classes) =
+  String.concat "" (List.map string_of_vdecl (add_tplevel (vars, 0))) ^ "\n" ^
+  String.concat "" (List.map string_of_cdecl (add_level (classes, 1))) ^ "\n" ^
+  String.concat "\n" (List.map string_of_fdecl (add_level (funcs, 0)))
 

@@ -9,6 +9,8 @@ rule token = parse
   [' ' '\t' '\r' '\n'] { token lexbuf } (* Whitespace *)
 | "/*"     { comment 0 lexbuf }           (* Comments *)
 | "//"     { linecomment lexbuf }       (* single line comments *)
+
+(* Symbols *)
 | '('      { LPAREN }
 | ')'      { RPAREN }
 | '{'      { LBRACE }
@@ -18,19 +20,24 @@ rule token = parse
 | ':'      { COLON  }
 | ';'      { SEMI   }
 | ','      { COMMA  }
+| '.'      { DOT    }
 | '?'      { QMARK  }
+
+(* Arithmetic Tokens *)
 | '+'      { PLUS   }
 | "+="     { PLUSEQ }
 | '-'      { MINUS  }
 | "-="     { MINUSEQ    }
-| "++"     { INCREMENT  }
-| "--"     { DECREMENT  }
 | '*'      { MULT  }
 | '/'      { DIV   }
 | "*="     { MULTEQ     }
 | "/="     { DIVEQ      }
 | '%'      { MODULO }
+| "++"     { INCREMENT  }
+| "--"     { DECREMENT  }
 | '='      { ASSIGN }
+
+(* Boolean Expression Tokens *)
 | "=?"     { EQ     }
 | "!="     { NEQ    }
 | '<'      { LT     }
@@ -40,6 +47,8 @@ rule token = parse
 | "and"    { AND    }
 | "or"     { OR     }
 | "!"      { NOT    }
+
+(* Control Flow *)
 | "if"     { IF     }
 | "else"   { ELSE   }
 | "elif"   { ELIF   }
@@ -48,23 +57,44 @@ rule token = parse
 | "return" { RETURN }
 | "continue" { CONTINUE }
 | "break"  { BREAK  }
-| "num"    { NUM    }
-| "bool"   { BOOL   }
-| "void"   { VOID   }
+
+(* Classes *)
 | "class"  { CLASS  }
 | "constructor" { CONSTRUCTOR }
-| "null"   { NULL   }
+
+(* Errors *)
 | "try"    { TRY    }
 | "catch"  { CATCH  }
 | "raise"  { RAISE  }
+
+(* Builtin Shapes Types *)
+| "pt"     { POINT  }
+| "shape"  { SHAPE  }
+| "square" { SQUARE }
+| "rect"   { RECT   }
+| "circle" { CIRCLE }
+| "ellipse"  { ELLIPSE  }
+| "triangle" { TRIANGLE }
+| "polygon"  { POLYGON  }
+| "regagon"  { REGAGON  }
+| "canvas" { CANVAS }
+| "line"   { LINE   }
+| "spline" { SPLINE }
+
+(* Builtin Types *)
+| "null"   { NULL   }
+| "num"    { NUM    }
+| "bool"   { BOOL   }
+| "void"   { VOID   }
 | "string" { STRING }
-(*| "char"   { CHAR   }*)
 | "True" |"true"   { BLIT(true)  }
 | "False"|"false"  { BLIT(false) }
-| digits as lxm { LITERAL(int_of_string lxm) }
-| digits '.'  digit* ( ['e' 'E'] ['+' '-']? digits )? as lxm { NLIT(lxm) }
+
+(* Numeric Literal *)
+| digits '.'?  digit* ( ['e' 'E'] ['+' '-']? digits )? as lxm { NUMLIT(lxm) }
 | ['a'-'z' '_' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
-|'\"' ([^ '\"']* as lxm)  '\"' { STRLIT(lxm) } 
+(* String Literal *)
+|'\"' ([^ '\"' '\n' '\r' '\t' '\b']* as lxm)  '\"' { STRLIT(lxm) }
 
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
@@ -72,11 +102,12 @@ rule token = parse
 and comment nest_level = parse
   "*/"  { match nest_level with
             0 -> token lexbuf
-          | _ -> comment (nest_level - 1) lexbuf 
+          | _ -> comment (nest_level - 1) lexbuf
         }
 | "/*"  { comment (nest_level + 1) lexbuf }
 | _     { comment nest_level lexbuf }
 
 and linecomment = parse
-  "\n"  { token lexbuf   }
+  "\n"  { token lexbuf }
+| eof   { token lexbuf }
 | _     { linecomment lexbuf }

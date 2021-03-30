@@ -37,19 +37,7 @@ let check (globals, functions, classes) =
       typ = Void;
       fname = name;
       formals = [(ty, "x")];
-      locals = []; body = [] } map
-    in List.fold_left add_bind StringMap.empty [
-			                         ("printb", Bool);
-			                         ("print", Num);
-                                     ("printf", String);
-			                         ("printbig", Num) ]
-  in
-  let built_in_decls =
-    let add_bind map (name, ty) = StringMap.add name {
-      typ = Void;
-      fname = name;
-      formals = [(ty, "x")];
-      locals = []; body = [] } map
+      locals = []; fbody = [] } map
     in let func_map = List.fold_left add_bind StringMap.empty [
 			                         ("printb", Bool);
 			                         ("print", Num);
@@ -61,7 +49,7 @@ let check (globals, functions, classes) =
       typ = Void;
       fname = name;
       formals = [];
-      locals = []; body = [] } map
+      locals = []; fbody = [] } map
     in List.fold_left add_bind2 func_map [("demo");]
 
   in
@@ -114,8 +102,7 @@ let check (globals, functions, classes) =
 
     (* Return a semantically-checked expression, i.e., with a type *)
     let rec expr = function
-        Literal  l -> (Num, SLiteral l)
-      | NumLit l   -> (Num, SNumLit l)
+        NumLit l   -> (Num, SNumLit l)
       | BoolLit l  -> (Bool, SBoolLit l)
       | StrLit l   -> (String, SStrLit l)
       | Noexpr     -> (Void, SNoexpr)
@@ -207,7 +194,7 @@ let check (globals, functions, classes) =
       sfname = func.fname;
       sformals = func.formals;
       slocals  = func.locals;
-      sbody = match check_stmt (Block func.body) with
+      sfbody = match check_stmt (Block func.fbody) with
 	SBlock(sl) -> sl
       | _ -> raise (Failure ("internal error: block didn't become a block?"))
     }
@@ -273,8 +260,7 @@ let check (globals, functions, classes) =
 
     (* Return a semantically-checked expression, i.e., with a type *)
     let rec expr = function
-        Literal  l -> (Num, SLiteral l)
-      | NumLit l   -> (Num, SNumLit l)
+        NumLit l   -> (Num, SNumLit l)
       | BoolLit l  -> (Bool, SBoolLit l)
       | StrLit l   -> (String, SStrLit l)
       | Noexpr     -> (Void, SNoexpr)
@@ -381,8 +367,7 @@ let check (globals, functions, classes) =
 
       (* Return a semantically-checked expression, i.e., with a type *)
       let rec expr = function
-          Literal  l -> (Num, SLiteral l)
-        | NumLit l   -> (Num, SNumLit l)
+          NumLit l   -> (Num, SNumLit l)
         | BoolLit l  -> (Bool, SBoolLit l)
         | StrLit l   -> (String, SStrLit l)
         | Noexpr     -> (Void, SNoexpr)
