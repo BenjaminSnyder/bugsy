@@ -50,8 +50,32 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [];
       locals = []; fbody = [] } map
-    in List.fold_left add_bind2 func_map [("demo");]
-
+    in let func_map2 = List.fold_left add_bind2 func_map [
+                                        ("demo");]
+    in
+(*    let add_bind3 map (name, ty1) = StringMap.add name {
+      typ = Void;
+      fname = name;
+      formals = [(ty1, "point")];
+      locals = []; fbody = [] } map
+    in let func_map3 = List.fold_left add_bind3 func_map2 [
+                            ("add_point", Pt);]
+    in *)
+    let add_bind4 map (name, ty1, ty2) = StringMap.add name {
+      typ = Void;
+      fname = name;
+      formals = [(ty1, "x"); (ty2, "y")];
+      locals = []; fbody = [] } map
+    in let func_map4 = List.fold_left add_bind4 func_map2 [
+                            ("add_point_xy", Num, Num);]
+    in
+    let add_bind5 map (name, ty1, ty2, ty3) = StringMap.add name {
+      typ = Void;
+      fname = name;
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "r")];
+      locals = []; fbody = [] } map
+    in List.fold_left add_bind5 func_map4 [
+                            ("add_circle", Num, Num, Num);]
   in
   (* Add function name to symbol table *)
   let add_func map fd =
@@ -205,11 +229,20 @@ let check (globals, functions, classes) =
   (* Collect class declarations for built-in classes: no bodies *)
 
   let built_in_class_decls =
-    let add_bind map (name, _) = StringMap.add name {
-      cname = name;
-      cdvars = [];
-      cdconst = []; cdfuncs = [] } map
-    in List.fold_left add_bind StringMap.empty []
+      let add_bind map (name, ty1, ty2) = StringMap.add name {
+          cname = name;
+          cdvars = [];
+          cdconst = []; cdfuncs = [] } map
+      in let func_map = List.fold_left add_bind StringMap.empty [
+                                       ("point", Num, Num);
+                                       ("ass_circle", Pt, Num);]
+
+      in
+      let add_bind2 map (name) = StringMap.add name {
+          cname = name;
+          cdvars = [];
+          cdconst = []; cdfuncs = [] } map
+      in List.fold_left add_bind2 func_map []
   in
 
   (* Add class name to symbol table *)
@@ -224,11 +257,11 @@ let check (globals, functions, classes) =
        | _ ->  StringMap.add n cd map
   in
 
-  (* Collect all function names into one symbol table *)
+  (* Collect all class names into one symbol table *)
   let class_decls = List.fold_left add_class built_in_class_decls classes
   in
 
-  (* Return a function from our symbol table *)
+  (* Return a class from our symbol table *)
   (* let find_class s =
     try StringMap.find s class_decls
     with Not_found -> raise (Failure ("unrecognized class " ^ s))

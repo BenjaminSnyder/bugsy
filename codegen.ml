@@ -66,6 +66,16 @@ let translate (globals, functions, classes) =
   let demo_func : L.llvalue =
       L.declare_function "demo" demo_t the_module in
 
+  let add_point_xy_t : L.lltype =
+      L.function_type float_t [| float_t; float_t; |] in
+  let add_point_xy_func : L.llvalue =
+      L.declare_function "add_point_xy" add_point_xy_t the_module in
+
+  let circle_t : L.lltype =
+      L.function_type float_t [| float_t; float_t; float_t |] in
+  let circle_func : L.llvalue =
+      L.declare_function "add_circle" circle_t the_module in
+
   (* Define each function (arguments and return type) so we can
      call it even before we've created its body *)
   let function_decls : (L.llvalue * sfunc_decl) StringMap.t =
@@ -173,6 +183,12 @@ let translate (globals, functions, classes) =
       | SCall ("printf", [e]) ->
 	  L.build_call printf_func [| string_format_str ; (expr builder e) |]
 	    "printf" builder
+      | SCall ("add_point_xy", [e1; e2]) ->
+      L.build_call add_point_xy_func [| (expr builder e1); (expr builder e2); |]
+      "add_point_xy" builder
+      | SCall ("add_circle", [e1; e2; e3]) ->
+      L.build_call circle_func [| (expr builder e1); (expr builder e2); (expr builder e3);|]
+      "add_circle" builder
       | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
 	 let llargs = List.rev (List.map (expr builder) (List.rev args)) in

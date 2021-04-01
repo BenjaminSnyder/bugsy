@@ -1,8 +1,8 @@
 num main() {
-	
-   string x;
-   x = "beans";
-   printf(x);
-   return 0.0;
+    num a;
+    num b;
+    a = 1.0;
+    b = 2.0;
+    demo();
+    return 0.0;
 }
-
