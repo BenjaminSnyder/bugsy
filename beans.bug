@@ -2,20 +2,21 @@ num main() {
     num a;
     num b;
 
-    a = 66.6;
-    b = 66.6;
+    a = 0;
+    b = 0;
     num c;
-    c = 66.6;
+    c = 500;
     print(a);
     print(b);
     print(c);
     num d;
     num e;
     num f;
-    d = a * 2;
+    d = 500;
     e = b * 2;
     f = c * 2;
-    add_circle(a, b, c);
-    add_circle(d, e, f);
+
+    add_canvas(c, d, a, b);
+
     return 0.0;
 }

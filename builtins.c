@@ -68,102 +68,121 @@ void disp() {
 
 }
 
+void add_circle(double x, double y, double r) {
+
+
+
+    glBegin(GL_POINTS);
+    for (float i = 0; i < (2 * pi); i += 0.001) {
+        float a = r * cos(i) + x;
+        float b = r * sin(i) + y;
+        glVertex2i(a, b);
+    }
+    glEnd();
+
+
+}
+
 void display ()
 
 {
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    // glClear(GL_COLOR_BUFFER_BIT);
+    //
+    // glBegin(GL_POINTS);
+    //
+    // float x, y, i;
+    //
+    // // iterate y up to 2*pi, i.e., 360 degree
+    //
+    // // with small increment in angle as
+    //
+    // // glVertex2i just draws a point on specified co-ordinate
+    //
+    // for ( i = 0; i < (2 * pi); i += 0.001)
+    //
+    // {
+    //
+    //     // let 200 is radius of circle and as,
+    //
+    //     // circle is defined as x=r*cos(i) and y=r*sin(i)
+    //
+    //     x = s * 50 * cos(i);
+    //
+    //     y = s * 50 * sin(i);
+    //
+    //
+    //
+    //     glVertex2i(x, y);
+    //
+    // }
+    //
+    // for ( i = 0; i < (2 * pi); i += 0.001)
+    //
+    // {
+    //
+    //     // let 200 is radius of circle and as,
+    //
+    //     // circle is defined as x=r*cos(i) and y=r*sin(i)
+    //
+    //     x = s * 50 * cos(i)+ (50 * s);
+    //
+    //     y = s * 50 * sin(i);
+    //
+    //
+    //
+    //     glVertex2i(x, y);
+    //
+    // }
+    //
+    //
+    // for(i = 0; i < s * l * 300; i += 0.001) {
+    //     x = i;
+    //     y = s * 50;
+    //     glVertex2i(x, y);
+    // }
+    //
+    // for(i = 0; i < s * l * 300; i += 0.001) {
+    //     x = i;
+    //     y = s * 100;
+    //     glVertex2i(x, y);
+    // }
+    //
+    // for(i = 0; i < s * 50; i += 0.001) {
+    //     x = 0;
+    //     y = i + (s * 50);
+    //     glVertex2i(x, y);
+    // }
+    //
+    // for ( i = 0; i < (2 * pi); i += 0.001)
+    //
+    // {
+    //
+    //     // let 200 is radius of circle and as,
+    //
+    //     // circle is defined as x=r*cos(i) and y=r*sin(i)
+    //
+    //     x = s * 30 * cos(i)+(s * l * 300);
+    //
+    //     y = s * 30 * sin(i) + (s * 75);
+    //
+    //     glVertex2i(x, y);
+    //
+    // }
+    //
+    //
+    // glEnd();
+    // glFlush();
 
-    glBegin(GL_POINTS);
-
-    float x, y, i;
-
-    // iterate y up to 2*pi, i.e., 360 degree
-
-    // with small increment in angle as
-
-    // glVertex2i just draws a point on specified co-ordinate
-
-    for ( i = 0; i < (2 * pi); i += 0.001)
-
-    {
-
-        // let 200 is radius of circle and as,
-
-        // circle is defined as x=r*cos(i) and y=r*sin(i)
-
-        x = s * 50 * cos(i);
-
-        y = s * 50 * sin(i);
-
-
-
-        glVertex2i(x, y);
-
-    }
-
-    for ( i = 0; i < (2 * pi); i += 0.001)
-
-    {
-
-        // let 200 is radius of circle and as,
-
-        // circle is defined as x=r*cos(i) and y=r*sin(i)
-
-        x = s * 50 * cos(i)+ (50 * s);
-
-        y = s * 50 * sin(i);
-
-
-
-        glVertex2i(x, y);
-
-    }
-
-
-    for(i = 0; i < s * l * 300; i += 0.001) {
-        x = i;
-        y = s * 50;
-        glVertex2i(x, y);
-    }
-
-    for(i = 0; i < s * l * 300; i += 0.001) {
-        x = i;
-        y = s * 100;
-        glVertex2i(x, y);
-    }
-
-    for(i = 0; i < s * 50; i += 0.001) {
-        x = 0;
-        y = i + (s * 50);
-        glVertex2i(x, y);
-    }
-
-    for ( i = 0; i < (2 * pi); i += 0.001)
-
-    {
-
-        // let 200 is radius of circle and as,
-
-        // circle is defined as x=r*cos(i) and y=r*sin(i)
-
-        x = s * 30 * cos(i)+(s * l * 300);
-
-        y = s * 30 * sin(i) + (s * 75);
-
-        glVertex2i(x, y);
-
-    }
-
-
-    glEnd();
+    add_circle(100, 10, 200);
     glFlush();
 
 }
 
-void add_circle(double x, double y, double r) {
 
-    printf("x: %.2f, y: %.2f, r: %.2f\n", x, y, r);
+
+void add_canvas(double width, double height, double xOffset, double yOffset) {
+
     int c = 0;
     char ** args;
 
@@ -174,32 +193,93 @@ void add_circle(double x, double y, double r) {
 
     // giving window size in X- and Y- direction
 
-    glutInitWindowSize(1366, 768);
+    int w = (int) width;
+    int h = (int) height;
+    int x = (int) xOffset;
+    int y = (int) yOffset;
 
-    glutInitWindowPosition(0, 0);
+    glutInitWindowSize(w, h);
+
+    glutInitWindowPosition(x, y);
 
 
 
     // Giving name to widouble x = 0.0;ndow
 
-    glutCreateWindow("Circle Drawing");
+    glViewport(0, 0, width, height);
+    glMatrixMode(GL_PROJECTION);
+    float aspect = (float)width / (float)height;
+    glOrtho(-aspect, aspect, -1, 1, -1, 1);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glutCreateWindow("Canvas");
+
+
 
     myInit();
 
-    glBegin(GL_POINTS);
-    for (float i = 0; i < (2 * pi); i += 0.001) {
-        float a = r * cos(i) + x;
-        float b = r * sin(i) + y;
-        glVertex2i(a, b);
-    }
+    // loop through the list of objects and call the add_object functions
+    // for shape in shapes:
 
 
-    glEnd();
+
+    add_circle(10, 10, 69);
+
     glFlush();
 
     glutMainLoop();
 
 }
+
+
+
+
+
+
+
+
+
+// void add_circle(double x, double y, double r) {
+//
+//     printf("x: %.2f, y: %.2f, r: %.2f\n", x, y, r);
+//     int c = 0;
+//     char ** args;
+//
+//     glutInit(&c, args);
+//
+//     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+//
+//
+//     // giving window size in X- and Y- direction
+//
+//     glutInitWindowSize(1366, 768);
+//
+//     glutInitWindowPosition(0, 0);
+//
+//
+//
+//     // Giving name to widouble x = 0.0;ndow
+//
+//     glutCreateWindow("Circle Drawing");
+//
+//     myInit();
+//
+//     glBegin(GL_POINTS);
+//     for (float i = 0; i < (2 * pi); i += 0.001) {
+//         float a = r * cos(i) + x;
+//         float b = r * sin(i) + y;
+//         glVertex2i(a, b);
+//     }
+//
+//
+//     glEnd();
+//     glFlush();
+//
+//     glutMainLoop();
+//
+// }
 
 
 // void printbig(float c)
