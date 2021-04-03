@@ -76,6 +76,11 @@ let translate (globals, functions, classes) =
   let circle_func : L.llvalue =
       L.declare_function "add_circle" circle_t the_module in
 
+  let square_t : L.lltype =
+      L.function_type float_t [| float_t; float_t; float_t |] in
+  let square_func : L.llvalue =
+      L.declare_function "add_square" square_t the_module in
+
   let canvas_t : L.lltype =
       L.function_type float_t [| float_t; float_t; float_t; float_t |] in
   let canvas_func : L.llvalue =
@@ -194,6 +199,9 @@ let translate (globals, functions, classes) =
       | SCall ("add_circle", [e1; e2; e3]) ->
       L.build_call circle_func [| (expr builder e1); (expr builder e2); (expr builder e3);|]
       "add_circle" builder
+      | SCall ("add_square", [e1; e2; e3]) ->
+      L.build_call square_func [| (expr builder e1); (expr builder e2); (expr builder e3);|]
+      "add_square" builder
       | SCall ("add_canvas", [e1; e2; e3; e4]) ->
       L.build_call canvas_func [| (expr builder e1); (expr builder e2); (expr builder e3); (expr builder e4);|]
       "add_canvas" builder

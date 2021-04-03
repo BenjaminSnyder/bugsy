@@ -77,12 +77,20 @@ let check (globals, functions, classes) =
     in let func_map5 = List.fold_left add_bind5 func_map4 [
                             ("add_circle", Num, Num, Num);]
     in
-    let add_bind6 map (name, ty1, ty2, ty3, ty4) = StringMap.add name {
+    let add_bind6 map (name, ty1, ty2, ty3) = StringMap.add name {
+      typ = Void;
+      fname = name;
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "size")];
+      locals = []; fbody = [] } map
+    in let func_map6 = List.fold_left add_bind6 func_map5 [
+                            ("add_square", Num, Num, Num);]
+    in
+    let add_bind7 map (name, ty1, ty2, ty3, ty4) = StringMap.add name {
       typ = Void;
       fname = name;
       formals = [(ty1, "width"); (ty2, "height"); (ty3, "xOffset"); (ty4, "yOffset")];
       locals = []; fbody = [] } map
-    in List.fold_left add_bind6 func_map5 [
+    in List.fold_left add_bind7 func_map6 [
                             ("add_canvas", Num, Num, Num, Num);]
   in
   (* Add function name to symbol table *)

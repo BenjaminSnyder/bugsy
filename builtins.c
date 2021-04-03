@@ -70,8 +70,6 @@ void disp() {
 
 void add_circle(double x, double y, double r) {
 
-
-
     glBegin(GL_POINTS);
     for (float i = 0; i < (2 * pi); i += 0.001) {
         float a = r * cos(i) + x;
@@ -80,106 +78,18 @@ void add_circle(double x, double y, double r) {
     }
     glEnd();
 
-
 }
 
-void display ()
+void add_square(double x, double y, double s) {
 
-{
-
-    // glClear(GL_COLOR_BUFFER_BIT);
-    //
-    // glBegin(GL_POINTS);
-    //
-    // float x, y, i;
-    //
-    // // iterate y up to 2*pi, i.e., 360 degree
-    //
-    // // with small increment in angle as
-    //
-    // // glVertex2i just draws a point on specified co-ordinate
-    //
-    // for ( i = 0; i < (2 * pi); i += 0.001)
-    //
-    // {
-    //
-    //     // let 200 is radius of circle and as,
-    //
-    //     // circle is defined as x=r*cos(i) and y=r*sin(i)
-    //
-    //     x = s * 50 * cos(i);
-    //
-    //     y = s * 50 * sin(i);
-    //
-    //
-    //
-    //     glVertex2i(x, y);
-    //
-    // }
-    //
-    // for ( i = 0; i < (2 * pi); i += 0.001)
-    //
-    // {
-    //
-    //     // let 200 is radius of circle and as,
-    //
-    //     // circle is defined as x=r*cos(i) and y=r*sin(i)
-    //
-    //     x = s * 50 * cos(i)+ (50 * s);
-    //
-    //     y = s * 50 * sin(i);
-    //
-    //
-    //
-    //     glVertex2i(x, y);
-    //
-    // }
-    //
-    //
-    // for(i = 0; i < s * l * 300; i += 0.001) {
-    //     x = i;
-    //     y = s * 50;
-    //     glVertex2i(x, y);
-    // }
-    //
-    // for(i = 0; i < s * l * 300; i += 0.001) {
-    //     x = i;
-    //     y = s * 100;
-    //     glVertex2i(x, y);
-    // }
-    //
-    // for(i = 0; i < s * 50; i += 0.001) {
-    //     x = 0;
-    //     y = i + (s * 50);
-    //     glVertex2i(x, y);
-    // }
-    //
-    // for ( i = 0; i < (2 * pi); i += 0.001)
-    //
-    // {
-    //
-    //     // let 200 is radius of circle and as,
-    //
-    //     // circle is defined as x=r*cos(i) and y=r*sin(i)
-    //
-    //     x = s * 30 * cos(i)+(s * l * 300);
-    //
-    //     y = s * 30 * sin(i) + (s * 75);
-    //
-    //     glVertex2i(x, y);
-    //
-    // }
-    //
-    //
-    // glEnd();
-    // glFlush();
-
-    add_circle(100, 10, 200);
-    glFlush();
+    glBegin(GL_QUADS);
+	glVertex2f(x-(s/2.0), y+(s/2.0));   
+        glVertex2f(x-(s/2.0), y-(s/2.0));
+        glVertex2f(x+(s/2.0), y+(s/2.0));
+        glVertex2f(x+(s/2.0), y-(s/2.0));
+    glEnd();
 
 }
-
-
 
 void add_canvas(double width, double height, double xOffset, double yOffset) {
 
@@ -226,6 +136,7 @@ void add_canvas(double width, double height, double xOffset, double yOffset) {
 
 
     add_circle(10, 10, 69);
+    add_square(20, 20, 69);
 
     glFlush();
 
@@ -351,7 +262,7 @@ void demo ()
 
     glutKeyboardFunc(keyPressed);
 
-    glutDisplayFunc(display);
+    //glutDisplayFunc(display);
 
     glutMainLoop();
     //
