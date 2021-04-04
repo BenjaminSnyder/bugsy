@@ -1,0 +1,11 @@
+num x;
+num y;
+num z;
+num main()
+{
+  x = 39.0;
+  y = 3.0;
+  z = x + y;
+  print(z);
+  return 0.0;
+}

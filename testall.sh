@@ -1,4 +1,21 @@
-#!/bin/sh
+#!/bin/bash
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+
+function red {
+    printf "${RED}$@${NC}\n"
+}
+
+function green {
+    printf "${GREEN}$@${NC}\n"
+}
+
+function yellow {
+    printf "${YELLOW}$@${NC}\n"
+}
 
 # Regression testing script for MicroC
 # Step through a list of files
@@ -17,7 +34,7 @@ CC="cc"
 
 # Path to the microc compiler.  Usually "./microc.native"
 # Try "_build/microc.native" if ocamlbuild was unable to create a symbolic link.
-MICROC="./microc.native"
+MICROC="./bugsy.native"
 #MICROC="_build/microc.native"
 
 # Set time limit for all operations
@@ -31,7 +48,7 @@ globalerror=0
 keep=0
 
 Usage() {
-    echo "Usage: testall.sh [options] [.mc files]"
+    echo "Usage: testall.sh [options] [.bug files]"
     echo "-k    Keep intermediate files"
     echo "-h    Print this help"
     exit 1
@@ -39,7 +56,8 @@ Usage() {
 
 SignalError() {
     if [ $error -eq 0 ] ; then
-	echo "FAILED"
+	#echo "FAILED"
+    echo $(red "FAILED")
 	error=1
     fi
     echo "  $1"
@@ -80,8 +98,8 @@ RunFail() {
 Check() {
     error=0
     basename=`echo $1 | sed 's/.*\\///
-                             s/.mc//'`
-    reffile=`echo $1 | sed 's/.mc$//'`
+                             s/.bug//'`
+    reffile=`echo $1 | sed 's/.bug$//'`
     basedir="`echo $1 | sed 's/\/[^\/]*$//'`/."
 
     echo -n "$basename..."
@@ -92,19 +110,22 @@ Check() {
     generatedfiles=""
 
     generatedfiles="$generatedfiles ${basename}.ll ${basename}.s ${basename}.exe ${basename}.out" &&
-    Run "$MICROC" $1 ">" "${basename}.ll" &&
-    Run "$LLC" "${basename}.ll" ">" "${basename}.s" &&
-    Run "$CC" "-o" "${basename}.exe" "${basename}.s" "printbig.o" &&
+    Run "$MICROC" "$1" ">" "${basename}.ll" &&
+    Run "$LLC" "-relocation-model=pic" "${basename}.ll" ">" "${basename}.s" &&
+    #Run "$CC" "-o" "${basename}.exe" "${basename}.s" "printbig.o" &&
+    Run "$CC" "${basename}.s" "-o" "${basename}.exe" &&
     Run "./${basename}.exe" > "${basename}.out" &&
     Compare ${basename}.out ${reffile}.out ${basename}.diff
 
     # Report the status and clean up the generated files
-
     if [ $error -eq 0 ] ; then
 	if [ $keep -eq 0 ] ; then
 	    rm -f $generatedfiles
 	fi
-	echo "OK"
+	#echo "OK"
+    echo $(green "OK")
+    #echo "Hi"
+
 	echo "###### SUCCESS" 1>&2
     else
 	echo "###### FAILED" 1>&2
@@ -115,8 +136,8 @@ Check() {
 CheckFail() {
     error=0
     basename=`echo $1 | sed 's/.*\\///
-                             s/.mc//'`
-    reffile=`echo $1 | sed 's/.mc$//'`
+                             s/.bug//'`
+    reffile=`echo $1 | sed 's/.bug$//'`
     basedir="`echo $1 | sed 's/\/[^\/]*$//'`/."
 
     echo -n "$basename..."
@@ -136,7 +157,8 @@ CheckFail() {
 	if [ $keep -eq 0 ] ; then
 	    rm -f $generatedfiles
 	fi
-	echo "OK"
+	#echo "OK"
+    echo $(green "OK")
 	echo "###### SUCCESS" 1>&2
     else
 	echo "###### FAILED" 1>&2
@@ -165,18 +187,19 @@ LLIFail() {
 
 which "$LLI" >> $globallog || LLIFail
 
-if [ ! -f printbig.o ]
-then
-    echo "Could not find printbig.o"
-    echo "Try \"make printbig.o\""
-    exit 1
-fi
+# if [ ! -f printbig.o ]
+# then
+#     echo "Could not find printbig.o"
+#     echo "Try \"make printbig.o\""
+#     exit 1
+# fi
 
 if [ $# -ge 1 ]
 then
     files=$@
 else
-    files="tests/test-*.mc tests/fail-*.mc"
+    #files="tests/test-*.bug tests/fail-*.bug"
+    files="tests/test-*.bug"
 fi
 
 for file in $files
