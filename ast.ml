@@ -8,6 +8,7 @@ type uop = Neg | Not
 
 (* type arr = typ * literal *)
 
+type new = New
 
 type expr =
     NumLit of string
