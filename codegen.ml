@@ -34,6 +34,13 @@ let translate (globals, functions, classes) =
   and string_t   = L.pointer_type (L.i8_type context) (*new string type *)
   and void_t     = L.void_type   context in
 
+
+
+  let object_type = L.named_struct_type context "obj" in
+  let objectptr_type = L.pointer_type object_type in
+  let objectref_type = L.named_struct_type context "objref" in
+  L.struct_set_body objectref_type [|i32_t; objectptr_type|] false;
+
   (* Return the LLVM type for a Bugsy type *)
   let ltype_of_typ = function
       A.Num   -> float_t
