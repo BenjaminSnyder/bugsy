@@ -8,13 +8,13 @@ type uop = Neg | Not
 
 (* type arr = typ * literal *)
 
-type new = New
 
 type expr =
     NumLit of string
   | StrLit of string
   | BoolLit of bool
   | ArrayLit of expr list
+  | IntLiteral of int
   | Id of string
   | Access of string * string
   | Binop of expr * op * expr
@@ -92,6 +92,7 @@ let string_of_uop = function
 
 let rec string_of_expr = function
     NumLit(nl)  -> nl
+  | IntLiteral(l) -> string_of_int l
   | StrLit(str) -> "\"" ^ str ^ "\""
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"

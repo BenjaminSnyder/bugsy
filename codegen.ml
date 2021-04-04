@@ -32,6 +32,7 @@ let translate (globals, functions, classes) =
   and i1_t       = L.i1_type     context
   and float_t    = L.double_type context
   and string_t   = L.pointer_type (L.i8_type context) (*new string type *)
+  and array_t    = L.array_type
   and void_t     = L.void_type   context in
 
 
@@ -148,6 +149,7 @@ let translate (globals, functions, classes) =
       | SNumLit nl -> L.const_float_of_string float_t nl
       | SNoexpr     -> L.const_int i32_t 0
       | SId s       -> L.build_load (lookup s) s builder
+      | SArrayLiteral (l, t) -> L.const_array (ltype_of_typ t) (Array.of_list (List.map (expr builder) l))
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'
       | SBinop ((A.Num,_ ) as e1, op, e2) ->
@@ -171,7 +173,7 @@ let translate (globals, functions, classes) =
 	  let e1' = expr builder e1
 	  and e2' = expr builder e2 in
 	  (match op with
-	    A.Add     -> L.build_add
+            A.Add     -> L.build_add
 	  | A.Sub     -> L.build_sub
 	  | A.Mult    -> L.build_mul
           | A.Div     -> L.build_sdiv

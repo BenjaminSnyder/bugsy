@@ -1,0 +1,7 @@
+num main() {
+
+   num[2] x;
+   x = [1.1, 1.2]; 
+
+    return 0;
+}

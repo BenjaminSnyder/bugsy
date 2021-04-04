@@ -3,6 +3,7 @@ open Ast
 type sexpr = typ * sx
 and sx =
     SNumLit of string
+  | SIntLiteral of int
   | SBoolLit of bool
   | SId of string
   | SBinop of sexpr * op * sexpr
@@ -10,6 +11,7 @@ and sx =
   | SAssign of string * sexpr
   | SCall of string * sexpr list
   | SStrLit of string
+  | SArrayLiteral of sexpr list * typ
   | SNoexpr
 
 type sstmt =
@@ -50,6 +52,7 @@ let rec string_of_sexpr (t, e) =
     SBoolLit(true) -> "true"
   | SBoolLit(false) -> "false"
   | SNumLit(l) -> l
+  | SIntLiteral(l) -> string_of_int l
   | SStrLit(l) -> l
   | SId(s) -> s
   | SBinop(e1, o, e2) ->
@@ -58,9 +61,11 @@ let rec string_of_sexpr (t, e) =
   | SAssign(v, e) -> v ^ " = " ^ string_of_sexpr e
   | SCall(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
+  | SArrayLiteral(el, t) -> string_of_typ t ^ "[" ^ String.concat ", " (List.map (fun e -> string_of_sexpr e) el) ^ "]"
+
   | SNoexpr -> ""
 				  ) ^ ")"
-
+  
 let rec add_slevel (listy, level) = match listy with
   [] -> []
   | hd::li' -> (hd,level):: add_slevel (li', level)
