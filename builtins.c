@@ -11,7 +11,6 @@ float s = 1;
 
 float l = 0.5;
 
-
 void myInit ()
 
 {
@@ -68,33 +67,122 @@ void disp() {
 
 }
 
-void add_circle(double x, double y, double r) {
+void add_circle(double x, double y, double r, double* stroke, double thiccness, double* fill) {
 
-    glBegin(GL_POINTS);
-    for (float i = 0; i < (2 * pi); i += 0.001) {
-        float a = r * cos(i) + x;
-        float b = r * sin(i) + y;
-        glVertex2i(a, b);
+    if(fill[0] >= 0.0) {
+
+        glColor3f(fill[0], fill[1], fill[2]);
+        glBegin(GL_TRIANGLE_FAN);
+        for (float i = 0; i < (2 * pi); i += 0.001) {
+            float a = r * cos(i) + x;
+            float b = r * sin(i) + y;
+            glVertex2i(a, b);
+        }
+        glEnd();
+
     }
-    glEnd();
+
+    if(stroke[0] >= 0.0) {
+
+        glColor3f(stroke[0], stroke[1], stroke[2]);
+        glLineWidth(thiccness);
+        glBegin(GL_LINE_LOOP);
+        for (float i = 0; i < (2 * pi); i += 0.1) {
+            float a = r * cos(i) + x;
+            float b = r * sin(i) + y;
+            glVertex2i(a, b);
+        }
+        glEnd();
+
+    }
+
+
+
+    // //filled circle
+    // float x1,y1,x2,y2;
+    // float angle;
+    //
+    // x1 = 0.5,y1=0.6;
+    // glColor3f(1.0,1.0,0.6);
+    //
+    // glBegin(GL_TRIANGLE_FAN);
+    // glVertex2f(x1,y1);
+    //
+    // for(angle = 1.0f; angle < 361.0f; angle += 0.2) {
+    //     x2 = x1+sin(angle) * r;
+    //     y2 = y1+cos(angle) * r;
+    //     glVertex2f(x2,y2);
+    // }
+    //
+    // glEnd();
 
 }
 
-void add_square(double x, double y, double s) {
+void add_square(double x, double y, double s, double* stroke, double thiccness, double* fill) {
 
-    glBegin(GL_QUADS);
-	glVertex2f(x-(s/2.0), y+(s/2.0));   
-        glVertex2f(x-(s/2.0), y-(s/2.0));
-        glVertex2f(x+(s/2.0), y+(s/2.0));
-        glVertex2f(x+(s/2.0), y-(s/2.0));
-    glEnd();
+    if(fill[0] >= 0.0) {
+
+        glColor3f(fill[0], fill[1], fill[2]);
+        glBegin(GL_QUADS);
+            glVertex2f(x-(s/2.0), y-(s/2.0));
+        	glVertex2f(x-(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y-(s/2.0));
+        glEnd();
+
+    }
+
+    if(stroke[0] >= 0.0) {
+
+        glColor3f(stroke[0], stroke[1], stroke[2]);
+        glLineWidth(thiccness);
+        glBegin(GL_LINE_LOOP);
+            glVertex2f(x-(s/2.0), y-(s/2.0));
+        	glVertex2f(x-(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y-(s/2.0));
+        glEnd();
+
+    }
 
 }
+
+
+void add_rectangle(double x, double y, double s, double* stroke, double thiccness, double* fill) {
+
+    if(fill[0] >= 0.0) {
+
+        glColor3f(fill[0], fill[1], fill[2]);
+        glBegin(GL_QUADS);
+            glVertex2f(x-(s/2.0), y-(s/2.0));
+        	glVertex2f(x-(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y-(s/2.0));
+        glEnd();
+
+    }
+
+    if(stroke[0] >= 0.0) {
+        fprintf(stderr, "sus");
+        glColor3f(stroke[0], stroke[1], stroke[2]);
+        glLineWidth(thiccness);
+        glBegin(GL_LINE_LOOP);
+            glVertex2f(x-(s/2.0), y-(s/2.0));
+        	glVertex2f(x-(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y-(s/2.0));
+        glEnd();
+
+    }
+
+}
+
 
 void add_canvas(double width, double height, double xOffset, double yOffset) {
 
     int c = 0;
     char ** args;
+    double aspect = width / height;
 
     glutInit(&c, args);
 
@@ -112,31 +200,23 @@ void add_canvas(double width, double height, double xOffset, double yOffset) {
 
     glutInitWindowPosition(x, y);
 
-
-
-    // Giving name to widouble x = 0.0;ndow
-
-    glViewport(0, 0, width, height);
-    glMatrixMode(GL_PROJECTION);
-    float aspect = (float)width / (float)height;
-    glOrtho(-aspect, aspect, -1, 1, -1, 1);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
     glutCreateWindow("Canvas");
-
-
 
     myInit();
 
     // loop through the list of objects and call the add_object functions
     // for shape in shapes:
 
+    double stroke[] = {1.0, 0.5, 0.0};
+    double fill[] = {0.0, 1.0, 0.0};
 
+    glClearColor(0.0, 0.0, 0.0, 0.0);         // black background
+    glMatrixMode(GL_PROJECTION);              // setup viewing projection
+    glLoadIdentity();                           // start with identity matrix
+    glOrtho(0.0, w, 0.0, h, 0.0, 1.0);   // setup a 10x10x2 viewing world
 
-    add_circle(10, 10, 69);
-    add_square(20, 20, 69);
+    add_circle(250, 250, 100, stroke, 2.0, fill);
+    // add_square(20, 20, 300, stroke, 5.0, fill);
 
     glFlush();
 

@@ -77,7 +77,7 @@ let translate (globals, functions, classes) =
       L.declare_function "add_circle" circle_t the_module in
 
   let square_t : L.lltype =
-      L.function_type float_t [| float_t; float_t; float_t |] in
+      L.function_type float_t [| float_t; float_t; float_t; L.pointer_type i8_t; L.pointer_type i8_t |] in
   let square_func : L.llvalue =
       L.declare_function "add_square" square_t the_module in
 
