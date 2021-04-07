@@ -1,7 +1,7 @@
 num main()
 {
   if (false) {
-    print(42); 
+    print(42);
   }
   else {
     print(8);

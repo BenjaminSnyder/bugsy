@@ -1,6 +1,6 @@
 num main()
 {
-  num i;  
+  num i;
 
   i = 15;
   return i;

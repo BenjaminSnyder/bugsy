@@ -86,7 +86,7 @@ Installation under OS X
 
 7. Install the OCaml llvm library:
 
-   opam install llvm.3.6 
+   opam install llvm.3.6
 
    Ensure that the version of llvm you install here matches the
    version you installed via brew. Brew installed llvm version 3.6.2,
@@ -114,7 +114,7 @@ Installation under OS X
    brew install homebrew/versions/llvm37
    opam install llvm.3.7
 
-   Where the number at the end of both commands is a version different 
+   Where the number at the end of both commands is a version different
    from the one your system currently has.
 
 8. Create a symbolic link to the lli command:
@@ -129,7 +129,7 @@ Installation under OS X
    directory.
 
    IF YOU GET OPERATION NOT PERMITTED ERROR, then this is probably a
-   result of OSX's System Integrity Protection. 
+   result of OSX's System Integrity Protection.
 
    One way to get around this is to reboot your machine into recovery
    mode (by holding cmd-r when restarting). Open a terminal from
@@ -138,13 +138,13 @@ Installation under OS X
 
    csrutil disable
    reboot
-   
+
    After your machine has restarted, try the `ln....` command again,
    and it should succeed.
 
    IMPORTANT: the prevous step disables System Integrity Protection,
    which can leave your machine vulnerable. It's highly advisable to
-   reenable System Integrity Protection when you are done by 
+   reenable System Integrity Protection when you are done by
    rebooting your machine into recovery mode and entering the following
    command in the terminal:
 
@@ -167,10 +167,10 @@ Installation under OS X
 
    IF RUNNING ./testall.sh FAILS ON SOME TESTS, check to make sure you
    have symlinked the correct executable from your llvm installation.
-   For example, if the executable is named lli-[version], then the 
+   For example, if the executable is named lli-[version], then the
    previous step should have looked something like:
 
-   sudo ln -s /usr/local/opt/llvm/bin/lli-3.7 /usr/bin/lli   
+   sudo ln -s /usr/local/opt/llvm/bin/lli-3.7 /usr/bin/lli
 
    As before, you may also modify the path to lli in testall.sh
 

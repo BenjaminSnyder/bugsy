@@ -31,6 +31,6 @@ constructor(num y){
 	return a;
 }
 
-num z; 
+num z;
 
 }

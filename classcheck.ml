@@ -1,4 +1,4 @@
-let check_class cls = 
+let check_class cls =
   check_binds "cdvars" cls.cdvars;
 
   (* Raise an exception if the given rvalue type cannot be assigned to
@@ -6,7 +6,7 @@ let check_class cls =
   let check_assign lvaluet rvaluet err =
         if lvaluet = rvaluet then lvaluet else raise (Failure err)
   in
-  
+
   (* Build local symbol table of variables for this function *)
   let symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
                 StringMap.empty (globals @ cls.cdvars )
@@ -130,7 +130,7 @@ let check_class cls =
         in SBlock(check_stmt_list sl)
 
     in (* body of check_function *)
-    { 
+    {
       scname = cls.cname;
       scdvars = cls.cdvars;
       scdconst  = cls.cdconst;

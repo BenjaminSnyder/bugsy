@@ -44,7 +44,7 @@ let translate (globals, camFunctions, classes) =
   L.struct_set_body objectref_type [|i32_t; objectptr_type|] false;
 
   let convert_int = function
-          i -> 4  
+          i -> 4
   in
 
   (* Return the LLVM type for a Bugsy type *)
@@ -56,7 +56,7 @@ let translate (globals, camFunctions, classes) =
     | A.Int -> i32_t
     | A.Array(typ, size) -> (match typ with
           A.Num -> array_t float_t (convert_int size))
-    
+
   in
 
   (*go through all functions, find main, and change main to return int *)
@@ -79,7 +79,7 @@ let translate (globals, camFunctions, classes) =
       L.declare_function "printf" printf_t the_module in
 
   (* let printbig_t : L.lltype =
-      L.function_type i32_t [| i32_t |] in 
+      L.function_type i32_t [| i32_t |] in
   let printbig_func : L.llvalue =
       L.declare_function "printbig" printbig_t the_module in *)
 
@@ -195,6 +195,22 @@ let translate (globals, camFunctions, classes) =
       | SArrayLiteral (l, t) -> L.const_array (ltype_of_typ t) (Array.of_list (List.map (expr builder) l))
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'
+      | SCrementop(e, op) ->
+          let e' = expr builder e in
+          let one = expr builder (A.Num, (Sast.SNumLit "1.0")) in
+          let eplus = L.build_fadd e' one "tmp" builder
+          and eminus = L.build_fsub e' one "tmp" builder
+          and s = (match snd e with
+            SId s -> s
+            | _ -> raise (Failure ("assignment failed")))
+          in
+          (match op with
+            A.PreInc  -> ignore(L.build_store eplus  (lookup s) builder); eplus
+          | A.PostInc -> ignore(L.build_store eplus  (lookup s) builder); e'
+          | A.PreDec  -> ignore(L.build_store eminus (lookup s) builder); eminus
+          | A.PostDec -> ignore(L.build_store eminus (lookup s) builder); e'
+          )
+
       | SBinop ((A.Num,_ ) as e1, op, e2) ->
 	  let e1' = expr builder e1
 	  and e2' = expr builder e2 in
@@ -216,10 +232,10 @@ let translate (globals, camFunctions, classes) =
 	  let e1' = expr builder e1
 	  and e2' = expr builder e2 in
 	  (match op with
-            A.Add     -> L.build_add
+      A.Add     -> L.build_add
 	  | A.Sub     -> L.build_sub
 	  | A.Mult    -> L.build_mul
-          | A.Div     -> L.build_sdiv
+    | A.Div     -> L.build_sdiv
 	  | A.And     -> L.build_and
 	  | A.Or      -> L.build_or
 	  | A.Equal   -> L.build_icmp L.Icmp.Eq
@@ -233,31 +249,31 @@ let translate (globals, camFunctions, classes) =
           let e' = expr builder e in
 	  (match op with
 	    A.Neg when t = A.Num -> L.build_fneg
-	  | A.Neg                  -> L.build_neg
-          | A.Not                  -> L.build_not) e' "tmp" builder
-      | SCall ("print", [e]) | SCall ("printb", [e]) ->
+	  | A.Neg                -> L.build_neg
+    | A.Not                -> L.build_not) e' "tmp" builder
+    | SCall ("print", [e]) | SCall ("printb", [e]) ->
 	  L.build_call printf_func [| float_format_str ; (expr builder e) |]
 	    "printf" builder
-      | SCall ("demo", []) ->
+    | SCall ("demo", []) ->
   	  L.build_call demo_func [||] "demo" builder
      (* | SCall ("printbig", [e]) ->
 	  L.build_call printbig_func [| (expr builder e) |] "printbig" builder *)
-      | SCall ("printf", [e]) ->
+    | SCall ("printf", [e]) ->
 	  L.build_call printf_func [| string_format_str ; (expr builder e) |]
 	    "printf" builder
-      | SCall ("add_point_xy", [e1; e2]) ->
+    | SCall ("add_point_xy", [e1; e2]) ->
       L.build_call add_point_xy_func [| (expr builder e1); (expr builder e2); |]
       "add_point_xy" builder
-      | SCall ("add_circle", [e1; e2; e3]) ->
+    | SCall ("add_circle", [e1; e2; e3]) ->
       L.build_call circle_func [| (expr builder e1); (expr builder e2); (expr builder e3);|]
       "add_circle" builder
-      | SCall ("add_square", [e1; e2; e3]) ->
+    | SCall ("add_square", [e1; e2; e3]) ->
       L.build_call square_func [| (expr builder e1); (expr builder e2); (expr builder e3);|]
       "add_square" builder
-      | SCall ("add_canvas", [e1; e2; e3; e4]) ->
+    | SCall ("add_canvas", [e1; e2; e3; e4]) ->
       L.build_call canvas_func [| (expr builder e1); (expr builder e2); (expr builder e3); (expr builder e4);|]
       "add_canvas" builder
-      | SCall (f, args) ->
+    | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
 	 let llargs = List.rev (List.map (expr builder) (List.rev args)) in
 	 let result = (match fdecl.styp with
@@ -286,7 +302,7 @@ let translate (globals, camFunctions, classes) =
                               (* Special "return nothing" instr *)
                               A.Void -> L.build_ret_void builder
                              |
-                              A.Int -> L.build_ret (L.const_null i32_t) builder 
+                              A.Int -> L.build_ret (L.const_null i32_t) builder
                               (* Build return statement *)
                             | _ -> L.build_ret (expr builder e) builder );
                      builder

@@ -144,7 +144,7 @@ let check (globals, functions, classes) =
     let rec expr = function
             NumLit l   -> (Num, SNumLit l)
            | ArrayLit l ->
-                          
+
         let test = string_of_int (List.length l) in
                            (Array (Num, NumLit(test)), SArrayLiteral(List.map expr l, Array(Num, IntLiteral(List.length l))))
 
@@ -169,6 +169,17 @@ let check (globals, functions, classes) =
                                  string_of_uop op ^ string_of_typ t ^
                                  " in " ^ string_of_expr ex))
           in (ty, SUnop(op, (t, e')))
+      | Crementop(e, op) as ex ->
+          let (t, e') = expr e in
+          let ty = match op with
+            PreInc  when t = Num -> Num
+          | PostInc when t = Num -> Num
+          | PreDec  when t = Num -> Num
+          | PostDec when t = Num -> Num
+          | _ -> raise (Failure ("illegal increment/decrement operator " ^
+                                   string_of_op op ^ string_of_typ t ^
+                                   " in " ^ string_of_expr ex))
+          in (ty, SCrementop((t, e'), op))
       | Binop(e1, op, e2) as e ->
           let (t1, e1') = expr e1
           and (t2, e2') = expr e2 in
@@ -445,6 +456,17 @@ let check (globals, functions, classes) =
                                    string_of_uop op ^ string_of_typ t ^
                                    " in " ^ string_of_expr ex))
             in (ty, SUnop(op, (t, e')))
+        | Crementop(e, op) as ex ->
+          let (t, e') = expr e in
+          let ty = match op with
+            PreInc  when t = Num -> Num
+          | PostInc when t = Num -> Num
+          | PreDec  when t = Num -> Num
+          | PostDec when t = Num -> Num
+          | _ -> raise (Failure ("illegal increment/decrement operator " ^
+                                   string_of_op op ^ string_of_typ t ^
+                                   " in " ^ string_of_expr ex))
+          in (ty, SCrementop((t, e'), op))
         | Binop(e1, op, e2) as e ->
             let (t1, e1') = expr e1
             and (t2, e2') = expr e2 in

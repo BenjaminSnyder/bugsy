@@ -3,7 +3,7 @@
 llvm=$1
 file=$(echo $llvm | cut -f1 -d.)
 if [ -z $2 ]; then
-   : 
+   :
 else
 	file2=$2
 fi

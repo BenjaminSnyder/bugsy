@@ -1,5 +1,7 @@
 num main()
 {
+  num i;
+  i=43;
   printb(true);
   printb(false);
   printb(true and true);
@@ -13,5 +15,5 @@ num main()
   printb(!false);
   printb(!true);
   print(-10);
-  print(--42);
+  print(--i);
 }

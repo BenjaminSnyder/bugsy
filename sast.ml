@@ -6,6 +6,7 @@ and sx =
   | SIntLiteral of int
   | SBoolLit of bool
   | SId of string
+  | SCrementop of sexpr * op
   | SBinop of sexpr * op * sexpr
   | SUnop of uop * sexpr
   | SAssign of string * sexpr
@@ -55,6 +56,7 @@ let rec string_of_sexpr (t, e) =
   | SIntLiteral(l) -> string_of_int l
   | SStrLit(l) -> l
   | SId(s) -> s
+  | SCrementop(e, o) -> string_of_sexpr e ^ " " ^ string_of_op o
   | SBinop(e1, o, e2) ->
       string_of_sexpr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_sexpr e2
   | SUnop(o, e) -> string_of_uop o ^ string_of_sexpr e
@@ -65,7 +67,7 @@ let rec string_of_sexpr (t, e) =
 
   | SNoexpr -> ""
 				  ) ^ ")"
-  
+
 let rec add_slevel (listy, level) = match listy with
   [] -> []
   | hd::li' -> (hd,level):: add_slevel (li', level)

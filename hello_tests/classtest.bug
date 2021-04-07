@@ -1,8 +1,8 @@
 class Dog {
     num y;
     num z;
-    
-    
+
+
     num five() {
         return 5.0;
     }

@@ -275,26 +275,26 @@ let check (globals, functions, classes) =
 
   (* Collect class declarations for built-in classes: no bodies *)
 
-  let check_class cls = 
+  let check_class cls =
     check_binds "cdvars" cls.cdvars;
-  
+
     (* Raise an exception if the given rvalue type cannot be assigned to
          the given lvalue type *)
     let check_assign lvaluet rvaluet err =
           if lvaluet = rvaluet then lvaluet else raise (Failure err)
     in
-    
+
     (* Build local symbol table of variables for this function *)
     let symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
                   StringMap.empty (globals @ cls.cdvars )
     in
-  
+
     (* Return a variable from our local symbol table *)
     let type_of_identifier s =
       try StringMap.find s symbols
       with Not_found -> raise (Failure ("undeclared identifier " ^ s))
     in
-  
+
     (* Return a semantically-checked expression, i.e., with a type *)
     let rec expr = function
         NumLit l   -> (Num, SNumLit l)
@@ -338,15 +338,15 @@ let check (globals, functions, classes) =
                       string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
                       string_of_typ t2 ^ " in " ^ string_of_expr e))
           in (ty, SBinop((t1, e1'), op, (t2, e2')))
-  
+
     in
-  
+
     let check_bool_expr e =
       let (t', e') = expr e
       and err = "expected Boolean expression in " ^ string_of_expr e
       in if t' != Bool then raise (Failure err) else (t', e')
     in
-  
+
     (* Return a semantically-checked statement i.e. containing sexprs *)
     let rec check_stmt = function
         Expr e -> SExpr (expr e)
@@ -354,7 +354,7 @@ let check (globals, functions, classes) =
       | For(e1, e2, e3, st) ->
       SFor(expr e1, check_bool_expr e2, expr e3, check_stmt st)
       | While(p, s) -> SWhile(check_bool_expr p, check_stmt s)
-  
+
       (* A block is correct if each statement is correct and nothing
         follows any Return statement.  Nested blocks are flattened. *)
       | Block sl ->
@@ -365,9 +365,9 @@ let check (globals, functions, classes) =
             | s :: ss         -> check_stmt s :: check_stmt_list ss
             | []              -> []
           in SBlock(check_stmt_list sl)
-  
+
       in (* body of check_function *)
-      { 
+      {
         scname = cls.cname;
         scdvars = cls.cdvars;
         scdconst = cls.cdconst;

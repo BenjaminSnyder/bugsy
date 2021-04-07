@@ -1,4 +1,4 @@
-int main 
+int main
 {
     square x = square(pt(0,0), 72);
     // rotates the square by 72 degrees
