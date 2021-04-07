@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <GL/glut.h>
 #include <math.h>
+#include <string.h>
+#include <stdlib.h>
 #define pi 3.142857
 
 float s = 1;
@@ -67,11 +69,84 @@ void disp() {
 
 }
 
-void add_circle(double x, double y, double r, double* stroke, double thiccness, double* fill) {
+double* str_to_arr(char* str_in) {
 
-    if(fill[0] >= 0.0) {
+    char str[strlen(str_in)];
+    sprintf(str, "%s", str_in);
 
-        glColor3f(fill[0], fill[1], fill[2]);
+    char* delim = " ";
+    char *ptr = strtok(str, delim);
+    double* arr = malloc(3 * sizeof(double));
+    int i = 0;
+    char* end;
+
+	while(ptr != NULL) {
+        arr[i] = strtod(ptr, &end);
+		ptr = strtok(NULL, delim);
+        i++;
+	}
+
+    return arr;
+
+}
+
+void add_ellipse(double x, double y, double w, double h,  char* stroke, double thiccness, char* fill) {
+
+    double* stroke_arr = str_to_arr(stroke);
+    double* fill_arr = str_to_arr(fill);
+    int num_segments = 100;
+    float xi = 1;
+    float yi = 0;
+
+    float theta = 2 * 3.1415926 / num_segments;
+    float c = cosf(theta);//precalculate the sine and cosine
+    float s = sinf(theta);
+
+    float t;
+    if(fill_arr[0] >= 0.0) {
+
+        glColor3f(fill_arr[0], fill_arr[1], fill_arr[2]);
+        glBegin(GL_TRIANGLE_FAN);
+        for(int i = 0; i < num_segments; i++) {
+               //apply radius and offset
+               glVertex2f(xi * w + x, yi * h + y);//output vertex
+
+               //apply the rotation matrix
+               t = xi;
+               xi = c * xi - s * yi;
+               yi = s * t + c * yi;
+           }
+        glEnd();
+
+    }
+
+    if(stroke_arr[0] >= 0.0) {
+
+        glColor3f(stroke_arr[0], stroke_arr[1], stroke_arr[2]);
+        glBegin(GL_LINE_LOOP);
+        for(int i = 0; i < num_segments; i++) {
+               //apply radius and offset
+               glVertex2f(xi * w + x, yi * h + y);//output vertex
+
+               //apply the rotation matrix
+               t = xi;
+               xi = c * xi - s * yi;
+               yi = s * t + c * yi;
+           }
+        glEnd();
+
+    }
+
+}
+
+void add_circle(double x, double y, double r, char* stroke, double thiccness, char* fill) {
+
+    double* stroke_arr = str_to_arr(stroke);
+    double* fill_arr = str_to_arr(fill);
+
+    if(fill_arr[0] >= 0.0) {
+
+        glColor3f(fill_arr[0], fill_arr[1], fill_arr[2]);
         glBegin(GL_TRIANGLE_FAN);
         for (float i = 0; i < (2 * pi); i += 0.001) {
             float a = r * cos(i) + x;
@@ -82,9 +157,9 @@ void add_circle(double x, double y, double r, double* stroke, double thiccness, 
 
     }
 
-    if(stroke[0] >= 0.0) {
+    if(stroke_arr[0] >= 0.0) {
 
-        glColor3f(stroke[0], stroke[1], stroke[2]);
+        glColor3f(stroke_arr[0], stroke_arr[1], stroke_arr[2]);
         glLineWidth(thiccness);
         glBegin(GL_LINE_LOOP);
         for (float i = 0; i < (2 * pi); i += 0.1) {
@@ -96,33 +171,16 @@ void add_circle(double x, double y, double r, double* stroke, double thiccness, 
 
     }
 
-
-
-    // //filled circle
-    // float x1,y1,x2,y2;
-    // float angle;
-    //
-    // x1 = 0.5,y1=0.6;
-    // glColor3f(1.0,1.0,0.6);
-    //
-    // glBegin(GL_TRIANGLE_FAN);
-    // glVertex2f(x1,y1);
-    //
-    // for(angle = 1.0f; angle < 361.0f; angle += 0.2) {
-    //     x2 = x1+sin(angle) * r;
-    //     y2 = y1+cos(angle) * r;
-    //     glVertex2f(x2,y2);
-    // }
-    //
-    // glEnd();
-
 }
 
-void add_square(double x, double y, double s, double* stroke, double thiccness, double* fill) {
+void add_square(double x, double y, double s, char* stroke, double thiccness, char* fill) {
 
-    if(fill[0] >= 0.0) {
+    double* stroke_arr = str_to_arr(stroke);
+    double* fill_arr = str_to_arr(fill);
 
-        glColor3f(fill[0], fill[1], fill[2]);
+    if(fill_arr[0] >= 0.0) {
+
+        glColor3f(fill_arr[0], fill_arr[1], fill_arr[2]);
         glBegin(GL_QUADS);
             glVertex2f(x-(s/2.0), y-(s/2.0));
         	glVertex2f(x-(s/2.0), y+(s/2.0));
@@ -134,7 +192,7 @@ void add_square(double x, double y, double s, double* stroke, double thiccness, 
 
     if(stroke[0] >= 0.0) {
 
-        glColor3f(stroke[0], stroke[1], stroke[2]);
+        glColor3f(stroke_arr[0], stroke_arr[1], stroke_arr[2]);
         glLineWidth(thiccness);
         glBegin(GL_LINE_LOOP);
             glVertex2f(x-(s/2.0), y-(s/2.0));
@@ -148,29 +206,31 @@ void add_square(double x, double y, double s, double* stroke, double thiccness, 
 }
 
 
-void add_rectangle(double x, double y, double s, double* stroke, double thiccness, double* fill) {
+void add_rectangle(double x, double y, double w, double h, char* stroke, double thiccness, char* fill) {
 
-    if(fill[0] >= 0.0) {
+    double* stroke_arr = str_to_arr(stroke);
+    double* fill_arr = str_to_arr(fill);
 
-        glColor3f(fill[0], fill[1], fill[2]);
+    if(fill_arr[0] >= 0.0) {
+
+        glColor3f(fill_arr[0], fill_arr[1], fill_arr[2]);
         glBegin(GL_QUADS);
-            glVertex2f(x-(s/2.0), y-(s/2.0));
-        	glVertex2f(x-(s/2.0), y+(s/2.0));
-            glVertex2f(x+(s/2.0), y+(s/2.0));
-            glVertex2f(x+(s/2.0), y-(s/2.0));
+            glVertex2f(x-(w/2.0), y-(h/2.0));
+        	glVertex2f(x-(w/2.0), y+(h/2.0));
+            glVertex2f(x+(w/2.0), y+(h/2.0));
+            glVertex2f(x+(w/2.0), y-(h/2.0));
         glEnd();
 
     }
 
-    if(stroke[0] >= 0.0) {
-        fprintf(stderr, "sus");
-        glColor3f(stroke[0], stroke[1], stroke[2]);
+    if(stroke_arr[0] >= 0.0) {
+        glColor3f(stroke_arr[0], stroke_arr[1], stroke_arr[2]);
         glLineWidth(thiccness);
         glBegin(GL_LINE_LOOP);
-            glVertex2f(x-(s/2.0), y-(s/2.0));
-        	glVertex2f(x-(s/2.0), y+(s/2.0));
-            glVertex2f(x+(s/2.0), y+(s/2.0));
-            glVertex2f(x+(s/2.0), y-(s/2.0));
+            glVertex2f(x-(w/2.0), y-(h/2.0));
+            glVertex2f(x-(w/2.0), y+(h/2.0));
+            glVertex2f(x+(w/2.0), y+(h/2.0));
+            glVertex2f(x+(w/2.0), y-(h/2.0));
         glEnd();
 
     }
@@ -207,16 +267,23 @@ void add_canvas(double width, double height, double xOffset, double yOffset) {
     // loop through the list of objects and call the add_object functions
     // for shape in shapes:
 
-    double stroke[] = {1.0, 0.5, 0.0};
-    double fill[] = {0.0, 1.0, 0.0};
+    char* stroke = malloc(100 * sizeof(char));
+    char* fill = malloc(100 * sizeof(char));
+
+    stroke = "1.0 1.0 0.0";
+    fill = "1.0 0.0 1.0";
 
     glClearColor(0.0, 0.0, 0.0, 0.0);         // black background
     glMatrixMode(GL_PROJECTION);              // setup viewing projection
     glLoadIdentity();                           // start with identity matrix
     glOrtho(0.0, w, 0.0, h, 0.0, 1.0);   // setup a 10x10x2 viewing world
 
-    add_circle(250, 250, 100, stroke, 2.0, fill);
+
+    // add_circle(0 + w/2, 0 + h/2, 100, stroke, 2.0, fill);
     // add_square(20, 20, 300, stroke, 5.0, fill);
+    // add_rectangle(20 + w/2, 20 + h/2, 300, 10, stroke, 5.0, fill);
+
+    // add_ellipse(w/2,s h/2, 50, 200, stroke, 5.0, fill);
 
     glFlush();
 

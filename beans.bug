@@ -15,8 +15,14 @@ num main() {
     d = 500;
     e = b * 2;
     f = c * 2;
-
     add_canvas(c, d, a, b);
+    string fill;
+    fill = "1.0 1.0 0.5";
+    string stroke;
+    stroke = "1.0 0.0 0.5";
+    num thicc;
+    thicc = 0.4;
+    add_rectangle(a, b, c, c, stroke, thicc, fill);
 
     return 0.0;
 }
