@@ -26,7 +26,7 @@ type expr =
   | Call of string * expr list
   | Noexpr
 
-type typ = Num | Bool | Void | String | Pt | Shape | Square | Rect |
+type typ = Num | Bool | Void | Int |  String | Pt | Shape | Square | Rect |
            Triangle | Circle | Ellipse | Regagon | Polygon |
            Canvas | Line | Spline | Array of typ * expr
 
