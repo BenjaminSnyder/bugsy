@@ -251,15 +251,18 @@ let translate (globals, camFunctions, classes) =
 	    A.Neg when t = A.Num -> L.build_fneg
 	  | A.Neg                -> L.build_neg
     | A.Not                -> L.build_not) e' "tmp" builder
-    | SCall ("print", [e]) | SCall ("printb", [e]) ->
-	  L.build_call printf_func [| float_format_str ; (expr builder e) |]
+    | SCall ("printb", [e]) -> 
+      L.build_call printf_func [| int_format_str ; (expr builder e) |]
+      "printf" builder
+    | SCall ("print", [e]) ->
+	    L.build_call printf_func [| float_format_str ; (expr builder e) |]
 	    "printf" builder
     | SCall ("demo", []) ->
   	  L.build_call demo_func [||] "demo" builder
-     (* | SCall ("printbig", [e]) ->
-	  L.build_call printbig_func [| (expr builder e) |] "printbig" builder *)
+    (* | SCall ("printbig", [e]) ->
+	    L.build_call printbig_func [| (expr builder e) |] "printbig" builder *)
     | SCall ("printf", [e]) ->
-	  L.build_call printf_func [| string_format_str ; (expr builder e) |]
+	    L.build_call printf_func [| string_format_str ; (expr builder e) |]
 	    "printf" builder
     | SCall ("add_point_xy", [e1; e2]) ->
       L.build_call add_point_xy_func [| (expr builder e1); (expr builder e2); |]
