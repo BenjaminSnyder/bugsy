@@ -19,7 +19,7 @@ open Sast
 module StringMap = Map.Make(String)
 
 (* translate : Sast.program -> Llvm.module *)
-let translate (globals, functions, classes) =
+let translate (globals, camFunctions, classes) =
   let context    = L.global_context () in
 
   (* Create the LLVM compilation module into which
@@ -58,6 +58,11 @@ let translate (globals, functions, classes) =
           A.Num -> array_t float_t (convert_int size))
     
   in
+
+  (*go through all functions, find main, and change main to return int *)
+  (*let functions = List.map (fun x -> (x.styp <- A.Int); x) camFunctions in *)
+  let functions = List.map (fun x -> if x.sfname = "main" then ((x.styp <- A.Int); x) else x) camFunctions in
+
 
   (* Create a map of global variables after creating each *)
   let global_vars : L.llvalue StringMap.t =
@@ -119,9 +124,15 @@ let translate (globals, functions, classes) =
       print_endline(L.string_of_lltype(float_t);); *)
 
       (*beans *)
-      let ye = L.function_type (ltype_of_typ A.Num) formal_types in  
-      StringMap.add name (L.define_function "main" ye  the_module, fdecl) m in
-    List.fold_left function_decl StringMap.empty functions in
+      let ye = L.function_type (ltype_of_typ A.Int) formal_types in
+
+
+      let ret_type = if name = "main" then ye else ftype in
+   (*   if name = "main" then let ret_type = ye in else let ret_type = ftype in *)
+
+      StringMap.add name (L.define_function name ret_type  the_module, fdecl) m in
+
+          List.fold_left function_decl StringMap.empty functions in
 
 
   let find_func s =
