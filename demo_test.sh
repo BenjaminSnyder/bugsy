@@ -1,8 +1,8 @@
 #!/bin/bash
-./bugsy.native demo.bug > "demo.ll"
-llc "demo.ll" -o "demo.s"
+./bugsy.native $1.bug > "$1.ll"
+llc "$1.ll" -o "$1.s"
 gcc "builtins.c" -c -o "builtins.o"
-g++ "demo.s" "builtins.o" -lglut -lGL -lGLU -lGLEW -o demo
-rm "demo.ll" "demo.s"
+g++ "$1.s" "builtins.o" -no-pie -lglut -lGL -lGLU -lGLEW -o $1
+rm "$1.ll" "$1.s"
 
-echo "Demo compiled"
+echo "$1 compiled"

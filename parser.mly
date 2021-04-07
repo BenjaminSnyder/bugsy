@@ -10,16 +10,17 @@ let trd  (_,_,tr)=tr
 %token CONSTRUCTOR CLASS NULL
 %token CONTINUE BREAK TRY CATCH RAISE
 %token LPAREN RPAREN LBRACE RBRACE LSQBRACKET RSQBRACKET
-%token COLON SEMI COMMA QMARK
+%token COLON SEMI COMMA QMARK DOT
 %token PLUS MINUS MULT DIV ASSIGN MODULO
 %token INCREMENT DECREMENT
 %token PLUSEQ MINUSEQ MULTEQ DIVEQ
 %token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR NOT
 %token RETURN IF ELIF ELSE FOR WHILE
 %token BOOL VOID STRING CHAR NUM
-%token <int> LITERAL
+%token POINT SHAPE SQUARE RECT CIRCLE ELLIPSE TRIANGLE
+%token POLYGON REGAGON CANVAS LINE SPLINE
 %token <bool> BLIT
-%token <string> ID NLIT STRLIT
+%token <string> ID NUMLIT STRLIT
 %token EOF
 
 %nonassoc NOELSE
@@ -66,22 +67,27 @@ cdecl:
   } }
 
 const_decl:
-  CONSTRUCTOR LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
+  CONSTRUCTOR LPAREN formals_opt RPAREN LBRACE body RBRACE
   { {
     ctformals = $3;
-    ctlocals = List.rev $6;
-    ctbody = List.rev $7;
+    ctlocals = List.rev (fst $6);
+    ctbody = List.rev (snd $6);
   } }
 
 fdecl:
-   typ ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
-  { { 
+   typ ID LPAREN formals_opt RPAREN LBRACE body RBRACE
+  { {
     typ = $1;
 	  fname = $2;
 	  formals = List.rev $4;
-	  locals = List.rev $7;
-	  body = List.rev $8 
+	  locals = List.rev (fst $7);
+    fbody = List.rev (snd $7);
   } }
+
+body:
+    /* nothing */   { [], [] }
+  | body vdecl { (($2 :: fst $1), snd $1) }
+  | body stmt  { (fst $1, ($2 :: snd $1)) }
 
 formals_opt:
     /* nothing */ { [] }
@@ -96,13 +102,28 @@ typ:
   | BOOL { Bool }
   | VOID { Void }
   | STRING { String }
+  | shape { $1 }
+  | array_t { $1 }
 
-vdecl_list:
-    /* nothing */    { [] }
-  | vdecl_list vdecl { $2 :: $1 }
+shape:
+    POINT      { Pt       }
+  | SHAPE      { Shape    }
+  | SQUARE     { Square   }
+  | RECT       { Rect     }
+  | TRIANGLE   { Triangle }
+  | CIRCLE     { Circle   }
+  | ELLIPSE    { Ellipse  }
+  | LINE       { Line     }
+  | CANVAS     { Canvas   }
+  | POLYGON    { Polygon  }
+  | REGAGON    { Regagon  }
+  | SPLINE     { Spline   }
+
+array_t:
+  typ LSQBRACKET expr RSQBRACKET { Array($1, $3) }
 
 vdecl:
-   typ ID SEMI { ($1, $2) }
+    typ ID SEMI { ($1, $2) }
 
 stmt_list:
     /* nothing */  { [] }
@@ -124,12 +145,29 @@ expr_opt:
   | expr          { $1 }
 
 expr:
-    NLIT             { NumLit($1)  }      
-  | LITERAL          { Literal($1) }
+    ID               { Id($1) }
+  | ID DOT ID        { Access($1, $3) }
+  | literal          { $1 }
+  | bool_expr        { $1 }
+  | arithmetic       { $1 }
+  | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
+  | ID ASSIGN expr   { Assign($1, $3) }
+  | ID LSQBRACKET expr RSQBRACKET ASSIGN expr   { ArrayAssign($1, $3, $6) }
+  | ID LSQBRACKET expr RSQBRACKET               { ArrayAccess($1, $3) }
+  | LPAREN expr RPAREN { $2 } /* allow parentheses in arithmetic */
+
+literal:
+    NUMLIT           { NumLit($1)  }
   | STRLIT           { StrLit($1)  }
-  | BLIT            { BoolLit($1) }
-  | ID               { Id($1) }
-  | expr EQ     expr { Binop($1, Equal, $3) }
+  | BLIT             { BoolLit($1) }
+  | LSQBRACKET arr_contents RSQBRACKET { ArrayLit($2) }
+
+arr_contents:
+    expr            { [$1] }
+  | arr_contents COMMA expr { $3 :: $1 }
+
+bool_expr:
+    expr EQ     expr { Binop($1, Equal, $3) }
   | expr NEQ    expr { Binop($1, Neq,   $3) }
   | expr LT     expr { Binop($1, Less,  $3) }
   | expr LEQ    expr { Binop($1, Leq,   $3) }
@@ -138,23 +176,22 @@ expr:
   | expr AND    expr { Binop($1, And,   $3) }
   | expr OR     expr { Binop($1, Or,    $3) }
   | NOT expr         { Unop(Not, $2) }
-  | expr PLUS   expr { Binop($1, Add,   $3) }
+
+arithmetic:
+    expr PLUS   expr { Binop($1, Add,   $3) }
   | expr MINUS  expr { Binop($1, Sub,   $3) }
-  | expr MULT  expr { Binop($1, Mult,  $3) }
-  | expr DIV expr { Binop($1, Div,   $3) }
-  | expr MODULO expr { Binop($1, Mod, $3) }
-  | expr PLUSEQ expr   { Binop($1, Pluseq, $3) }
-  | expr MINUSEQ expr  { Binop($1, Mineq, $3) }
-  | expr MULTEQ expr   { Binop($1, Multeq, $3) }
-  | expr DIVEQ expr    { Binop($1, Diveq, $3) }
-  | expr INCREMENT   { Unop(Incr, $1) }
-  | INCREMENT expr   { Unop(Incr, $2) } /* Todo: Think about post vs pre increment */
-  | expr DECREMENT   { Unop(Decr, $1) }
-  | DECREMENT expr   { Unop(Decr, $2) }
+  | expr MULT   expr { Binop($1, Mult,  $3) }
+  | expr DIV    expr { Binop($1, Div,   $3) }
+  | expr MODULO expr { Binop($1, Mod,   $3) }
+  | expr PLUSEQ  expr   { Binop($1, Pluseq, $3) }
+  | expr MINUSEQ expr   { Binop($1, Mineq, $3)  }
+  | expr MULTEQ  expr   { Binop($1, Multeq, $3) }
+  | expr DIVEQ   expr   { Binop($1, Diveq, $3)  }
+  | expr INCREMENT   { Crementop($1, PostInc) }
+  | INCREMENT expr   { Crementop($2, PreInc)  }
+  | expr DECREMENT   { Crementop($1, PostDec)  }
+  | DECREMENT expr   { Crementop($2, PreDec) }
   | MINUS expr %prec NEG { Unop(Neg, $2) }
-  | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
-  | ID ASSIGN expr   { Assign($1, $3) }
-  | LPAREN expr RPAREN { $2 }
 
 actuals_opt:
     /* nothing */ { [] }

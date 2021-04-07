@@ -32,7 +32,15 @@ let translate (globals, functions, classes) =
   and i1_t       = L.i1_type     context
   and float_t    = L.double_type context
   and string_t   = L.pointer_type (L.i8_type context) (*new string type *)
+  and array_t    = L.array_type
   and void_t     = L.void_type   context in
+
+
+
+  let object_type = L.named_struct_type context "obj" in
+  let objectptr_type = L.pointer_type object_type in
+  let objectref_type = L.named_struct_type context "objref" in
+  L.struct_set_body objectref_type [|i32_t; objectptr_type|] false;
 
   (* Return the LLVM type for a Bugsy type *)
   let ltype_of_typ = function
@@ -65,6 +73,26 @@ let translate (globals, functions, classes) =
       L.function_type float_t [||] in
   let demo_func : L.llvalue =
       L.declare_function "demo" demo_t the_module in
+
+  let add_point_xy_t : L.lltype =
+      L.function_type float_t [| float_t; float_t; |] in
+  let add_point_xy_func : L.llvalue =
+      L.declare_function "add_point_xy" add_point_xy_t the_module in
+
+  let circle_t : L.lltype =
+      L.function_type float_t [| float_t; float_t; float_t |] in
+  let circle_func : L.llvalue =
+      L.declare_function "add_circle" circle_t the_module in
+
+  let square_t : L.lltype =
+      L.function_type float_t [| float_t; float_t; float_t; L.pointer_type i8_t; L.pointer_type i8_t |] in
+  let square_func : L.llvalue =
+      L.declare_function "add_square" square_t the_module in
+
+  let canvas_t : L.lltype =
+      L.function_type float_t [| float_t; float_t; float_t; float_t |] in
+  let canvas_func : L.llvalue =
+      L.declare_function "add_canvas" canvas_t the_module in
 
   (* Define each function (arguments and return type) so we can
      call it even before we've created its body *)
@@ -117,11 +145,11 @@ let translate (globals, functions, classes) =
     (* Construct code for an expression; return its value *)
     let rec expr builder ((_, e) : sexpr) = match e with
         SStrLit s -> L.build_global_stringptr s "str" builder
-      |	SLiteral i  -> L.const_int i32_t i
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SNumLit nl -> L.const_float_of_string float_t nl
       | SNoexpr     -> L.const_int i32_t 0
       | SId s       -> L.build_load (lookup s) s builder
+      | SArrayLiteral (l, t) -> L.const_array (ltype_of_typ t) (Array.of_list (List.map (expr builder) l))
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'
       | SBinop ((A.Num,_ ) as e1, op, e2) ->
@@ -145,7 +173,7 @@ let translate (globals, functions, classes) =
 	  let e1' = expr builder e1
 	  and e2' = expr builder e2 in
 	  (match op with
-	    A.Add     -> L.build_add
+            A.Add     -> L.build_add
 	  | A.Sub     -> L.build_sub
 	  | A.Mult    -> L.build_mul
           | A.Div     -> L.build_sdiv
@@ -174,6 +202,18 @@ let translate (globals, functions, classes) =
       | SCall ("printf", [e]) ->
 	  L.build_call printf_func [| string_format_str ; (expr builder e) |]
 	    "printf" builder
+      | SCall ("add_point_xy", [e1; e2]) ->
+      L.build_call add_point_xy_func [| (expr builder e1); (expr builder e2); |]
+      "add_point_xy" builder
+      | SCall ("add_circle", [e1; e2; e3]) ->
+      L.build_call circle_func [| (expr builder e1); (expr builder e2); (expr builder e3);|]
+      "add_circle" builder
+      | SCall ("add_square", [e1; e2; e3]) ->
+      L.build_call square_func [| (expr builder e1); (expr builder e2); (expr builder e3);|]
+      "add_square" builder
+      | SCall ("add_canvas", [e1; e2; e3; e4]) ->
+      L.build_call canvas_func [| (expr builder e1); (expr builder e2); (expr builder e3); (expr builder e4);|]
+      "add_canvas" builder
       | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
 	 let llargs = List.rev (List.map (expr builder) (List.rev args)) in
@@ -242,7 +282,7 @@ let translate (globals, functions, classes) =
     in
 
     (* Build the code for each statement in the function *)
-    let builder = stmt builder (SBlock fdecl.sbody) in
+    let builder = stmt builder (SBlock fdecl.sfbody) in
 
     (* Add a return if the last block falls off the end *)
     add_terminal builder (match fdecl.styp with

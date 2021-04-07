@@ -1,0 +1,15 @@
+class Dog {
+    num y;
+    num z;
+    
+    
+    num five() {
+        return 5.0;
+    }
+}
+
+num main()
+{
+    Dog.five();
+    return 0.0;
+}

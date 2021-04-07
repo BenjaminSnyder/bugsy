@@ -3,74 +3,13 @@
  */
 
 #include <stdio.h>
-#include<stdio.h>
-#include<GL/glut.h>
-#include<math.h>
+#include <GL/glut.h>
+#include <math.h>
 #define pi 3.142857
 
 float s = 1;
 
 float l = 0.5;
-
-/*
- * Font information: one byte per row, 8 rows per character
- * In order, space, 0-9, A-Z
- */
-static const char font[] = {
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x1c, 0x3e, 0x61, 0x41, 0x43, 0x3e, 0x1c, 0x00,
-  0x00, 0x40, 0x42, 0x7f, 0x7f, 0x40, 0x40, 0x00,
-  0x62, 0x73, 0x79, 0x59, 0x5d, 0x4f, 0x46, 0x00,
-  0x20, 0x61, 0x49, 0x4d, 0x4f, 0x7b, 0x31, 0x00,
-  0x18, 0x1c, 0x16, 0x13, 0x7f, 0x7f, 0x10, 0x00,
-  0x27, 0x67, 0x45, 0x45, 0x45, 0x7d, 0x38, 0x00,
-  0x3c, 0x7e, 0x4b, 0x49, 0x49, 0x79, 0x30, 0x00,
-  0x03, 0x03, 0x71, 0x79, 0x0d, 0x07, 0x03, 0x00,
-  0x36, 0x4f, 0x4d, 0x59, 0x59, 0x76, 0x30, 0x00,
-  0x06, 0x4f, 0x49, 0x49, 0x69, 0x3f, 0x1e, 0x00,
-  0x7c, 0x7e, 0x13, 0x11, 0x13, 0x7e, 0x7c, 0x00,
-  0x7f, 0x7f, 0x49, 0x49, 0x49, 0x7f, 0x36, 0x00,
-  0x1c, 0x3e, 0x63, 0x41, 0x41, 0x63, 0x22, 0x00,
-  0x7f, 0x7f, 0x41, 0x41, 0x63, 0x3e, 0x1c, 0x00,
-  0x00, 0x7f, 0x7f, 0x49, 0x49, 0x49, 0x41, 0x00,
-  0x7f, 0x7f, 0x09, 0x09, 0x09, 0x09, 0x01, 0x00,
-  0x1c, 0x3e, 0x63, 0x41, 0x49, 0x79, 0x79, 0x00,
-  0x7f, 0x7f, 0x08, 0x08, 0x08, 0x7f, 0x7f, 0x00,
-  0x00, 0x41, 0x41, 0x7f, 0x7f, 0x41, 0x41, 0x00,
-  0x20, 0x60, 0x40, 0x40, 0x40, 0x7f, 0x3f, 0x00,
-  0x7f, 0x7f, 0x18, 0x3c, 0x76, 0x63, 0x41, 0x00,
-  0x00, 0x7f, 0x7f, 0x40, 0x40, 0x40, 0x40, 0x00,
-  0x7f, 0x7f, 0x0e, 0x1c, 0x0e, 0x7f, 0x7f, 0x00,
-  0x7f, 0x7f, 0x0e, 0x1c, 0x38, 0x7f, 0x7f, 0x00,
-  0x3e, 0x7f, 0x41, 0x41, 0x41, 0x7f, 0x3e, 0x00,
-  0x7f, 0x7f, 0x11, 0x11, 0x11, 0x1f, 0x0e, 0x00,
-  0x3e, 0x7f, 0x41, 0x51, 0x71, 0x3f, 0x5e, 0x00,
-  0x7f, 0x7f, 0x11, 0x31, 0x79, 0x6f, 0x4e, 0x00,
-  0x26, 0x6f, 0x49, 0x49, 0x4b, 0x7a, 0x30, 0x00,
-  0x00, 0x01, 0x01, 0x7f, 0x7f, 0x01, 0x01, 0x00,
-  0x3f, 0x7f, 0x40, 0x40, 0x40, 0x7f, 0x3f, 0x00,
-  0x0f, 0x1f, 0x38, 0x70, 0x38, 0x1f, 0x0f, 0x00,
-  0x1f, 0x7f, 0x38, 0x1c, 0x38, 0x7f, 0x1f, 0x00,
-  0x63, 0x77, 0x3e, 0x1c, 0x3e, 0x77, 0x63, 0x00,
-  0x00, 0x03, 0x0f, 0x78, 0x78, 0x0f, 0x03, 0x00,
-  0x61, 0x71, 0x79, 0x5d, 0x4f, 0x47, 0x43, 0x00
-};
-
-void printbig(float c)
-{
-  int index = 0;
-  int col, data;
-  if (c >= '0' && c <= '9') index = 8 + (c - '0') * 8;
-  else if (c >= 'A' && c <= 'Z') index = 88 + (c - 'A') * 8;
-  do {
-    data = font[index++];
-    for (col = 0 ; col < 8 ; data <<= 1, col++) {
-      char d = data & 0x80 ? 'X' : ' ';
-      putchar(d); putchar(d);
-    }
-    putchar('\n');
-  } while (index & 0x7);
-}
 
 void myInit ()
 
@@ -99,109 +38,256 @@ void myInit ()
     glLoadIdentity();
 
 
-
     // setting window dimension in X- and Y- direction
 
     gluOrtho2D(-780, 780, -420, 420);
 
 }
 
+void add_point_xy(double x, double y) {
+    printf("x: %.2f, y: %.2f\n", x, y);
+}
 
-void display ()
-
-{
-
+void disp() {
     glClear(GL_COLOR_BUFFER_BIT);
-
     glBegin(GL_POINTS);
-
     float x, y, i;
+    for (i = 0; i < (2 * pi); i += 0.001) {
 
-    // iterate y up to 2*pi, i.e., 360 degree
-
-    // with small increment in angle as
-
-    // glVertex2i just draws a point on specified co-ordinate
-
-    for ( i = 0; i < (2 * pi); i += 0.001)
-
-    {
-
-        // let 200 is radius of circle and as,
-
-        // circle is defined as x=r*cos(i) and y=r*sin(i)
-
-        x = s * 50 * cos(i);
-
-        y = s * 50 * sin(i);
-
-
-
+        x = 50 * cos(i) + 10;
+        y = 50 * sin(i) + 20;
         glVertex2i(x, y);
 
-    }
-
-    for ( i = 0; i < (2 * pi); i += 0.001)
-
-    {
-
-        // let 200 is radius of circle and as,
-
-        // circle is defined as x=r*cos(i) and y=r*sin(i)
-
-        x = s * 50 * cos(i)+ (50 * s);
-
-        y = s * 50 * sin(i);
-
-
-
-        glVertex2i(x, y);
-
-    }
-
-
-    for(i = 0; i < s * l * 300; i += 0.001) {
-        x = i;
-        y = s * 50;
-        glVertex2i(x, y);
-    }
-
-    for(i = 0; i < s * l * 300; i += 0.001) {
-        x = i;
-        y = s * 100;
-        glVertex2i(x, y);
-    }
-
-    for(i = 0; i < s * 50; i += 0.001) {
-        x = 0;
-        y = i + (s * 50);
-        glVertex2i(x, y);
-    }
-
-    for ( i = 0; i < (2 * pi); i += 0.001)
-
-    {
-
-        // let 200 is radius of circle and as,
-
-        // circle is defined as x=r*cos(i) and y=r*sin(i)
-
-        x = s * 30 * cos(i)+(s * l * 300);
-
-        y = s * 30 * sin(i) + (s * 75);
-
-
-
-        glVertex2i(x, y);
 
     }
 
 
     glEnd();
-
     glFlush();
 
 }
+
+void add_circle(double x, double y, double r, double* stroke, double thiccness, double* fill) {
+
+    if(fill[0] >= 0.0) {
+
+        glColor3f(fill[0], fill[1], fill[2]);
+        glBegin(GL_TRIANGLE_FAN);
+        for (float i = 0; i < (2 * pi); i += 0.001) {
+            float a = r * cos(i) + x;
+            float b = r * sin(i) + y;
+            glVertex2i(a, b);
+        }
+        glEnd();
+
+    }
+
+    if(stroke[0] >= 0.0) {
+
+        glColor3f(stroke[0], stroke[1], stroke[2]);
+        glLineWidth(thiccness);
+        glBegin(GL_LINE_LOOP);
+        for (float i = 0; i < (2 * pi); i += 0.1) {
+            float a = r * cos(i) + x;
+            float b = r * sin(i) + y;
+            glVertex2i(a, b);
+        }
+        glEnd();
+
+    }
+
+
+
+    // //filled circle
+    // float x1,y1,x2,y2;
+    // float angle;
+    //
+    // x1 = 0.5,y1=0.6;
+    // glColor3f(1.0,1.0,0.6);
+    //
+    // glBegin(GL_TRIANGLE_FAN);
+    // glVertex2f(x1,y1);
+    //
+    // for(angle = 1.0f; angle < 361.0f; angle += 0.2) {
+    //     x2 = x1+sin(angle) * r;
+    //     y2 = y1+cos(angle) * r;
+    //     glVertex2f(x2,y2);
+    // }
+    //
+    // glEnd();
+
+}
+
+void add_square(double x, double y, double s, double* stroke, double thiccness, double* fill) {
+
+    if(fill[0] >= 0.0) {
+
+        glColor3f(fill[0], fill[1], fill[2]);
+        glBegin(GL_QUADS);
+            glVertex2f(x-(s/2.0), y-(s/2.0));
+        	glVertex2f(x-(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y-(s/2.0));
+        glEnd();
+
+    }
+
+    if(stroke[0] >= 0.0) {
+
+        glColor3f(stroke[0], stroke[1], stroke[2]);
+        glLineWidth(thiccness);
+        glBegin(GL_LINE_LOOP);
+            glVertex2f(x-(s/2.0), y-(s/2.0));
+        	glVertex2f(x-(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y-(s/2.0));
+        glEnd();
+
+    }
+
+}
+
+
+void add_rectangle(double x, double y, double s, double* stroke, double thiccness, double* fill) {
+
+    if(fill[0] >= 0.0) {
+
+        glColor3f(fill[0], fill[1], fill[2]);
+        glBegin(GL_QUADS);
+            glVertex2f(x-(s/2.0), y-(s/2.0));
+        	glVertex2f(x-(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y-(s/2.0));
+        glEnd();
+
+    }
+
+    if(stroke[0] >= 0.0) {
+        fprintf(stderr, "sus");
+        glColor3f(stroke[0], stroke[1], stroke[2]);
+        glLineWidth(thiccness);
+        glBegin(GL_LINE_LOOP);
+            glVertex2f(x-(s/2.0), y-(s/2.0));
+        	glVertex2f(x-(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y+(s/2.0));
+            glVertex2f(x+(s/2.0), y-(s/2.0));
+        glEnd();
+
+    }
+
+}
+
+
+void add_canvas(double width, double height, double xOffset, double yOffset) {
+
+    int c = 0;
+    char ** args;
+    double aspect = width / height;
+
+    glutInit(&c, args);
+
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+
+
+    // giving window size in X- and Y- direction
+
+    int w = (int) width;
+    int h = (int) height;
+    int x = (int) xOffset;
+    int y = (int) yOffset;
+
+    glutInitWindowSize(w, h);
+
+    glutInitWindowPosition(x, y);
+
+    glutCreateWindow("Canvas");
+
+    myInit();
+
+    // loop through the list of objects and call the add_object functions
+    // for shape in shapes:
+
+    double stroke[] = {1.0, 0.5, 0.0};
+    double fill[] = {0.0, 1.0, 0.0};
+
+    glClearColor(0.0, 0.0, 0.0, 0.0);         // black background
+    glMatrixMode(GL_PROJECTION);              // setup viewing projection
+    glLoadIdentity();                           // start with identity matrix
+    glOrtho(0.0, w, 0.0, h, 0.0, 1.0);   // setup a 10x10x2 viewing world
+
+    add_circle(250, 250, 100, stroke, 2.0, fill);
+    // add_square(20, 20, 300, stroke, 5.0, fill);
+
+    glFlush();
+
+    glutMainLoop();
+
+}
+
+
+
+
+
+
+
+
+
+// void add_circle(double x, double y, double r) {
+//
+//     printf("x: %.2f, y: %.2f, r: %.2f\n", x, y, r);
+//     int c = 0;
+//     char ** args;
+//
+//     glutInit(&c, args);
+//
+//     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+//
+//
+//     // giving window size in X- and Y- direction
+//
+//     glutInitWindowSize(1366, 768);
+//
+//     glutInitWindowPosition(0, 0);
+//
+//
+//
+//     // Giving name to widouble x = 0.0;ndow
+//
+//     glutCreateWindow("Circle Drawing");
+//
+//     myInit();
+//
+//     glBegin(GL_POINTS);
+//     for (float i = 0; i < (2 * pi); i += 0.001) {
+//         float a = r * cos(i) + x;
+//         float b = r * sin(i) + y;
+//         glVertex2i(a, b);
+//     }
+//
+//
+//     glEnd();
+//     glFlush();
+//
+//     glutMainLoop();
+//
+// }
+
+
+// void printbig(float c)
+// {
+//   int index = 0;
+//   int col, data;
+//   if (c >= '0' && c <= '9') index = 8 + (c - '0') * 8;
+//   else if (c >= 'A' && c <= 'Z') index = 88 + (c - 'A') * 8;
+//   do {
+//     data = font[index++];
+//     for (col = 0 ; col < 8 ; data <<= 1, col++) {
+//       char d = data & 0x80 ? 'X' : ' ';
+//       putchar(d); putchar(d);
+//     }
+//     putchar('\n');
+//   } while (index & 0x7);
+// }
 
 void keyPressed (unsigned char key, int x, int y) {
     if(key == 'g') {
@@ -227,13 +313,9 @@ void keyPressed (unsigned char key, int x, int y) {
     }
 }
 
-
-
 void demo ()
 
 {
-
-    fprintf(stderr, "hello");
 
     int c = 0;
     char ** args;
@@ -260,7 +342,7 @@ void demo ()
 
     glutKeyboardFunc(keyPressed);
 
-    glutDisplayFunc(display);
+    //glutDisplayFunc(display);
 
     glutMainLoop();
     //

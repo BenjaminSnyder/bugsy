@@ -1,0 +1,22 @@
+num main() {
+    num a;
+    num b;
+
+    a = 0;
+    b = 0;
+    num c;
+    c = 500;
+    print(a);
+    print(b);
+    print(c);
+    num d;
+    num e;
+    num f;
+    d = 500;
+    e = b * 2;
+    f = c * 2;
+
+    add_canvas(c, d, a, b);
+
+    return 0.0;
+}

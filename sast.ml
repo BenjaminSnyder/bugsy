@@ -2,8 +2,8 @@ open Ast
 
 type sexpr = typ * sx
 and sx =
-    SLiteral of int
-  | SNumLit of string
+    SNumLit of string
+  | SIntLiteral of int
   | SBoolLit of bool
   | SId of string
   | SBinop of sexpr * op * sexpr
@@ -11,6 +11,7 @@ and sx =
   | SAssign of string * sexpr
   | SCall of string * sexpr list
   | SStrLit of string
+  | SArrayLiteral of sexpr list * typ
   | SNoexpr
 
 type sstmt =
@@ -32,7 +33,7 @@ type sfunc_decl = {
     sfname : string;
     sformals : bind list;
     slocals : bind list;
-    sbody : sstmt list;
+    sfbody : sstmt list;
   }
 
 type scdecl = {
@@ -48,10 +49,10 @@ type sprogram = bind list * sfunc_decl list * scdecl list
 
 let rec string_of_sexpr (t, e) =
   "(" ^ string_of_typ t ^ " : " ^ (match e with
-    SLiteral(l) -> string_of_int l
-  | SBoolLit(true) -> "true"
+    SBoolLit(true) -> "true"
   | SBoolLit(false) -> "false"
   | SNumLit(l) -> l
+  | SIntLiteral(l) -> string_of_int l
   | SStrLit(l) -> l
   | SId(s) -> s
   | SBinop(e1, o, e2) ->
@@ -60,8 +61,66 @@ let rec string_of_sexpr (t, e) =
   | SAssign(v, e) -> v ^ " = " ^ string_of_sexpr e
   | SCall(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
+  | SArrayLiteral(el, t) -> string_of_typ t ^ "[" ^ String.concat ", " (List.map (fun e -> string_of_sexpr e) el) ^ "]"
+
   | SNoexpr -> ""
 				  ) ^ ")"
+  
+let rec add_slevel (listy, level) = match listy with
+  [] -> []
+  | hd::li' -> (hd,level):: add_slevel (li', level)
+
+let rec string_of_sstmt (stmt,level) = match stmt with
+    SBlock(stmts) ->
+      "{\n" ^ String.concat "" (List.map string_of_sstmt (add_slevel (stmts, (level+1)))) ^ "}\n"
+  | SExpr(expr) -> (String.make level '\t') ^
+string_of_sexpr expr ^ ";\n";
+  | SReturn(expr) -> (String.make level '\t') ^
+"return " ^ string_of_sexpr expr ^ ";\n";
+  | SIf(e, s, SBlock([])) -> (String.make level '\t') ^
+"if (" ^ string_of_sexpr e ^ ")" ^ string_of_sstmt (s, (level+1))
+  | SIf(e, s1, s2) ->  (String.make level '\t') ^
+"if (" ^ string_of_sexpr e ^ ")" ^
+      string_of_sstmt (s1, (level+1)) ^ "else" ^ string_of_sstmt (s2, (level+1))
+  | SFor(e1, e2, e3, s) ->
+      (String.make level '\t') ^
+"for (" ^ string_of_sexpr e1  ^ " ; " ^ string_of_sexpr e2 ^ " ; " ^
+      string_of_sexpr e3  ^ ") " ^ string_of_sstmt (s, (level+1))
+  | SWhile(e, s) -> (String.make level '\t') ^
+"while (" ^ string_of_sexpr e ^ ") " ^ string_of_sstmt (s, (level+1))
+
+let string_of_svdecl (t, id, level) = string_of_typ t ^ " " ^ id ^ ";\n"
+
+let rec add_stplevel (listy, level) = match listy with
+  [] -> []
+  | hd::li' -> (fst hd, snd hd, level):: add_stplevel (li', level)
+
+let string_of_sconst_decl const_decl =
+  "constructor(" ^ String.concat ", " (List.map snd const_decl.sctformals) ^
+  ") {\n\t" ^
+  String.concat "\t" (List.map string_of_svdecl (add_stplevel (const_decl.sctlocals, 1))) ^ "\t" ^
+  String.concat "\t" (List.map string_of_sstmt (add_slevel (const_decl.sctbody, 1))) ^ "\t" ^
+  "}\n"
+
+let string_of_sfdecl (fdecl, level) =
+  string_of_typ fdecl.styp ^ " " ^
+  fdecl.sfname ^ "(" ^ String.concat ", " (List.map snd fdecl.sformals) ^
+  ") {\n" ^ "\t" ^
+  String.concat "\t" (List.map string_of_svdecl (add_stplevel (fdecl.slocals, level+1))) ^
+  String.concat "\t" (List.map string_of_sstmt (add_slevel (fdecl.sfbody, (level+1)))) ^ (String.make level '\t') ^
+  "}\n"
+
+let string_of_scdecl (cdecl, level) =
+  "class " ^ cdecl.scname ^ " {" ^ "\n" ^ "\t" ^
+  String.concat "\t" (List.map string_of_svdecl (add_stplevel (cdecl.scdvars,level+1))) ^ "\t" ^
+  String.concat "\t" (List.map string_of_sconst_decl cdecl.scdconst) ^ "\t" ^
+  String.concat "\t" (List.map string_of_sfdecl (add_slevel (cdecl.scdfuncs, (level+1)))) ^ (String.make level '\t') ^
+  "}\n"
+
+let string_of_sprogram (svars, sfuncs, sclasses) =
+  String.concat "" (List.map string_of_svdecl (add_stplevel (svars,0))) ^ "\n" ^
+  String.concat "" (List.map string_of_scdecl (add_slevel (sclasses, 0))) ^ "\n" ^
+  String.concat "\n" (List.map string_of_sfdecl (add_slevel (sfuncs, 0)))
 
 let rec string_of_sstmt = function
     SBlock(stmts) ->
@@ -77,30 +136,3 @@ let rec string_of_sstmt = function
       string_of_sexpr e3  ^ ") " ^ string_of_sstmt s
   | SWhile(e, s) -> "while (" ^ string_of_sexpr e ^ ") " ^ string_of_sstmt s
 
-
-  let string_of_sconst_decl const_decl =
-    "constructor(" ^ String.concat ", " (List.map snd const_decl.sctformals) ^
-    ")\n{\n" ^
-    String.concat "" (List.map string_of_vdecl const_decl.sctlocals) ^
-    String.concat "" (List.map string_of_sstmt const_decl.sctbody) ^
-    "}\n"
-
-let string_of_sfdecl fdecl =
-  string_of_typ fdecl.styp ^ " " ^
-  fdecl.sfname ^ "(" ^ String.concat ", " (List.map snd fdecl.sformals) ^
-  ")\n{\n" ^
-  String.concat "" (List.map string_of_vdecl fdecl.slocals) ^
-  String.concat "" (List.map string_of_sstmt fdecl.sbody) ^
-  "}\n"
-
-  let string_of_scdecl cdecl =
-    cdecl.scname ^ "{" ^
-    String.concat "" (List.map string_of_vdecl cdecl.scdvars) ^
-    String.concat "" (List.map string_of_sconst_decl cdecl.scdconst) ^
-    String.concat "" (List.map string_of_sfdecl cdecl.scdfuncs) ^
-    "}\n"
-
-let string_of_sprogram (vars, funcs, _classes) =
-  String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
-  String.concat "" (List.map string_of_scdecl _classes) ^ "\n" ^
-  String.concat "\n" (List.map string_of_sfdecl funcs)
