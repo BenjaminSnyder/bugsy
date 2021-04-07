@@ -1,7 +1,8 @@
 num main() {
 
-   num[2] x;
-   x = [1.1, 1.2]; 
+    num x;
+    x = 10;
+    
 
     return 0;
 }

@@ -142,8 +142,11 @@ let check (globals, functions, classes) =
 
     (* Return a semantically-checked expression, i.e., with a type *)
     let rec expr = function
-        NumLit l   -> (Num, SNumLit l)
-           | ArrayLit l -> (Array (Num, IntLiteral(List.length l)), SArrayLiteral(List.map expr l, Array(Num, IntLiteral(List.length l))))
+            NumLit l   -> (Num, SNumLit l)
+           | ArrayLit l ->
+                          
+        let test = string_of_int (List.length l) in
+                           (Array (Num, NumLit(test)), SArrayLiteral(List.map expr l, Array(Num, IntLiteral(List.length l))))
 
       | IntLiteral l -> (Num, SIntLiteral l)
       | BoolLit l  -> (Bool, SBoolLit l)

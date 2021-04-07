@@ -29,7 +29,7 @@ type sconstruct_decl = {
   }
 
 type sfunc_decl = {
-    styp : typ;
+    mutable styp : typ;
     sfname : string;
     sformals : bind list;
     slocals : bind list;

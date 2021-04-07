@@ -1,0 +1,15 @@
+num m;
+num n;
+
+num add(num x, num y){
+return x + y;
+
+}
+
+num main(){
+m = 17.0;
+n = 25.0;
+print(add(m,n));
+return 0;
+
+}

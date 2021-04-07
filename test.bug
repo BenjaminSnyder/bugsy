@@ -11,7 +11,7 @@ num main() {
     z = x + y;
   /*  printf(z); */
   /*  printf(y); */
-    return 24.9;
+    return 0;
 }
 
 
