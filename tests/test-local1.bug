@@ -6,7 +6,7 @@ void foo(bool i)
   print(i + i);
 }
 
-int num()
+num main()
 {
   foo(true);
   return 0;

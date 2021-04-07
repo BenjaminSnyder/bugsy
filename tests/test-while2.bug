@@ -1,4 +1,4 @@
-num foo(int a)
+num foo(num a)
 {
   num j;
   j = 0;
