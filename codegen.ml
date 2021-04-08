@@ -44,7 +44,8 @@ let translate (globals, camFunctions, classes) =
   L.struct_set_body objectref_type [|i32_t; objectptr_type|] false;
 
   let convert_int = function
-          i -> 4
+      A.IntLiteral(i) -> i |
+      A.NumLit(i) -> int_of_string i
   in
 
   (* Return the LLVM type for a Bugsy type *)
@@ -55,6 +56,7 @@ let translate (globals, camFunctions, classes) =
     | A.String -> string_t
     | A.Int -> i32_t
     | A.Array(typ, size) -> (match typ with
+
           A.Num -> array_t float_t (convert_int size))
 
   in
