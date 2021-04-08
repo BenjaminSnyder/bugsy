@@ -99,29 +99,32 @@ Check() {
     error=0
     basename=`echo $1 | sed 's/.*\\///
                              s/.bug//'`
-    reffile=`echo $1 | sed 's/.bug$//'`
-    basedir="`echo $1 | sed 's/\/[^\/]*$//'`/."
+    reffile=`echo $1 | sed 's/.bug$//' | sed 's/test\/tests//'`
+    basedir="`echo $1 | sed 's/\/[^\/]*$//'`../golden_set"
 
     echo -n "$basename..."
 
     echo 1>&2
     echo "###### Testing $basename" 1>&2
-
+    
+    if [ ! -d tmp ]; then 
+        mkdir tmp
+    fi
     generatedfiles=""
 
-    generatedfiles="$generatedfiles ${basename}.ll ${basename}.s ${basename}.exe ${basename}.out" &&
-    Run "$BUGSY" "$1" ">" "${basename}.ll" &&
-    Run "$LLC" "-relocation-model=pic" "${basename}.ll" ">" "${basename}.s" &&
+    generatedfiles="$generatedfiles tmp/${basename}.ll tmp/${basename}.s tmp/${basename}.exe tmp/${basename}.out" &&
+    Run "$BUGSY" "$1" ">" "tmp/${basename}.ll" &&
+    Run "$LLC" "-relocation-model=pic" "tmp/${basename}.ll" ">" "tmp/${basename}.s" &&
     #Run "$CC" "-o" "${basename}.exe" "${basename}.s" "printbig.o" &&
-    Run "$CC" "${basename}.s" "-o" "${basename}.exe" &&
-    Run "./${basename}.exe" > "${basename}.out" &&
-    Compare ${basename}.out ${reffile}.out ${basename}.diff
+    Run "$CC" "tmp/${basename}.s" "-o" "tmp/${basename}.exe" &&
+    Run "./tmp/${basename}.exe" > "tmp/${basename}.out" &&
+    Compare "test/golden_set/${basename}.out" "tmp/${reffile}.out" "tmp/${basename}.diff"
 
     # Report the status and clean up the generated files
     if [ $error -eq 0 ] ; then
-	if [ $keep -eq 0 ] ; then
-	    rm -f $generatedfiles
-	fi
+	    if [ $keep -eq 0 ] ; then
+	      rm -f $generatedfiles
+      fi
 	#echo "OK"
     echo $(green "OK")
     #echo "Hi"
@@ -187,19 +190,19 @@ LLIFail() {
 
 which "$LLI" >> $globallog || LLIFail
 
-# if [ ! -f printbig.o ]
-# then
-#     echo "Could not find printbig.o"
-#     echo "Try \"make printbig.o\""
-#     exit 1
-# fi
+if [ ! -f _build/builtins.o ]
+then
+    echo "Could not find builtins.o"
+    echo "Have you run \"make\"?"
+    exit 1
+fi
 
 if [ $# -ge 1 ]
 then
     files=$@
 else
     #files="tests/test-*.bug tests/fail-*.bug"
-    files="tests/test-*.bug"
+    files="test/tests/test-*.bug"
 fi
 
 for file in $files

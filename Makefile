@@ -9,11 +9,11 @@ all : clean bugsy.native builtins.o
 
 .PHONY: bugsy.native
 bugsy.native :
-	ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,+a-4 \
+	ocamlbuild -I src -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,+a-4 \
 		bugsy.native
 
 builtins.o:
-	gcc builtins.c -c -o builtins.o
+	gcc src/builtins.c -c -o _build/builtins.o
 
 # "make clean" removes all generated files
 
@@ -21,22 +21,22 @@ builtins.o:
 clean :
 	ocamlbuild -clean
 	rm -rf testall.log *.diff bugsy scanner.ml parser.ml parser.mli
-	rm -rf printbig
+	rm -rf builtins.o
 	rm -rf *.cmx *.cmi *.cmo *.cmx *.o *.s *.ll *.out *.exe
-	rm -rf _build
+	rm -rf _build tmp
 
 # More detailed: build using ocamlc/ocamlopt + ocamlfind to locate LLVM
 
 OBJS = ast.cmx codegen.cmx parser.cmx scanner.cmx semant.cmx bugsy.cmx
 
-bugsy : $(OBJS)
-	ocamlfind ocamlopt -linkpkg -package llvm -package llvm.analysis $(OBJS) -o bugsy
+bugsy : $(src/OBJS)
+	ocamlfind ocamlopt -linkpkg -package llvm -package llvm.analysis $(src/OBJS) -o bugsy
 
 scanner.ml : scanner.mll
-	ocamllex scanner.mll
+	ocamllex src/scanner.mll
 
 parser.ml parser.mli : parser.mly
-	ocamlyacc parser.mly
+	ocamlyacc src/parser.mly
 
 %.cmo : %.ml
 	ocamlc -c $<
@@ -64,29 +64,25 @@ parser.cmi : ast.cmo
 
 # Building the tarball
 
-TESTS = hello add beans bool
+#TESTS = hello add beans bool
 
-#TESTS = add1 arith1 arith2 arith3 fib for1 for2 func1 func2 func3	\
+TESTS = add1 arith1 arith2 arith3 fib for1 for2 func1 func2 func3	\
     func4 func5 func6 func7 func8 gcd2 gcd global1 global2 global3	\
     hello if1 if2 if3 if4 if5 local1 local2 ops1 ops2 var1 var2		\
-    while1 while2 printbig
+    while1 while2
 
 #FAILS = assign1 assign2 assign3 dead1 dead2 expr1 expr2 for1 for2	\
     for3 for4 for5 func1 func2 func3 func4 func5 func6 func7 func8	\
     func9 global1 global2 if1 if2 if3 nomain return1 return2 while1	\
     while2
 
-#TESTFILES = $(TESTS:%=test-%.mc) $(TESTS:%=test-%.out) \
-	    $(FAILS:%=fail-%.mc) $(FAILS:%=fail-%.err)
+TESTFILES = $(TESTS:%=tests/test-%.bug) $(TESTS:%=golden_set/test-%.out) \
+	    $(FAILS:%=fails/fail-%.bug) $(FAILS:%=fails/fail-%.err)
 
-#TARFILES = ast.ml codegen.ml Makefile bugsy.ml parser.mly README scanner.mll \
-	semant.ml testall.sh $(TESTFILES:%=tests/%) printbig.c arcade-font.pbm \
-	font2c
-
-TARFILES = ast.ml codegen.ml sast.ml Makefile bugsy.ml parser.mly README scanner.mll \
-					 semant.ml test_hello.sh $(TESTS:%=hello_tests/%.bug) demo.bug builtins.c arcade-font.pbm \
-	font2c
+TARFILES = src/ast.ml src/codegen.ml Makefile src/bugsy.ml src/parser.mly\
+					 README src/scanner.mll src/sast.ml src/semant.ml scripts/testall.sh\
+					 $(TESTFILES:%=test%) src/builtins.c arcade-font.pbm font2c
 
 bugsy-llvm.tar.gz : $(TARFILES)
-	cd .. && tar czf bugsy/bugsy-llvm.tar.gz \
+	cd .. && tar czf bugsy.tar.gz \
 		$(TARFILES:%=bugsy/%)
