@@ -1,15 +1,10 @@
-class Dog {
-    num y;
-    num z;
-    
-    
-    num five() {
-        return 5.0;
-    }
-}
-
-num main()
+num m;
+num n;
+num add(num x, num y)
 {
-    Dog.five();
-    return 0.0;
+    return x + y;
 }
+num main() { m = 17.0; n = 25.0;
+    print( add(m, n) );
+    return 0;
+} 
