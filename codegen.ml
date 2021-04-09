@@ -57,7 +57,9 @@ let translate (globals, camFunctions, classes) =
     | A.Int -> i32_t
     | A.Array(typ, size) -> (match typ with
 
-          A.Num -> array_t float_t (convert_int size))
+          A.Num -> array_t float_t (convert_int size)
+    | _ -> raise(Failure("sus mans"))
+    )
 
   in
 
@@ -189,10 +191,12 @@ let translate (globals, camFunctions, classes) =
 
     (* Construct code for an expression; return its value *)
     let rec expr builder ((_, e) : sexpr) = match e with
-        SStrLit s -> L.build_global_stringptr s "str" builder
+         SIntLiteral i -> L.const_int i32_t i
+      |  SStrLit s -> L.build_global_stringptr s "str" builder
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SNumLit nl -> L.const_float_of_string float_t nl
       | SNoexpr     -> L.const_int i32_t 0
+      | SArrayAccess(a, e, _) -> L.build_load (L.build_gep (lookup a) [| L.const_int i32_t 0; L.const_int i32_t 0; |] a builder) a builder
       | SId s       -> L.build_load (lookup s) s builder
       | SArrayLiteral (l, t) -> L.const_array (ltype_of_typ t) (Array.of_list (List.map (expr builder) l))
       | SAssign (s, e) -> let e' = expr builder e in
@@ -285,6 +289,9 @@ let translate (globals, camFunctions, classes) =
                         A.Void -> ""
                       | _ -> f ^ "_result") in
          L.build_call fdef (Array.of_list llargs) result builder
+    and 
+    get_address a el builder = begin (*print_endline(L.string_of_llvalue(lookup a)); *) L.build_gep (lookup a) end
+    [| (L.const_float float_t 0.0); (expr builder el) |] a builder 
     in
 
     (* LLVM insists each basic block end with exactly one "terminator"
