@@ -61,6 +61,7 @@ rule token = parse
 (* Classes *)
 | "class"  { CLASS  }
 | "constructor" { CONSTRUCTOR }
+| "new"  { NEW }
 
 (* Errors *)
 | "try"    { TRY    }

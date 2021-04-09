@@ -7,7 +7,7 @@ let snd' (_,sn,_)=sn
 let trd  (_,_,tr)=tr
 %}
 
-%token CONSTRUCTOR CLASS NULL
+%token CONSTRUCTOR CLASS NULL NEW
 %token CONTINUE BREAK TRY CATCH RAISE
 %token LPAREN RPAREN LBRACE RBRACE LSQBRACKET RSQBRACKET
 %token COLON SEMI COMMA QMARK DOT
@@ -151,6 +151,7 @@ expr:
   | bool_expr        { $1 }
   | arithmetic       { $1 }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
+  | ID ASSIGN NEW ID LPAREN actuals_opt RPAREN { Assign($1, Construct($4, $6) ) } /* Dog d = new Dog(5,3); */
   | ID ASSIGN expr   { Assign($1, $3) }
   | ID LSQBRACKET expr RSQBRACKET ASSIGN expr   { ArrayAssign($1, $3, $6) }
   | ID LSQBRACKET expr RSQBRACKET               { ArrayAccess($1, $3) }

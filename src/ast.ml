@@ -20,6 +20,7 @@ type expr =
   | Binop of expr * op * expr
   | Unop of uop * expr
   | Assign of string * expr
+  | Construct of string * expr list
   | ArrayAssign of string * expr * expr
   | ArrayAccess of string * expr
   | Crementop of expr * op
@@ -110,6 +111,7 @@ let rec string_of_expr = function
     | _ -> "ERROR")
 
   | Assign(v, e) -> v ^ " = " ^ string_of_expr e
+  | Construct(a, e) -> " new " ^ a ^ "(" ^ String.concat ", " (List.map string_of_expr e) ^ ")"
   | ArrayAccess(a, e) -> a ^ "[" ^ string_of_expr e ^ "]"
   | ArrayAssign(a, e1, e2) -> a ^ "[" ^ string_of_expr e1 ^ "] = " ^ string_of_expr e2
   | Call(f, el) ->
