@@ -167,7 +167,7 @@ let string_of_fdecl (fdecl, level) =
   fdecl.fname ^ "(" ^ String.concat ", " (List.map snd fdecl.formals) ^
   ") {\n" ^ (String.make (level) '\t') ^
   String.concat (String.make level '\t') (List.map string_of_vdecl fdecl.locals) ^ (String.make level '\t') ^
-  String.concat (String.make level '\t') (List.map string_of_stmt (add_level (fdecl.fbody, (level+1)))) ^ (String.make (level-1) '\t') ^
+  String.concat (String.make level '\t') (List.map string_of_stmt (add_level (fdecl.fbody, (level+1)))) ^ (String.make (if level-1 < 0 then 0 else level-1) '\t') ^
   "}\n"
 
 let string_of_cdecl (cdecl, level) =
@@ -180,5 +180,5 @@ let string_of_cdecl (cdecl, level) =
 let string_of_program (vars, funcs, classes) =
   String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
   String.concat "" (List.map string_of_cdecl (add_level (classes, 1))) ^ "\n" ^
-  String.concat "\n" (List.map string_of_fdecl (add_level (funcs, 0)))
+  String.concat "\n" (List.map string_of_fdecl (add_level (funcs, 1)))
 

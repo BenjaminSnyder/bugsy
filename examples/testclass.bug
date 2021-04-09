@@ -1,36 +1,38 @@
 class test{
 
-num foo(){
+	num foo(){
+		num x;
+		num y;
+		num f;
+		num g;
+		num[5] h;
+		x=0.0;
+		y=1.0;
+		f=4.2;
+		h = [5.3, 3.2, 2.3, 6.6];
+		if(true){
+			x=5.0;
+			print(x);
+		}
+		if(false){
+			x+y;
+			return h[2];
+		}
+		else{
+			y-x;
+			return f;
+		}
+		return x;
+	}
+
+	constructor(num y){
+		num a;
+		a = y;
+		return a;
+	} //end constructor
+} //end class
+
+num main(){
 	num x;
-	num y;
-	num f;
-	num g;
-	num[5] h;
-	x=0.0;
-	y=1.0;
-	f=4.2;
-	h = [5.3, 3.2, 2.3, 6.6];
-	if(true){
-		x=5.0;
-		print(x);
-	}
-	if(false){
-		x+y;
-		return h[2];
-	}
-	else{
-		y-x;
-		return f;
-	}
-	return x;
-}
-
-constructor(num y){
-  num a;
-	a = y;
-	return a;
-}
-
-num z;
-
+	return 0;
 }
