@@ -5,9 +5,26 @@ open Ast
 let fst' (fs,_,_)=fs
 let snd' (_,sn,_)=sn
 let trd  (_,_,tr)=tr
+
+let parse_error s =
+
+begin
+  try
+  let start_pos = Parsing.symbol_start_pos ()
+  and end_pos = Parsing.symbol_end_pos () in
+    Printf.printf "File \"%s\", line %d, characters %d-%d: \n"
+    start_pos.pos_fname
+    start_pos.pos_lnum
+    (start_pos.pos_cnum - start_pos.pos_bol)
+    (end_pos.pos_cnum - start_pos.pos_bol)
+    with Invalid_argument(_) -> ()
+end;
+
+  Printf.printf "Syntax error: %s\n" s;
+  raise Parsing.Parse_error
 %}
 
-%token CONSTRUCTOR CLASS NULL NEW
+%token CONSTRUCTOR CLASS NEW
 %token CONTINUE BREAK TRY CATCH RAISE
 %token LPAREN RPAREN LBRACE RBRACE LSQBRACKET RSQBRACKET
 %token COLON SEMI COMMA QMARK DOT
@@ -16,7 +33,7 @@ let trd  (_,_,tr)=tr
 %token PLUSEQ MINUSEQ MULTEQ DIVEQ
 %token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR NOT
 %token RETURN IF ELIF ELSE FOR WHILE
-%token BOOL VOID STRING CHAR NUM
+%token BOOL VOID STRING CHAR NUM NULL
 %token POINT SHAPE SQUARE RECT CIRCLE ELLIPSE TRIANGLE
 %token POLYGON REGAGON CANVAS LINE SPLINE
 %token <bool> BLIT
@@ -98,13 +115,17 @@ formal_list:
   | formal_list COMMA typ ID { ($3,$4) :: $1 }
 
 typ:
-    NUM { Num  }
-  | BOOL { Bool }
-  | VOID { Void }
-  | STRING { String }
-  | shape { $1 }
+    NUM     { Num  }
+  | BOOL    { Bool }
+  | VOID    { Void }
+  | STRING  { String }
+  | shape   { $1 }
   | array_t { $1 }
-  | ID { $1 }
+  | ID { Object({
+                className = $1;
+                instanceVars = StringMap.empty;
+              })
+            }
 
 shape:
     POINT      { Pt       }
@@ -152,7 +173,7 @@ expr:
   | bool_expr        { $1 }
   | arithmetic       { $1 }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
-  | ID ASSIGN NEW ID LPAREN actuals_opt RPAREN { Assign($1, Construct($4, $6) ) } /* Dog d = new Dog(5,3); */
+  | NEW ID LPAREN actuals_opt RPAREN { Construct($2, $4) }
   | ID ASSIGN expr   { Assign($1, $3) }
   | ID LSQBRACKET expr RSQBRACKET ASSIGN expr   { ArrayAssign($1, $3, $6) }
   | ID LSQBRACKET expr RSQBRACKET               { ArrayAccess($1, $3) }

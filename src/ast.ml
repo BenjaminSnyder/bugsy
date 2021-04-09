@@ -1,4 +1,5 @@
 (* Abstract Syntax Tree and functions for printing it *)
+module StringMap = Map.Make(String)
 
 type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
           And | Or  | Mod | Pluseq | Mineq | Multeq | Diveq |
@@ -33,7 +34,7 @@ type typ = Num | Bool | Void | Int |  String | Pt | Shape | Square | Rect |
 
 and classTyp = {
   className : string;
-  instanceVars : (typ * expr Option) stringMap.t;
+  instanceVars : (typ * expr option) StringMap.t;
 }
 
 type bind = typ * string
@@ -158,6 +159,7 @@ let rec string_of_typ = function
   | Line -> "line"
   | Spline -> "spline"
   | Array(t, e) -> string_of_typ t ^ "[" ^ string_of_expr e ^ "]"
+  | Object(clas) -> clas.className
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 
