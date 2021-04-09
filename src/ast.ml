@@ -29,12 +29,18 @@ type expr =
 
 type typ = Num | Bool | Void | Int |  String | Pt | Shape | Square | Rect |
            Triangle | Circle | Ellipse | Regagon | Polygon |
-           Canvas | Line | Spline | Array of typ * expr
+           Canvas | Line | Spline | Array of typ * expr | Object of classTyp
+
+and classTyp = {
+  className : string;
+  instanceVars : (typ * expr Option) stringMap.t;
+}
 
 type bind = typ * string
 
 type stmt =
     Block of stmt list
+  | Vdecl of string * string
   | Expr of expr
   | Return of expr
   | If of expr * stmt * stmt

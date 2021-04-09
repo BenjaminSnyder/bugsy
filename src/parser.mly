@@ -104,6 +104,7 @@ typ:
   | STRING { String }
   | shape { $1 }
   | array_t { $1 }
+  | ID { $1 }
 
 shape:
     POINT      { Pt       }

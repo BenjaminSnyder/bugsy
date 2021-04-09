@@ -4,7 +4,7 @@ num n;
 num add(num x, num y)
 {
   return x + y;
-} 
+}
 
 num main(){
 m = 17.0;
