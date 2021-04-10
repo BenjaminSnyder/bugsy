@@ -7,11 +7,114 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #define pi 3.142857
 
 float s = 1;
-
+int count = 0;
 float l = 0.5;
+
+// struct shape {
+//     int circle;
+//     int ellipse;
+//     int square;
+//     int rectangle;
+//     int triangle;
+//     int polygon;
+//     int regagon;
+// } shape;
+
+// struct circle {
+//     char shape[20];
+//     double x;
+//     double y;
+//     double r;
+//     char* stroke;
+//     double thiccness;
+//     char* fill;
+// } circle;
+//
+// struct ellipse {
+//     char shape[20];
+//     double x;
+//     double y;
+//     double w;
+//     double h;
+//     char* stroke;
+//     double thiccness;
+//     char* fill;
+// } ellipse;
+//
+// struct square {
+//     char shape[20];
+//     double x;
+//     double y;
+//     double s;
+//     char* stroke;
+//     double thiccness;
+//     char* fill;
+// } square;
+//
+// struct rectangle {
+//     char shape[20];
+//     double x;
+//     double y;
+//     double w;
+//     double h;
+//     char* stroke;
+//     double thiccness;
+//     char* fill;
+// } rectangle;
+//
+// struct polygon {
+//     char shape[20];
+//     int num_points;
+//     double points[][2];
+//     char* stroke;
+//     double thiccness;
+//     char* fill;
+// } polygon;
+//
+// struct triangle {
+//     char shape[20];
+//     double x;
+//     double y;
+//     double b;
+//     double h;
+//     char* stroke;
+//     double thiccness;
+//     char* fill;
+// } triangle;
+//
+// struct regagon {
+//     char shape[20];
+//     double x;
+//     double y;
+//     double n;
+//     double r;
+//     char* stroke;
+//     double thiccness;
+//     char* fill;
+// } regagon;
+
+struct Shape {
+    char shape[20];
+    char shapeId[100];
+    double x;
+    double y;
+    double n;
+    double r;
+    double w;
+    double h;
+    double b;
+    int num_points;
+    char stroke[20];
+    double thiccness;
+    char fill[20];
+    double points[10][2];
+} Shape;
+
+struct Shape* shapes;
 
 void myInit ()
 
@@ -60,9 +163,7 @@ void disp() {
         y = 50 * sin(i) + 20;
         glVertex2i(x, y);
 
-
     }
-
 
     glEnd();
     glFlush();
@@ -90,7 +191,69 @@ double* str_to_arr(char* str_in) {
 
 }
 
-void add_ellipse(double x, double y, double w, double h,  char* stroke, double thiccness, char* fill) {
+void genId(char *dest, size_t length) {
+    char charset[] = "0123456789"
+                     "abcdefghijklmnopqrstuvwxyz"
+                     "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    while (length-- > 0) {
+        size_t index = (double) rand() / RAND_MAX * (sizeof charset - 1);
+        *dest++ = charset[index];
+    }
+    *dest = '\0';
+}
+
+void add_ellipse(double x, double y, double w, double h,  char* stroke, double thiccness, char* fill, char* id) {
+
+
+
+
+    struct Shape ellipse;
+
+    if(id == NULL) {
+        char* shapeId = malloc(sizeof(char) * 100);
+        size_t len = 100;
+        genId(shapeId, len);
+        strcpy(ellipse.shape, "ellipse");
+        strcpy(ellipse.shapeId, shapeId);
+        ellipse.x = x;
+        ellipse.y = y;
+        ellipse.w = w;
+        ellipse.h = h;
+        strcpy(ellipse.stroke, stroke);
+        ellipse.thiccness = thiccness;
+        strcpy(ellipse.fill, fill);
+
+        struct Shape* front = shapes;
+        shapes += sizeof(struct Shape) * count;
+        *shapes = ellipse;
+        count++;
+        shapes = front;
+    } else {
+
+        for(int i = 0; i < count; i++) {
+            // struct Shape s = *(shapes + sizeof(struct Shape) * i);
+            // struct Shape* start = shapes;
+            struct Shape s = *shapes;
+
+            if(strcmp(s.shapeId, id) == 0) {
+                strcpy(s.shape, "ellipse");
+                strcpy(s.shapeId, id);
+                s.x = x;
+                s.y = y;
+                s.w = w;
+                s.h = h;
+                strcpy(s.stroke, stroke);
+                s.thiccness = thiccness;
+                strcpy(s.fill, fill);
+            }
+            // fprintf(stderr, "%f, %f\n", s.x, shape.x);
+        }
+
+    }
+
+
+    // fprintf(stderr, "%s: %f\n", shapes[0].shapeId, shapes[0].x);
 
     double* stroke_arr = str_to_arr(stroke);
     double* fill_arr = str_to_arr(fill);
@@ -205,6 +368,83 @@ void add_square(double x, double y, double s, char* stroke, double thiccness, ch
 
 }
 
+// void get_rotation(double x, double y, double a, double arr[], double translateX, double translateY) {
+//     x += translateX
+//     y += translateY
+//     arr[0] = x * cos(a) - y * sin(a);
+//     arr[1] = x * sin(a) + y * cos(a);
+//
+// }
+
+void add_triangle(double x, double y, double b, double h, char* stroke, double thiccness, char* fill) {
+
+    double* stroke_arr = str_to_arr(stroke);
+    double* fill_arr = str_to_arr(fill);
+
+    // double arr[2];
+    // get_rotation(x, y, 90, arr);
+    //
+    // x = arr[0];
+    // y = arr[1];
+    //
+    // fprintf(stderr, "%f", x);
+    // fprintf(stderr, "%f\n", y);
+
+    if(fill_arr[0] >= 0.0) {
+
+        glColor3f(fill_arr[0], fill_arr[1], fill_arr[2]);
+        glBegin(GL_TRIANGLES);
+            glVertex2f(x, y+(h/2.0));
+        	glVertex2f(x-(b/2.0), y-(h/2.0));
+            glVertex2f(x+(b/2.0), y-(h/2.0));
+        glEnd();
+
+    }
+
+    if(stroke[0] >= 0.0) {
+
+        glColor3f(stroke_arr[0], stroke_arr[1], stroke_arr[2]);
+        glLineWidth(thiccness);
+        glBegin(GL_LINE_LOOP);
+            glVertex2f(x, y+(h/2.0));
+            glVertex2f(x-(b/2.0), y-(h/2.0));
+            glVertex2f(x+(b/2.0), y-(h/2.0));
+        glEnd();
+
+    }
+
+}
+
+void add_triangle_down(double x, double y, double b, double h, char* stroke, double thiccness, char* fill) {
+
+    double* stroke_arr = str_to_arr(stroke);
+    double* fill_arr = str_to_arr(fill);
+
+
+    if(fill_arr[0] >= 0.0) {
+
+        glColor3f(fill_arr[0], fill_arr[1], fill_arr[2]);
+        glBegin(GL_TRIANGLES);
+        	glVertex2f(x-(b/2.0), y+(h/2.0));
+            glVertex2f(x+(b/2.0), y+(h/2.0));
+            glVertex2f(x, y-(h/2));
+        glEnd();
+
+    }
+
+    if(stroke[0] >= 0.0) {
+
+        glColor3f(stroke_arr[0], stroke_arr[1], stroke_arr[2]);
+        glLineWidth(thiccness);
+        glBegin(GL_LINE_LOOP);
+            glVertex2f(x-(b/2.0), y+(h/2.0));
+            glVertex2f(x+(b/2.0), y+(h/2.0));
+            glVertex2f(x, y-(h/2));
+        glEnd();
+
+    }
+
+}
 
 void add_rectangle(double x, double y, double w, double h, char* stroke, double thiccness, char* fill) {
 
@@ -237,12 +477,135 @@ void add_rectangle(double x, double y, double w, double h, char* stroke, double 
 
 }
 
+void add_line(double x1, double y1, double x2, double y2, char* stroke, double thiccness) {
+
+    double* stroke_arr = str_to_arr(stroke);
+
+    if(stroke_arr[0] >= 0.0) {
+        glColor3f(stroke_arr[0], stroke_arr[1], stroke_arr[2]);
+        glLineWidth(thiccness);
+        glBegin(GL_LINES);
+            glVertex2f(x1, y1);
+            glVertex2f(x2, y2);
+        glEnd();
+
+    }
+
+}
+
+void add_polygon(int num_points, double points[10][2], char* stroke, double thiccness, char* fill) {
+
+    double* stroke_arr = str_to_arr(stroke);
+    double* fill_arr = str_to_arr(fill);
+
+    if(fill_arr[0] >= 0.0) {
+
+        glColor3f(fill_arr[0], fill_arr[1], fill_arr[2]);
+        glBegin(GL_POLYGON);
+            for(int i = 0; i < num_points; i++) {
+                glVertex2f(points[i][0], points[i][1]);
+            }
+        glEnd();
+
+    }
+
+    if(stroke_arr[0] >= 0.0) {
+        glColor3f(stroke_arr[0], stroke_arr[1], stroke_arr[2]);
+        glLineWidth(thiccness);
+        glBegin(GL_LINE_LOOP);
+            for(int i = 0; i < num_points; i++) {
+                glVertex2f(points[i][0], points[i][1]);
+            }
+        glEnd();
+
+    }
+
+}
+
+void add_regagon(double x, double y, int n, double r, char* stroke, double thiccness, char* fill) {
+
+    double* stroke_arr = str_to_arr(stroke);
+    double* fill_arr = str_to_arr(fill);
+
+    double a = 2 / (pi * n);
+
+    if(fill_arr[0] >= 0.0) {
+
+        glColor3f(fill_arr[0], fill_arr[1], fill_arr[2]);
+        glBegin(GL_POLYGON);
+            for(int i = 0; i < n; i++) {
+                double x_i = x + r * cos(2 * pi * i / n);
+                double y_i = y + r * sin(2 * pi * i / n);
+                glVertex2f(x_i, y_i);
+            }
+        glEnd();
+
+    }
+
+    if(stroke_arr[0] >= 0.0) {
+        glColor3f(stroke_arr[0], stroke_arr[1], stroke_arr[2]);
+        glLineWidth(thiccness);
+        glBegin(GL_LINE_LOOP);
+            for(int i = 0; i < n; i++) {
+                double x_i = x + r * cos(2 * pi * i / n);
+                double y_i = y + r * sin(2 * pi * i / n);
+                glVertex2f(x_i, y_i);
+            }
+        glEnd();
+
+    }
+
+}
+
+void moveBy(struct Shape shape, double translateX, double translateY, double speed) {
+
+    double movedX = 0.0;
+    double movedY = 0.0;
+    double incX = 1 * (translateX / abs(translateX));
+    double incY = 1 * (translateY / abs(translateY));
+
+    struct Shape* front = shapes;
+    while(movedX < translateX) {
+        glClear(GL_COLOR_BUFFER_BIT);
+        shapes = front;
+        for(int i = 0; i < 3; i++) {
+            // struct Shape s = *(shapes + sizeof(struct Shape) * i);
+            // struct Shape* start = shapes;
+            struct Shape s = *shapes;
+
+            if(strcmp(s.shapeId, shape.shapeId) != 0) {
+                if(strcmp(s.shapeId, "ellipse") != 0) {
+                    add_ellipse(s.x,
+                                s.y, s.w, s.h,
+                                s.stroke,
+                                s.thiccness, s.fill, s.shapeId);
+                                // fprintf(stderr, "arr num: %d", i);
+                }
+            }
+            // fprintf(stderr, "%f, %f\n", s.x, shape.x);
+            shapes += sizeof(struct Shape);
+        }
+
+        movedX += incX;
+        movedY += incY;
+        fprintf(stderr, "%s: %f, %f, %f, %f\n", shape.shapeId, shape.x + movedX, shape.y + movedX, shape.w, shape.h);
+        // fprintf(stderr, "movedX = %f\n", shape.x + movedX);
+        add_ellipse(shape.x + movedX, shape.y + movedY, shape.w, shape.h,
+                    shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
+
+        glFlush();
+        usleep(100000);
+
+    }
+}
+
 
 void add_canvas(double width, double height, double xOffset, double yOffset) {
 
     int c = 0;
     char ** args;
     double aspect = width / height;
+    shapes = malloc(sizeof(struct Shape) * 100);
 
     glutInit(&c, args);
 
@@ -270,8 +633,8 @@ void add_canvas(double width, double height, double xOffset, double yOffset) {
     char* stroke = malloc(100 * sizeof(char));
     char* fill = malloc(100 * sizeof(char));
 
-    stroke = "1.0 1.0 0.0";
-    fill = "1.0 0.0 1.0";
+    stroke = "-1.0 0.0 0.0";
+    fill = "0.0 0.6 0.1";
 
     glClearColor(0.0, 0.0, 0.0, 0.0);         // black background
     glMatrixMode(GL_PROJECTION);              // setup viewing projection
@@ -279,18 +642,67 @@ void add_canvas(double width, double height, double xOffset, double yOffset) {
     glOrtho(0.0, w, 0.0, h, 0.0, 1.0);   // setup a 10x10x2 viewing world
 
 
-    // add_circle(0 + w/2, 0 + h/2, 100, stroke, 2.0, fill);
-    // add_square(20, 20, 300, stroke, 5.0, fill);
-    // add_rectangle(20 + w/2, 20 + h/2, 300, 10, stroke, 5.0, fill);
+    // add_circle(w/2, h/2-200, 25, stroke, 2.0, fill);
+    // add_square(w/2-100, h/2+100, 50, stroke, 5.0, fill);
+    //
+    // stroke = "0.5 0.0 0.5";
+    // fill = "1.0 0.2 0.2";
+    //
+    // add_triangle(w/2+100, h/2+100, 50, 50, stroke, 5.0, fill);
+    // add_line(w/2-100, h/2+200, w/2+100, h/2+200, stroke, 2.0);
+    // add_ellipse(w/2-100, h/2-100, 50, 25, stroke, 5.0, fill);
+    //
+    // double arr[][2] = { {w/2-50, h/2+50}, {w/2+50, h/2 + 50}, {w/2+70, h/2}, {w/2, h/2-100}, {w/2-70, h/2}};
+    // add_polygon(5, arr, stroke, 2.0, fill);
+    // stroke = "0.5 1.0 0.5";
+    // fill = "1.0 1.0 0.2";
+    // add_regagon(w/2+100, h/2-100, 10, 60, stroke, 3, fill);
 
-    // add_ellipse(w/2,s h/2, 50, 200, stroke, 5.0, fill);
+    //dino
+    double cx = w/2;
+    double cy = h/2;
+    //
+    // add_rectangle(cx-25, cy+75, 225, 75, stroke, 3.0, fill);
+    // add_rectangle(cx-25, cy-75, 225, 75, stroke, 3.0, fill);
+    // add_rectangle(cx+100, cy, 75, 225, stroke, 3.0, fill);
+    // add_rectangle(cx+125, cy-50, 150, 225, stroke, 3.0, fill);
+    //
+    // add_rectangle(cx+87.5, cy+125, 100, 50, stroke, 5.0, fill);
+    //
+    // fill = "0.0 0.0 0.0";
+    // add_circle(cx+100, cy+125, 15, stroke, 5.0, fill);
+    // fill = "1.0 1.0 1.0";
+    // add_circle(cx+100, cy+125, 7.5, stroke, 5.0, fill);
+    // fill = "0.0 0.25 0.0";
+    // add_ellipse(cx-100, h/2+85, 10, 5, stroke, 5.0, fill);
+    //
+    // fill = "1.0 1.0 1.0";
+    // add_triangle(cx+30, cy-22, 30, 30, stroke, 5.0, fill);
+    // add_triangle(cx, cy-22, 30, 30, stroke, 5.0, fill);
+    // add_triangle(cx-30, cy-22, 30, 30, stroke, 5.0, fill);
+    // add_triangle(cx-60, cy-22, 30, 30, stroke, 5.0, fill);
+    // add_triangle(cx-90, cy-22, 30, 30, stroke, 5.0, fill);
+    // add_triangle(cx-120, cy-22, 30, 30, stroke, 5.0, fill);
+    //
+    // add_triangle_down(cx+30, cy+22, 30, 30, stroke, 5.0, fill);
+    // add_triangle_down(cx, cy+22, 30, 30, stroke, 5.0, fill);
+    // add_triangle_down(cx-30, cy+22, 30, 30, stroke, 5.0, fill);
+    // add_triangle_down(cx-60, cy+22, 30, 30, stroke, 5.0, fill);
+    // add_triangle_down(cx-90, cy+22, 30, 30, stroke, 5.0, fill);
+    // add_triangle_down(cx-120, cy+22, 30, 30, stroke, 5.0, fill);
+
+    add_ellipse(cx+25, cy, 50, 75, stroke, 5.0, fill, NULL);
+    fill = "0.5 0.6 0.1";
+    add_ellipse(cx-100, cy+100, 50, 75, stroke, 5.0, fill, NULL);
+    add_ellipse(cx-20, cy+200, 50, 75, stroke, 5.0, fill, NULL);
+    fprintf(stderr, "%f\n", shapes[2].x);
+    moveBy(shapes[0], 300, 300, 1);
 
     glFlush();
 
     glutMainLoop();
 
 }
-
 
 
 
