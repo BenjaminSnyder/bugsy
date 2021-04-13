@@ -557,18 +557,108 @@ void add_regagon(double x, double y, int n, double r, char* stroke, double thicc
 
 }
 
+void scaleBy(struct Shape shape, double scale, double speed) {
+
+    double scaled = 0.0;
+    // double inc = 1 * (scale / abs(scale));
+    double inc = 0.1 * (scale * speed);
+
+    struct Shape* front = shapes;
+    while(scaled < scale) {
+        glClear(GL_COLOR_BUFFER_BIT);
+        shapes = front;
+        for(int i = 0; i < count; i++) {
+            // struct Shape s = *(shapes + sizeof(struct Shape) * i);
+            // struct Shape* start = shapes;
+            struct Shape s = *shapes;
+
+            if(strcmp(s.shapeId, shape.shapeId) != 0) {
+                if(strcmp(s.shapeId, "ellipse") != 0) {
+                    add_ellipse(s.x,
+                                s.y, s.w, s.h,
+                                s.stroke,
+                                s.thiccness, s.fill, s.shapeId);
+                                // fprintf(stderr, "arr num: %d", i);
+                }
+            }
+            // fprintf(stderr, "%f, %f\n", s.x, shape.x);
+            shapes += sizeof(struct Shape);
+        }
+
+        scaled += inc;
+        // fprintf(stderr, "%s: %f\n", shape.shapeId, printme);
+
+        if(scale >= 1) {
+            add_ellipse(shape.x, shape.y,  shape.w * (1 + scaled), shape.h * (1 + scaled),
+                    shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
+        } else {
+            add_ellipse(shape.x, shape.y,  shape.w * scaled, shape.h * scaled,
+                    shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
+        }
+
+        glFlush();
+        usleep(100000);
+
+    }
+
+}
+
+void rotateBy(struct Shape shape, double angle, double speed) {
+
+    double rotated = 0.0;
+    double inc = 1 * (angle / abs(angle)) * speed;
+
+    struct Shape* front = shapes;
+    while(rotated < angle) {
+        glClear(GL_COLOR_BUFFER_BIT);
+        shapes = front;
+        for(int i = 0; i < count; i++) {
+            // struct Shape s = *(shapes + sizeof(struct Shape) * i);
+            // struct Shape* start = shapes;
+            struct Shape s = *shapes;
+
+            if(strcmp(s.shapeId, shape.shapeId) != 0) {
+                if(strcmp(s.shapeId, "ellipse") != 0) {
+                    add_ellipse(s.x,
+                                s.y, s.w, s.h,
+                                s.stroke,
+                                s.thiccness, s.fill, s.shapeId);
+                                // fprintf(stderr, "arr num: %d", i);
+                }
+            }
+            // fprintf(stderr, "%f, %f\n", s.x, shape.x);
+            shapes += sizeof(struct Shape);
+        }
+
+        rotated += inc;
+        // double printme = shape.x * cos(rotated) - shape.y * sin(rotated);
+        // fprintf(stderr, "%s: %f\n", shape.shapeId, printme);
+        glPushMatrix();
+        glTranslatef(shape.x, shape.y, 0);
+        glRotatef(rotated, 0, 0, 1);
+        add_ellipse(0, 0, shape.w, shape.h,
+                    shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
+        glPopMatrix();
+
+        glFlush();
+        usleep(100000);
+
+    }
+
+}
+
 void moveBy(struct Shape shape, double translateX, double translateY, double speed) {
 
     double movedX = 0.0;
     double movedY = 0.0;
-    double incX = 1 * (translateX / abs(translateX));
-    double incY = 1 * (translateY / abs(translateY));
+    double incX = 1 * (translateX / abs(translateX)) * speed;
+    double incY = 1 * (translateY / abs(translateY)) * speed;
 
     struct Shape* front = shapes;
     while(movedX < translateX) {
         glClear(GL_COLOR_BUFFER_BIT);
         shapes = front;
-        for(int i = 0; i < 3; i++) {
+        for(int i = 0; i < count; i++) {
             // struct Shape s = *(shapes + sizeof(struct Shape) * i);
             // struct Shape* start = shapes;
             struct Shape s = *shapes;
@@ -588,7 +678,7 @@ void moveBy(struct Shape shape, double translateX, double translateY, double spe
 
         movedX += incX;
         movedY += incY;
-        fprintf(stderr, "%s: %f, %f, %f, %f\n", shape.shapeId, shape.x + movedX, shape.y + movedX, shape.w, shape.h);
+        // fprintf(stderr, "%s: %f, %f, %f, %f\n", shape.shapeId, shape.x + movedX, shape.y + movedX, shape.w, shape.h);
         // fprintf(stderr, "movedX = %f\n", shape.x + movedX);
         add_ellipse(shape.x + movedX, shape.y + movedY, shape.w, shape.h,
                     shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
@@ -597,6 +687,118 @@ void moveBy(struct Shape shape, double translateX, double translateY, double spe
         usleep(100000);
 
     }
+}
+
+void mirrorBy(struct Shape shape, double angle) {
+
+    double movedX = 0.0;
+    double movedY = 0.0;
+    double incX = 1 * (translateX / abs(translateX)) * speed;
+    double incY = 1 * (translateY / abs(translateY)) * speed;
+
+    struct Shape* front = shapes;
+    while(movedX < translateX) {
+        glClear(GL_COLOR_BUFFER_BIT);
+        shapes = front;
+        for(int i = 0; i < count; i++) {
+            // struct Shape s = *(shapes + sizeof(struct Shape) * i);
+            // struct Shape* start = shapes;
+            struct Shape s = *shapes;
+
+            if(strcmp(s.shapeId, shape.shapeId) != 0) {
+                if(strcmp(s.shapeId, "ellipse") != 0) {
+                    add_ellipse(s.x,
+                                s.y, s.w, s.h,
+                                s.stroke,
+                                s.thiccness, s.fill, s.shapeId);
+                                // fprintf(stderr, "arr num: %d", i);
+                }
+            }
+            // fprintf(stderr, "%f, %f\n", s.x, shape.x);
+            shapes += sizeof(struct Shape);
+        }
+
+        movedX += incX;
+        movedY += incY;
+        // fprintf(stderr, "%s: %f, %f, %f, %f\n", shape.shapeId, shape.x + movedX, shape.y + movedX, shape.w, shape.h);
+        // fprintf(stderr, "movedX = %f\n", shape.x + movedX);
+        add_ellipse(shape.x + movedX, shape.y + movedY, shape.w, shape.h,
+                    shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
+
+        glFlush();
+        usleep(100000);
+
+    }
+
+}
+
+double map(double a, double b, double x) {
+    return (x - a) / (b - a) ;
+}
+
+void animateBy(struct Shape shape, double angle, double translateX, double translateY, double scale, double speed) {
+
+    double movedX = 0.0;
+    double movedY = 0.0;
+    double incX = 1 * (translateX / abs(translateX));
+    double incY = 1 * (translateY / abs(translateY));
+    double rotated = 0.0;
+    double incR = 1 * (angle / abs(angle));
+    double scaled = 0.0;
+    double incS = 1 * (scale * speed);
+
+    struct Shape* front = shapes;
+    while(movedX < translateX || movedY < translateY || rotated < angle || scaled < scale) {
+        glClear(GL_COLOR_BUFFER_BIT);
+        shapes = front;
+        for(int i = 0; i < count; i++) {
+            // struct Shape s = *(shapes + sizeof(struct Shape) * i);
+            // struct Shape* start = shapes;
+            struct Shape s = *shapes;
+
+            if(strcmp(s.shapeId, shape.shapeId) != 0) {
+                if(strcmp(s.shapeId, "ellipse") != 0) {
+                    add_ellipse(s.x,
+                                s.y, s.w, s.h,
+                                s.stroke,
+                                s.thiccness, s.fill, s.shapeId);
+                                // fprintf(stderr, "arr num: %d", i);
+                }
+            }
+            // fprintf(stderr, "%f, %f\n", s.x, shape.x);
+            shapes += sizeof(struct Shape);
+        }
+
+        if(movedX < translateX) {
+            movedX += incX;
+        }
+        if(movedY < translateY) {
+            movedY += incY;
+        }
+        if(rotated < angle) {
+            rotated += incR;
+        }
+        if(scaled < scale) {
+            scaled += incS;
+        }
+        // fprintf(stderr, "%s: %f, %f, %f, %f\n", shape.shapeId, shape.x + movedX, shape.y + movedX, shape.w, shape.h);
+        // fprintf(stderr, "movedX = %f\n", shape.x + movedX);
+        glPushMatrix();
+        glTranslatef(shape.x + movedX, shape.y + movedY, 0);
+        glRotatef(rotated, 0, 0, 1);
+        if(scale >= 1) {
+            add_ellipse(0, 0,  shape.w * (1 + scaled), shape.h * (1 + scaled),
+                    shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
+        } else {
+            add_ellipse(0, 0,  shape.w * scaled, shape.h * scaled,
+                    shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
+        }
+        glPopMatrix();
+        glFlush();
+        usleep(100000);
+
+    }
+
 }
 
 
@@ -696,7 +898,10 @@ void add_canvas(double width, double height, double xOffset, double yOffset) {
     add_ellipse(cx-100, cy+100, 50, 75, stroke, 5.0, fill, NULL);
     add_ellipse(cx-20, cy+200, 50, 75, stroke, 5.0, fill, NULL);
     fprintf(stderr, "%f\n", shapes[2].x);
-    moveBy(shapes[0], 300, 300, 1);
+    // moveBy(shapes[0], 300, 300, 1);
+    // rotateBy(shapes[0], 360, 5);
+    // scaleBy(shapes[0], 2, 0.1);
+    animateBy(shapes[0], 360, 100, 100, 2, 1);
 
     glFlush();
 
