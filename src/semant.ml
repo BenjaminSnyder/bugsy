@@ -142,23 +142,62 @@ let check (globals, functions, classes) =
 
     (* Return a semantically-checked expression, i.e., with a type *)
     let rec expr = function
-            NumLit l   -> (Num, SNumLit l)
+             NumLit l   -> (Num, SNumLit l)
            | ArrayLit l ->
 
         let test = string_of_int (List.length l) in
-                           (Array (Num, NumLit(test)), SArrayLiteral(List.map expr l, Array(Num, IntLiteral(List.length l))))
+        (Array (Num, NumLit(test)), SArrayLiteral(List.map expr l, Array(Num, IntLiteral(List.length l))))
 
       | IntLiteral l -> (Num, SIntLiteral l)
       | BoolLit l  -> (Bool, SBoolLit l)
       | StrLit l   -> (String, SStrLit l)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
+      | Access (s1, s2) -> (type_of_identifier s2, SAccess(s1,s2))
       | Assign(var, e) as ex ->
           let lt = type_of_identifier var
           and (rt, e') = expr e in
           let err = "illegal assignment " ^ string_of_typ lt ^ " = " ^
             string_of_typ rt ^ " in " ^ string_of_expr ex
           in (check_assign lt rt err, SAssign(var, (rt, e')))
+      | Construct(cn, aopt) as construct -> 
+          (* Add class name to symbol table *)
+          let add_class map cd =
+            let dup_err = "duplicate class " ^ cd.cname
+            and make_err er = raise (Failure er)
+            and n = cd.cname (* Name of the class *)
+            in match cd with (* No duplicate classes or redefinitions of built-ins *)
+               | _ when StringMap.mem n map -> make_err dup_err
+               | _ ->  StringMap.add n cd map
+          in
+
+          (* Collect all class names into one symbol table *)
+          (* TODO: Fix the unused class_decls here *)
+          let class_decls = List.fold_left add_class StringMap.empty classes
+          in
+
+          let find_class s =
+            try StringMap.find s class_decls
+            with Not_found -> raise (Failure ("unrecognized class " ^ s))
+          in 
+
+          let _class = find_class cn in (* Ensure class cn is defined *)
+          (*_class.ctformals *)
+          let ct = List.nth _class.cdconst 0 in
+          let param_length = List.length ct.ctformals in
+          let empty = StringMap.empty in
+          if List.length aopt != param_length then
+            raise (Failure ("expecting " ^ string_of_int param_length ^
+                            " arguments in " ^ string_of_expr construct ))
+          else let check_const_call ((Object({className = cn; instanceVars = empty ;}) as call_type),_) e =
+            let (et, e') = expr e in
+            let err = "illegal argument found " ^ string_of_typ et ^
+              " expected " (* TODO: ^ string_of_typ call_type ^ " in " ^ string_of_expr e*)
+            in (check_assign call_type et err, e')
+          in
+          let aopt' = List.map2 check_const_call ct.ctformals aopt
+          in (Object({className = cn; instanceVars = empty ;}) , SConstruct(cn, aopt'))
+
       | Unop(op, e) as ex ->
           let (t, e') = expr e in
           let ty = match op with
@@ -262,7 +301,7 @@ let check (globals, functions, classes) =
   (* Collect class declarations for built-in classes: no bodies *)
 
   let built_in_class_decls =
-      let add_bind map (name, ty1, ty2) = StringMap.add name {
+      let add_bind map (name, _, _) = StringMap.add name {
           cname = name;
           cdvars = [];
           cdconst = []; cdfuncs = [] } map
@@ -291,6 +330,7 @@ let check (globals, functions, classes) =
   in
 
   (* Collect all class names into one symbol table *)
+  (* TODO: Fix the unused class_decls here *)
   let class_decls = List.fold_left add_class built_in_class_decls classes
   in
 
@@ -440,6 +480,7 @@ let check (globals, functions, classes) =
         | StrLit l   -> (String, SStrLit l)
         | Noexpr     -> (Void, SNoexpr)
         | Id s       -> (type_of_identifier s, SId s)
+        | Access (s1, s2) -> (type_of_identifier s2, SAccess(s1, s2)) 
         | Assign(var, e) as ex ->
             let lt = type_of_identifier var
             and (rt, e') = expr e in
@@ -513,6 +554,7 @@ let check (globals, functions, classes) =
               | s :: ss         -> check_stmt s :: check_stmt_list ss
               | []              -> []
             in SBlock(check_stmt_list sl)
+        | _ -> raise (Failure ("Not semantically valid. You might've returned in a constructor."))
 
       in (* body of check_function *)
       {

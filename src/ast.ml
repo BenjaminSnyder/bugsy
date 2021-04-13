@@ -41,7 +41,6 @@ type bind = typ * string
 
 type stmt =
     Block of stmt list
-  | Vdecl of string * string
   | Expr of expr
   | Return of expr
   | If of expr * stmt * stmt
@@ -118,7 +117,7 @@ let rec string_of_expr = function
     | _ -> "ERROR")
 
   | Assign(v, e) -> v ^ " = " ^ string_of_expr e
-  | Construct(a, e) -> " new " ^ a ^ "(" ^ String.concat ", " (List.map string_of_expr e) ^ ")"
+  | Construct(a, e) -> "new " ^ a ^ "(" ^ String.concat ", " (List.map string_of_expr e) ^ ")"
   | ArrayAccess(a, e) -> a ^ "[" ^ string_of_expr e ^ "]"
   | ArrayAssign(a, e1, e2) -> a ^ "[" ^ string_of_expr e1 ^ "] = " ^ string_of_expr e2
   | Call(f, el) ->
@@ -160,6 +159,7 @@ let rec string_of_typ = function
   | Spline -> "spline"
   | Array(t, e) -> string_of_typ t ^ "[" ^ string_of_expr e ^ "]"
   | Object(clas) -> clas.className
+  | Int | _ -> raise ( Failure ("Not implemented in AST!"))
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 
@@ -179,8 +179,8 @@ let string_of_fdecl (fdecl, level) =
   "}\n"
 
 let string_of_cdecl (cdecl, level) =
-  "class " ^ cdecl.cname ^ " {" ^ "\n" ^ "\t" ^
-  String.concat "\t" (List.map string_of_vdecl cdecl.cdvars) ^ "\t" ^
+  "class " ^ cdecl.cname ^ " {" ^ "\n" ^ (if (List.length cdecl.cdvars) < 1 then "" else "\t") ^
+  String.concat "\t" (List.map string_of_vdecl cdecl.cdvars) ^ (if (List.length cdecl.cdconst) < 1 then "" else "\t") ^
   String.concat "\t" (List.map string_of_const_decl cdecl.cdconst) ^ "\t" ^
   String.concat "\t" (List.map string_of_fdecl (add_level (cdecl.cdfuncs, (level+1)))) ^ (String.make (level-1) '\t') ^
   "}\n"
