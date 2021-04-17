@@ -28,16 +28,17 @@ type expr =
   | Call of string * expr list
   | Noexpr
 
+
 type typ = Num | Bool | Void | Int |  String | Pt | Shape | Square | Rect |
            Triangle | Circle | Ellipse | Regagon | Polygon |
            Canvas | Line | Spline | Array of typ * expr | Object of classTyp
 
+and bind = typ * string
 and classTyp = {
   className : string;
-  instanceVars : (typ * expr option) StringMap.t;
+  instanceVars : bind list;
 }
 
-type bind = typ * string
 
 type stmt =
     Block of stmt list

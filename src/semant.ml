@@ -160,7 +160,7 @@ let check (globals, functions, classes) =
           let err = "illegal assignment " ^ string_of_typ lt ^ " = " ^
             string_of_typ rt ^ " in " ^ string_of_expr ex
           in (check_assign lt rt err, SAssign(var, (rt, e')))
-      | Construct(cn, aopt) as construct -> 
+      | Construct(cn, args) as construct ->
           (* Add class name to symbol table *)
           let add_class map cd =
             let dup_err = "duplicate class " ^ cd.cname
@@ -179,24 +179,25 @@ let check (globals, functions, classes) =
           let find_class s =
             try StringMap.find s class_decls
             with Not_found -> raise (Failure ("unrecognized class " ^ s))
-          in 
+          in
 
           let _class = find_class cn in (* Ensure class cn is defined *)
           (*_class.ctformals *)
           let ct = List.nth _class.cdconst 0 in
-          let param_length = List.length ct.ctformals in
+          let formals = ct.ctformals in
+          let param_length = List.length formals in
           let empty = StringMap.empty in
-          if List.length aopt != param_length then
+          if List.length args != param_length then
             raise (Failure ("expecting " ^ string_of_int param_length ^
                             " arguments in " ^ string_of_expr construct ))
-          else let check_const_call ((Object({className = cn; instanceVars = empty ;}) as call_type),_) e =
+          else let check_const_call (formal_typ,_) e =
             let (et, e') = expr e in
             let err = "illegal argument found " ^ string_of_typ et ^
-              " expected " (* TODO: ^ string_of_typ call_type ^ " in " ^ string_of_expr e*)
-            in (check_assign call_type et err, e')
+              " expected " ^ string_of_typ formal_typ ^ " in " ^ string_of_expr e
+            in (check_assign formal_typ et err, e')
           in
-          let aopt' = List.map2 check_const_call ct.ctformals aopt
-          in (Object({className = cn; instanceVars = empty ;}) , SConstruct(cn, aopt'))
+          let args' = List.map2 check_const_call formals args
+          in (Object({className = cn; instanceVars = [] ;}) , SConstruct(cn, args'))
 
       | Unop(op, e) as ex ->
           let (t, e') = expr e in
@@ -354,13 +355,13 @@ let check (globals, functions, classes) =
     in
 
     (* Build local symbol table of variables for this function *)
-    let symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
+    let class_symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
 	                StringMap.empty (globals @ _class.cdvars )
     in
 
     (* Return a variable from our local symbol table *)
     let type_of_identifier s =
-      try StringMap.find s symbols
+      try StringMap.find s class_symbols
       with Not_found -> raise (Failure ("undeclared identifier " ^ s))
     in
 
@@ -461,13 +462,17 @@ let check (globals, functions, classes) =
       in
 
       (* Build local symbol table of variables for this function *)
-      let symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
+      let local_symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
                       StringMap.empty (globals @ const.ctformals @ const.ctlocals )
       in
 
       (* Return a variable from our local symbol table *)
       let type_of_identifier s =
-        try StringMap.find s symbols
+        try StringMap.find s (StringMap.merge (fun k xo yo -> match xo,yo with
+        | Some x, Some y -> Some (x)
+        | None, yo -> yo
+        | xo, None -> xo
+        ) class_symbols local_symbols)
         with Not_found -> raise (Failure ("undeclared identifier " ^ s))
       in
 
@@ -480,7 +485,7 @@ let check (globals, functions, classes) =
         | StrLit l   -> (String, SStrLit l)
         | Noexpr     -> (Void, SNoexpr)
         | Id s       -> (type_of_identifier s, SId s)
-        | Access (s1, s2) -> (type_of_identifier s2, SAccess(s1, s2)) 
+        | Access (s1, s2) -> (type_of_identifier s2, SAccess(s1, s2))
         | Assign(var, e) as ex ->
             let lt = type_of_identifier var
             and (rt, e') = expr e in

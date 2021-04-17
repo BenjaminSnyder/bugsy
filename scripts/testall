@@ -106,8 +106,8 @@ Check() {
 
     echo 1>&2
     echo "###### Testing $basename" 1>&2
-    
-    if [ ! -d tmp ]; then 
+
+    if [ ! -d tmp ]; then
         mkdir tmp
     fi
     generatedfiles=""

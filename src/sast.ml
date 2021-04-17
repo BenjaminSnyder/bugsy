@@ -14,7 +14,7 @@ and sx =
   | SAssign of string * sexpr
   | SConstruct of string * sexpr list
   | ArrayAssign of string * sexpr * sexpr
-  | ArrayAccess of string * sexpr 
+  | ArrayAccess of string * sexpr
   | SCrementop of sexpr * op
   | SCall of string * sexpr list
   | SNoexpr
@@ -60,7 +60,7 @@ let rec string_of_sexpr (t, e) =
   | SIntLiteral(l) -> string_of_int l
   | SStrLit(l) -> l
   | SId(s) -> s
-  | SAccess(s1,s2) -> s1 ^ "." ^ s2  
+  | SAccess(s1,s2) -> s1 ^ "." ^ s2
   | SCrementop(e, o) -> string_of_sexpr e ^ " " ^ string_of_op o
   | SBinop(e1, o, e2) ->
       string_of_sexpr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_sexpr e2
