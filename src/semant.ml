@@ -160,7 +160,7 @@ let check (globals, functions, classes) =
           let err = "illegal assignment " ^ string_of_typ lt ^ " = " ^
             string_of_typ rt ^ " in " ^ string_of_expr ex
           in (check_assign lt rt err, SAssign(var, (rt, e')))
-      | Construct(cn, args) as construct ->
+      | Construct(cn, args) as construct -> 
           (* Add class name to symbol table *)
           let add_class map cd =
             let dup_err = "duplicate class " ^ cd.cname
@@ -184,7 +184,7 @@ let check (globals, functions, classes) =
           let _class = find_class cn in (* Ensure class cn is defined *)
           (*_class.ctformals *)
           let ct = List.nth _class.cdconst 0 in
-          let formals = ct.ctformals in
+          let formals = ct.ctformals in 
           let param_length = List.length formals in
           let empty = StringMap.empty in
           if List.length args != param_length then
@@ -468,7 +468,7 @@ let check (globals, functions, classes) =
 
       (* Return a variable from our local symbol table *)
       let type_of_identifier s =
-        try StringMap.find s (StringMap.merge (fun k xo yo -> match xo,yo with
+        try StringMap.find s (StringMap.merge (fun k xo yo -> match xo,yo with 
         | Some x, Some y -> Some (x)
         | None, yo -> yo
         | xo, None -> xo
