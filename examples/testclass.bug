@@ -28,7 +28,7 @@ class test{
 	}
 
 	num foo2(num z){
-		return 2 + z;
+		return a + z;
 	}
 
 } //end class

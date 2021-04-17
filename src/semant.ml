@@ -5,6 +5,19 @@ open Sast
 
 module StringMap = Map.Make(String)
 
+
+let rec zip_list (listy, li2) = match listy with
+    [] -> []
+  | hd::li' -> (hd, li2)::zip_list(li', li2)
+
+(* let rec unzip' (tup) = match tup with
+    [] -> []
+  | (elem, li)::li' -> elem::unzip'(li')
+
+let unzip tup = match tup with
+    [] -> ([], [])
+  | (elem, li)::li' -> (elem::unzip'(li'), li) *)
+    
 (* Semantic checking of the AST. Returns an SAST if successful,
    throws an exception if something is wrong.
    Check each global variable, then check each function *)
@@ -154,7 +167,10 @@ let check (globals, functions, classes) =
 
   let _ = find_func "main" in (* Ensure "main" is defined *)
 
-  let check_function func =
+  let check_function tup =
+    let func = fst tup in (* function declaration *)
+    let opt_class = snd tup in (* Class binds if the function is nested in a class *)
+
     (* Make sure no formals or locals are void or duplicates *)
     check_binds "formal" func.formals;
     check_binds "local" func.locals;
@@ -167,7 +183,7 @@ let check (globals, functions, classes) =
 
     (* Build local symbol table of variables for this function *)
     let symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
-	                StringMap.empty (globals @ func.formals @ func.locals )
+	                StringMap.empty (globals @ func.formals @ func.locals @ opt_class)
     in
 
     (* Return a variable from our local symbol table *)
@@ -291,7 +307,7 @@ let check (globals, functions, classes) =
           let args' = List.map2 check_call fd.formals args
           in (fd.typ, SCall(fname, args'))
       | ClassCall(cname, fname, args) as classcall ->
-          let ctyp = string_of_typ (type_of_identifier cname) in
+          let ctyp = string_of_typ (type_of_identifier cname) in (* Get class name from object name *)
           let _ = verify_class_name ctyp in
           let class_object = get_class ctyp in
           let cfuncs = List.fold_left add_func StringMap.empty class_object.cdfuncs in 
@@ -658,6 +674,6 @@ let check (globals, functions, classes) =
       scname = _class.cname;
       scdvars = _class.cdvars;
       scdconst = List.map check_constructor _class.cdconst;
-      scdfuncs = List.map check_function _class.cdfuncs
+      scdfuncs = List.map check_function (zip_list (_class.cdfuncs, _class.cdvars));
     }
-  in (globals, List.map check_function functions, List.map check_class classes)
+  in (globals, List.map check_function (zip_list (functions, [])), List.map check_class classes)
