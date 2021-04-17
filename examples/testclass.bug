@@ -12,6 +12,7 @@ class test{
 		num x;
 		num y;
 		x=0.0;
+		t.a;
 		y=2.0;
 		if(true){
 			x=5.0;
@@ -41,6 +42,5 @@ num main(){
 	t = new test(3.0, o);
 	t.foo();
 	t.foo2(20.0);
-	t.a;
 	return 0;
 }

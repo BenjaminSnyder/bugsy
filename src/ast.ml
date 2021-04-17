@@ -35,6 +35,7 @@ type typ = Num | Bool | Void | Int |  String | Pt | Shape | Square | Rect |
            Canvas | Line | Spline | Array of typ * expr | Object of classTyp
 
 and bind = typ * string
+
 and classTyp = {
   className : string;
   instanceVars : bind list;

@@ -449,6 +449,13 @@ let check (globals, functions, classes) =
       | StrLit l   -> (String, SStrLit l)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
+      | Access(obj, var) as ex -> 
+          let ctyp = string_of_typ (type_of_identifier obj) in (* Get class name from object name *)
+          let _ = verify_class_name ctyp in (*make sure class exists *)
+          let class_object = get_class ctyp in (*get the class we need to check *) 
+          let vt = type_of_identifier var in
+          (vt, SAccess(obj, var))
+
       | Assign(var, e) as ex ->
           let lt = type_of_identifier var
           and (rt, e') = expr e in
