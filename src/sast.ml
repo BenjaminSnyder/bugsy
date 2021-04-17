@@ -17,6 +17,7 @@ and sx =
   | ArrayAccess of string * sexpr
   | SCrementop of sexpr * op
   | SCall of string * sexpr list
+  | SClassCall of string * string * sexpr list
   | SNoexpr
 
 type sstmt =
@@ -69,6 +70,8 @@ let rec string_of_sexpr (t, e) =
   | SConstruct(a, e) -> " new " ^ a ^ "(" ^ String.concat ", " (List.map string_of_sexpr e) ^ ")"
   | SCall(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
+  | SClassCall(c, f, el) -> 
+      c ^ "." ^ f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
   | SArrayLiteral(el, t) -> string_of_typ t ^ "[" ^ String.concat ", " (List.map (fun e -> string_of_sexpr e) el) ^ "]"
 
   | SNoexpr -> ""

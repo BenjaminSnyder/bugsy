@@ -156,6 +156,7 @@ expr:
   | bool_expr        { $1 }
   | arithmetic       { $1 }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
+  | ID DOT ID LPAREN actuals_opt RPAREN { ClassCall($1, $3, $5) }
   | NEW ID LPAREN actuals_opt RPAREN { Construct($2, $4) }
   | ID ASSIGN expr                   { Assign($1, $3) }
   | ID LSQBRACKET expr RSQBRACKET ASSIGN expr           { ArrayAssign($1, $3, $6) }

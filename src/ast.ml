@@ -26,6 +26,7 @@ type expr =
   | ArrayAccess of string * expr
   | Crementop of expr * op
   | Call of string * expr list
+  | ClassCall of string * string * expr list
   | Noexpr
 
 
@@ -123,6 +124,8 @@ let rec string_of_expr = function
   | ArrayAssign(a, e1, e2) -> a ^ "[" ^ string_of_expr e1 ^ "] = " ^ string_of_expr e2
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
+  | ClassCall(c, f, el) -> 
+      c ^ "." ^ f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | Noexpr -> ""
 
 let rec add_level (listy, level) = match listy with

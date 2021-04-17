@@ -27,6 +27,10 @@ class test{
 		return x;
 	}
 
+	num foo2(num z){
+		return 2 + z;
+	}
+
 } //end class
 
 num main(){
@@ -35,5 +39,7 @@ num main(){
 	string o;
 	o = "hello";
 	t = new test(3.0, o);
+	t.foo();
+	t.foo2(20.0);
 	return 0;
 }

@@ -24,6 +24,42 @@ let check (globals, functions, classes) =
     in dups (List.sort (fun (_,a) (_,b) -> compare a b) binds)
   in
 
+  (* Add Class Helper *)
+  let add_class map cd =
+    let built_in_err = "class " ^ cd.cname ^ " may not be defined"
+    and dup_err = "duplicate class " ^ cd.cname
+    and make_err er = raise (Failure er)
+    and n = cd.cname (* Name of the class *)
+    in match cd with (* No duplicate classes or redefinitions of built-ins *)
+        _ when StringMap.mem n map -> make_err dup_err
+      | _ ->  StringMap.add n cd map
+  in
+  
+  
+  (* Helper function for checking if a class is defined *)
+  let verify_class_name cname = 
+    (* Collect all class names into one symbol table *)
+    (* TODO: Fix the unused class_decls here *)
+    let class_decls = List.fold_left add_class (*built_in_class_decls*) StringMap.empty classes
+    in
+    let find_class s =
+      try StringMap.find s class_decls
+      with Not_found -> raise (Failure ("unrecognized class " ^ s))
+    in
+    find_class cname
+  in
+
+  (* Find class *)
+  let get_class cname =
+    let class_decls = List.fold_left add_class StringMap.empty classes
+    in
+    let find_class s =
+      try StringMap.find s class_decls
+      with Not_found -> raise (Failure ("unrecognized class " ^ s))
+    in
+    find_class cname (* Return the class from its name *)
+  in
+
   (**** Check global variables ****)
 
   check_binds "global" globals;
@@ -254,6 +290,31 @@ let check (globals, functions, classes) =
           in
           let args' = List.map2 check_call fd.formals args
           in (fd.typ, SCall(fname, args'))
+      | ClassCall(cname, fname, args) as classcall ->
+          let ctyp = string_of_typ (type_of_identifier cname) in
+          let _ = verify_class_name ctyp in
+          let class_object = get_class ctyp in
+          let cfuncs = List.fold_left add_func StringMap.empty class_object.cdfuncs in 
+
+          (* Find the function in the class *)
+          let find_func s =
+            try StringMap.find fname cfuncs
+            with Not_found -> raise (Failure ("unrecognized function " ^ cname ^ "." ^ fname))
+          in
+          let cf = find_func fname in
+          let param_length = List.length cf.formals in
+          if List.length args != param_length then
+            raise (Failure ("expecting " ^ string_of_int param_length ^
+                            " arguments in " ^ string_of_expr classcall))
+          else let check_call (ft, _) e =
+            let (et, e') = expr e in
+            let err = "illegal argument found " ^ string_of_typ et ^
+              " expected " ^ string_of_typ ft ^ " in " ^ string_of_expr e
+            in (check_assign ft et err, e')
+          in
+          let args' = List.map2 check_call cf.formals args
+          in (cf.typ, SClassCall(cname, fname, args'))
+
     in
 
     let check_bool_expr e =
