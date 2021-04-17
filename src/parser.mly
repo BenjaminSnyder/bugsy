@@ -69,7 +69,7 @@ cdecl:
 const_decl:
   CONSTRUCTOR LPAREN formals_opt RPAREN LBRACE body RBRACE
   { {
-    ctformals = $3;
+    ctformals = List.rev $3;
     ctlocals = List.rev (fst $6);
     ctbody = List.rev (snd $6);
   } }
@@ -106,7 +106,7 @@ typ:
   | array_t { $1 }
   | ID { Object({
                 className = $1;
-                instanceVars = StringMap.empty;
+                instanceVars = [];
               })
             }
 
@@ -157,10 +157,10 @@ expr:
   | arithmetic       { $1 }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | NEW ID LPAREN actuals_opt RPAREN { Construct($2, $4) }
-  | ID ASSIGN expr   { Assign($1, $3) }
-  | ID LSQBRACKET expr RSQBRACKET ASSIGN expr   { ArrayAssign($1, $3, $6) }
-  | ID LSQBRACKET expr RSQBRACKET               { ArrayAccess($1, $3) }
-  | LPAREN expr RPAREN { $2 } /* allow parentheses in arithmetic */
+  | ID ASSIGN expr                   { Assign($1, $3) }
+  | ID LSQBRACKET expr RSQBRACKET ASSIGN expr           { ArrayAssign($1, $3, $6) }
+  | ID LSQBRACKET expr RSQBRACKET    { ArrayAccess($1, $3) }
+  | LPAREN expr RPAREN               { $2 } /* allow parentheses in arithmetic */
 
 literal:
     NUMLIT           { NumLit($1)  }

@@ -1,5 +1,13 @@
 class test{
 
+	num a;
+	string b;
+	
+	constructor(num y, string x){
+		a = y;
+		b = x;
+	} //end constructor
+
 	num foo(){
 		num x;
 		num y;
@@ -19,15 +27,13 @@ class test{
 		return x;
 	}
 
-	constructor(num y){
-		num a;
-		a = y;
-	} //end constructor
 } //end class
 
 num main(){
 	num x;
 	test t;
-	t = new test(3.0);
+	string o;
+	o = "hello";
+	t = new test(3.0, o);
 	return 0;
 }
