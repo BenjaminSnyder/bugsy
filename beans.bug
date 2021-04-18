@@ -6,9 +6,9 @@ num main() {
     b = 0;
     num c;
     c = 1000;
-    print(a);
+    /*print(a);
     print(b);
-    print(c);
+    print(c);*/
     num d;
     num e;
     num f;
