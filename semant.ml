@@ -125,9 +125,12 @@ let check (globals, functions, classes) =
 
     (* Raise an exception if the given rvalue type cannot be assigned to
        the given lvalue type *)
-    let check_assign lvaluet rvaluet err =
-       if 1 = 1 then lvaluet else raise (Failure err)
-       lvaluet
+    let rec check_assign lvaluet rvaluet err = match rvaluet with
+       Array(t1, _) -> (match t1 with
+       Num -> check_assign t1 Num err
+       | _ -> raise (Failure err))
+      | _ ->  if lvaluet = rvaluet then lvaluet else raise (Failure err)
+       (* haww *)
     in
 
     (* Build local symbol table of variables for this function *)
@@ -431,7 +434,7 @@ let check (globals, functions, classes) =
       (* Raise an exception if the given rvalue type cannot be assigned to
          the given lvalue type *)
       let check_assign lvaluet rvaluet err =
-         if 1 = 1 then lvaluet else raise (Failure err)
+         if lvaluet = rvaluet then lvaluet else raise (Failure err)
       in
 
       (* Build local symbol table of variables for this function *)

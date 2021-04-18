@@ -189,6 +189,11 @@ let translate (globals, camFunctions, classes) =
                    with Not_found -> StringMap.find n global_vars
     in
 
+   (* let conversion x = L.int64_of_const x in *)
+    let conversion = function
+            x -> L.const_fptoui x i32_t
+    in 
+   
     (* Construct code for an expression; return its value *)
     let rec expr builder ((_, e) : sexpr) = match e with
          SIntLiteral i -> L.const_int i32_t i
@@ -196,7 +201,7 @@ let translate (globals, camFunctions, classes) =
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SNumLit nl -> L.const_float_of_string float_t nl
       | SNoexpr     -> L.const_int i32_t 0
-      | SArrayAccess(a, e, _) -> L.build_load (L.build_gep (lookup a) [| L.const_int i32_t 0; L.const_int i32_t 0; |] a builder) a builder
+      | SArrayAccess(a, e, l) -> let yeye = conversion (expr builder e)  in begin L.build_load (L.build_gep (lookup a) [| L.const_int i32_t 0; yeye |] a builder) a builder end
       | SId s       -> L.build_load (lookup s) s builder
       | SArrayLiteral (l, t) -> L.const_array (ltype_of_typ t) (Array.of_list (List.map (expr builder) l))
       | SAssign (s, e) -> let e' = expr builder e in
