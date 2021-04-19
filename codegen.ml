@@ -205,7 +205,11 @@ let translate (globals, camFunctions, classes) =
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SNumLit nl -> L.const_float_of_string float_t nl
       | SNoexpr     -> L.const_int i32_t 0
-      | SArrayAccess(a, e, l) -> let yeye = conversion (expr builder e)  in begin L.build_load (L.build_gep (lookup a) [| L.const_int i32_t 0; yeye |] a builder) a builder end
+     
+
+      | SArrayAccess(a, e, l) -> let yeye = conversion (expr builder e)
+    in let beans =  L.build_gep (lookup a) [| L.const_int i32_t 0; yeye |] a builder in L.build_load beans a builder
+      (* | SArrayAccess(a, e, l) -> let yeye = conversion (expr builder e)  in L.build_load (L.build_gep (lookup a) [| L.const_int i32_t 0; yeye |] a builder) a builder  *)
       | SArrayAssign (s, e1, e2) ->
               let left = let yeye = conversion (expr builder e1) in L.build_gep (lookup s) [| L.const_int i32_t 0; yeye |] s builder in let right = expr builder e2 in ignore (L.build_store right left builder); right
       | SId s       -> L.build_load (lookup s) s builder

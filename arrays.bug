@@ -14,16 +14,19 @@ num main() {
  
 
    a = 2.1;
+
+   e = 4.0;
    
    x[2] = a;
 
    c = 3.4;
    x[3] = c;
 
+
    x[4] = 9.0;
    
    printf("sirs second element is");
-   print(x[2]);
+   print(x[e]);
    printf("sirs third element is");
    print(x[3]);
    printf("sirs fourth element is");
