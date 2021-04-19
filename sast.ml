@@ -14,6 +14,7 @@ and sx =
   | SStrLit of string
   | SArrayLiteral of sexpr list * typ
   | SArrayAccess of string * sexpr * typ
+  | SArrayAssign of string * sexpr * sexpr
   | SNoexpr
 
 type sstmt =
@@ -66,6 +67,7 @@ let rec string_of_sexpr (t, e) =
       f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
   | SArrayLiteral(el, t) -> string_of_typ t ^ "[" ^ String.concat ", " (List.map (fun e -> string_of_sexpr e) el) ^ "]"
   | SArrayAccess(a, e, t) -> string_of_typ t ^ " " ^ a ^ "[" ^ string_of_sexpr e ^ "]"
+  | SArrayAssign(a, e1, e2) -> a ^ "[" ^ string_of_sexpr e1 ^ "] = " ^ string_of_sexpr e2
 
   | SNoexpr -> ""
 				  ) ^ ")"

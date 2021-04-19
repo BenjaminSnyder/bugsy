@@ -190,8 +190,12 @@ let translate (globals, camFunctions, classes) =
     in
 
    (* let conversion x = L.int64_of_const x in *)
-    let conversion = function
-            x -> L.const_fptoui x i32_t
+   (* ayy *)
+    let conversion x =
+            match x with
+            float_t -> begin L.const_fptoui x i32_t end;
+            | _ -> begin print_endline("sususus"); L.const_fptoui x i32_t end
+            
     in 
    
     (* Construct code for an expression; return its value *)
@@ -202,6 +206,8 @@ let translate (globals, camFunctions, classes) =
       | SNumLit nl -> L.const_float_of_string float_t nl
       | SNoexpr     -> L.const_int i32_t 0
       | SArrayAccess(a, e, l) -> let yeye = conversion (expr builder e)  in begin L.build_load (L.build_gep (lookup a) [| L.const_int i32_t 0; yeye |] a builder) a builder end
+      | SArrayAssign (s, e1, e2) ->
+              let left = let yeye = conversion (expr builder e1) in L.build_gep (lookup s) [| L.const_int i32_t 0; yeye |] s builder in let right = expr builder e2 in ignore (L.build_store right left builder); right
       | SId s       -> L.build_load (lookup s) s builder
       | SArrayLiteral (l, t) -> L.const_array (ltype_of_typ t) (Array.of_list (List.map (expr builder) l))
       | SAssign (s, e) -> let e' = expr builder e in

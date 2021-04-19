@@ -158,6 +158,7 @@ let check (globals, functions, classes) =
                            (Array (Num, NumLit(test)), SArrayLiteral(List.map expr l, Array(Num, IntLiteral(List.length l))))
 
       | ArrayAccess(a, e) -> check_int e; (type_of_identifier a, SArrayAccess(a, expr e, access_type (type_of_identifier a)))
+      | ArrayAssign(var, idx, num) -> check_int num; check_int idx; (type_of_identifier var, SArrayAssign(var, expr idx, expr num))
 
       | IntLiteral l -> (Num, SIntLiteral l)
       | BoolLit l  -> (Bool, SBoolLit l)
