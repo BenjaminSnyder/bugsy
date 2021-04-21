@@ -205,7 +205,22 @@ let check (globals, functions, classes) =
       | StrLit l   -> (String, SStrLit l)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
-      | Access (s1, s2) -> (type_of_identifier s2, SAccess(s1,s2))
+      | Access (obj, var) ->
+          let ctyp = string_of_typ (type_of_identifier obj) in (* Get class name from object name *)
+          let _ = verify_class_name ctyp in (*make sure class exists *)
+          let class_object = get_class ctyp in (*get the class we need to check *) 
+
+          (* Build local symbol table of variables for this function *)
+          let classSymbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
+          StringMap.empty (class_object.cdvars)
+          in
+          (* Find the variable in the class *)
+          let find_var s =
+            try StringMap.find s classSymbols
+            with Not_found -> raise (Failure ("unrecognized variable " ^ s))
+          in
+          let cv = find_var var in
+          (cv, SAccess(obj, var))
       | Assign(var, e) as ex ->
           let lt = type_of_identifier var
           and (rt, e') = expr e in
