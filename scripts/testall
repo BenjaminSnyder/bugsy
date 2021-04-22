@@ -101,7 +101,6 @@ Check() {
                              s/.bug//'`
     reffile=`echo $1 | sed 's/.bug$//' | sed 's/test\/tests//'`
     basedir="`echo $1 | sed 's/\/[^\/]*$//'`../golden_set"
-
     echo -n "$basename..."
 
     echo 1>&2
@@ -140,8 +139,8 @@ CheckFail() {
     error=0
     basename=`echo $1 | sed 's/.*\\///
                              s/.bug//'`
-    reffile=`echo $1 | sed 's/.bug$//'`
-    basedir="`echo $1 | sed 's/\/[^\/]*$//'`/."
+    reffile=`echo $1 | sed 's/.bug$//' | sed 's/test\/tests//'`
+    basedir="`echo $1 | sed 's/\/[^\/]*$//'`../fails"
 
     echo -n "$basename..."
 
@@ -150,9 +149,9 @@ CheckFail() {
 
     generatedfiles=""
 
-    generatedfiles="$generatedfiles ${basename}.err ${basename}.diff" &&
-    RunFail "$BUGSY" "<" $1 "2>" "${basename}.err" ">>" $globallog &&
-    Compare ${basename}.err ${reffile}.err ${basename}.diff
+    generatedfiles="$generatedfiles tmp/${basename}.err tmp/${basename}.diff" &&
+    RunFail "$BUGSY" "<" $1 "2>" "tmp/${basename}.err" ">>" "$globallog" &&
+    Compare "test/fails/${basename}.err" "tmp/${basename}.err" "tmp/${basename}.diff"
 
     # Report the status and clean up the generated files
 
@@ -201,8 +200,8 @@ if [ $# -ge 1 ]
 then
     files=$@
 else
-    #files="tests/test-*.bug tests/fail-*.bug"
-    files="test/tests/test-*.bug"
+    files="test/tests/test-*.bug test/tests/fail-*.bug"
+    #files="test/tests/test-*.bug"
 fi
 
 for file in $files
