@@ -38,7 +38,7 @@ and bind = typ * string
 
 and classTyp = {
   className : string;
-  instanceVars : bind list;
+  instanceVars : (typ * expr) StringMap.t;
 }
 
 
@@ -125,7 +125,7 @@ let rec string_of_expr = function
   | ArrayAssign(a, e1, e2) -> a ^ "[" ^ string_of_expr e1 ^ "] = " ^ string_of_expr e2
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-  | ClassCall(c, f, el) -> 
+  | ClassCall(c, f, el) ->
       c ^ "." ^ f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | Noexpr -> ""
 
@@ -166,7 +166,7 @@ let rec string_of_typ = function
   | Object(clas) -> clas.className
   | Int | _ -> raise ( Failure ("Not implemented in AST!"))
 
-let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
+and string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 
 let string_of_const_decl const_decl =
   "constructor(" ^ String.concat ", " (List.map snd const_decl.ctformals) ^
