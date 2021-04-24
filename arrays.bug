@@ -15,6 +15,10 @@ num main() {
 
    a = 2.1;
 
+   b = 2;
+
+   e = x[b];
+
    e = 4.0;
    
    x[2] = a;
@@ -26,7 +30,6 @@ num main() {
    x[4] = 9.0;
    
    printf("sirs second element is");
-   print(x[e]);
    printf("sirs third element is");
    print(x[3]);
    printf("sirs fourth element is");

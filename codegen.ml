@@ -27,7 +27,8 @@ let translate (globals, camFunctions, classes) =
   let the_module = L.create_module context "Bugsy" in
 
   (* Get types from the context *)
-  let i32_t      = L.i32_type    context
+  let i64_t      = L.i64_type    context
+  and i32_t      = L.i32_type    context
   and i8_t       = L.i8_type     context
   and i1_t       = L.i1_type     context
   and float_t    = L.double_type context
@@ -193,7 +194,7 @@ let translate (globals, camFunctions, classes) =
    (* ayy *)
     let conversion x =
             match x with
-            float_t -> begin L.const_fptoui x i32_t end;
+            float_t -> begin L.const_fptoui x i64_t end;
             | _ -> begin print_endline("sususus"); L.const_fptoui x i32_t end
             
     in 
@@ -207,9 +208,15 @@ let translate (globals, camFunctions, classes) =
       | SNoexpr     -> L.const_int i32_t 0
      
 
-      | SArrayAccess(a, e, l) -> let yeye = conversion (expr builder e)
-    in let beans =  L.build_gep (lookup a) [| L.const_int i32_t 0; yeye |] a builder in L.build_load beans a builder
-      (* | SArrayAccess(a, e, l) -> let yeye = conversion (expr builder e)  in L.build_load (L.build_gep (lookup a) [| L.const_int i32_t 0; yeye |] a builder) a builder  *)
+      | SArrayAccess(a, e, l) -> let yeye = (expr builder e)
+    in (match e with 
+    
+    float_t  -> let beans =  L.build_gep (lookup a) [| L.const_int i32_t 0; conversion (yeye) |] a builder in L.build_load beans a builder 
+
+   | string_t -> let beans =  L.build_gep (lookup a) [| L.const_int i32_t 0; L.const_int i32_t 2; |] a builder in L.build_load beans a builder 
+
+      | _ -> let beans =  L.build_gep (lookup a) [| L.const_int i32_t 0; L.const_int i32_t 3 |] a builder in L.build_load beans a builder )
+      (* | SArrayAccess(a, e, l) -> let yeye = conversion (expr builder e)  in L.build_load (L.build_gep (lookup a) [| L.const_int i32_t 0; yeye |] a builder) a builder  *) 
       | SArrayAssign (s, e1, e2) ->
               let left = let yeye = conversion (expr builder e1) in L.build_gep (lookup s) [| L.const_int i32_t 0; yeye |] s builder in let right = expr builder e2 in ignore (L.build_store right left builder); right
       | SId s       -> L.build_load (lookup s) s builder
