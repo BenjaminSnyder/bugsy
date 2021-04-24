@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <GL/glut.h>
+#include <GL/freeglut.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
@@ -42,7 +43,7 @@ int id_len = 7;
 void printShapes() {
     for(int i = 0; i < count; i++) {
         struct Shape s = shapes[i];
-        fprintf(stderr, "\nShape: %s ID: %s\nx: %f y: %f\nn: %d r: %f\n", s.shape, s.shapeId, s.x, s.y, s.n, s.r);
+        fprintf(stderr, "\nShape: %s ID: %s\nx: %f y: %f\nn: %f r: %f\n", s.shape, s.shapeId, s.x, s.y, s.n, s.r);
         fprintf(stderr, "w: %f h: %f\nb: %f s: %f\nx1: %f y1: %f\nx2: %f y2: %f\n", s.w, s.h, s.b, s.s, s.x1, s.y1, s.x2, s.y2);
         fprintf(stderr, "stroke: %s thickness: %f\n:fill %s", s.stroke, s.thiccness, s.fill);
     }
@@ -870,6 +871,12 @@ void rotateBy(struct Shape shape, double angle, double speed) {
     double rotated = 0.0;
     double inc = 1 * (angle / abs(angle)) * speed;
 
+    double abs_val = angle;
+    if(abs_val < 0) {
+        abs_val *= -1;
+    }
+    double time = (speed * 1000000) / (abs_val / inc);
+
     struct Shape* front = shapes;
     while(rotated < angle) {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -935,7 +942,7 @@ void rotateBy(struct Shape shape, double angle, double speed) {
         glPopMatrix();
 
         glFlush();
-        usleep(100000);
+        usleep(time);
     }
 }
 
@@ -959,6 +966,12 @@ void moveBy(struct Shape shape, double translateX, double translateY, double spe
     } else {
         incY = translateY / abs(translateX);
     }
+
+    double abs_val = translateX;
+    if(abs_val < 0) {
+        abs_val *= -1;
+    }
+    double time = (speed * 1000000) / (abs_val / incX);
 
     struct Shape* front = shapes;
     while(movedX < translateX) {
@@ -1027,7 +1040,7 @@ void moveBy(struct Shape shape, double translateX, double translateY, double spe
         }
 
         glFlush();
-        usleep(100000);
+        usleep(time);
     }
 }
 
@@ -1163,16 +1176,22 @@ void add_canvas(double width, double height, double xOffset, double yOffset) {
     // scaleBy(shapes[3], 1.5, 5);
     // scaleBy(shapes[4], 1.5, 5);
 
-    moveBy(shapes[0], 100, 300, 1);
+    moveBy(shapes[0], 100, 300, 5);
     // moveBy(shapes[1], 30, 30, 1);
-
+    // sleep(5);
+    // exit(0);
 
     // for(int i = 0; i < 5; i++) {
     //     scaleBy(shapes[i], 1.2, 1);
     // }
     glFlush();
+    fprintf(stderr, "%s\n", getenv("DEBUG"));
+    if(strcmp(getenv("DEBUG"), "1") != 0) {
+        glutMainLoop();
+    }
 
-    glutMainLoop();
+
+
 
 }
 
