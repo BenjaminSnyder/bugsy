@@ -38,7 +38,7 @@ and bind = typ * string
 
 and classTyp = {
   className : string;
-  instanceVars : bind list;
+  instanceVars : (typ * expr) StringMap.t;
 }
 
 
@@ -166,7 +166,7 @@ let rec string_of_typ = function
   | Object(clas) -> clas.className
   | Int | _ -> raise ( Failure ("Not implemented in AST!"))
 
-let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
+and string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 
 let string_of_const_decl const_decl =
   "constructor(" ^ String.concat ", " (List.map snd const_decl.ctformals) ^

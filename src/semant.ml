@@ -242,7 +242,27 @@ let check (globals, functions, classes) =
     (* Raise an exception if the given rvalue type cannot be assigned to
        the given lvalue type *)
     let check_assign lvaluet rvaluet err =
-       if lvaluet = rvaluet then lvaluet else raise (Failure err)
+      let className  =  match lvaluet with
+        Object(o) -> (match o with
+              {className; instanceVars} -> className
+            | _ -> raise ( Failure ("Something went horribly wrong."))
+            )
+        | _ -> ""
+      in
+      (* check if there is a class *)
+      if not (String.equal className "") then
+        (* check if the class lt is same as class rt *)
+        if not (String.equal className
+        (
+        match rvaluet with
+          Object(o) -> match o with
+                {className; instanceVars} -> className
+              | _ -> raise ( Failure ("Something went horribly wrong."))
+          | _ -> ""
+          (*if not, then raise an err, otherwise return lvalue*)
+        )) then raise (Failure err) else lvaluet
+        (* otherwise if not a class, then run normal check_assign *)
+      else (if lvaluet = rvaluet then lvaluet else raise (Failure err))
     in
 
     (* Build local symbol table of variables for this function *)
@@ -327,8 +347,11 @@ let check (globals, functions, classes) =
               " expected " ^ string_of_typ formal_typ ^ " in " ^ string_of_expr e
             in (check_assign formal_typ et err, e')
           in
-          let args' = List.map2 check_const_call formals args
-          in (Object({className = cn; instanceVars = [] ;}) , SConstruct(cn, args'))
+          let args' = List.map2 check_const_call formals args in
+          let vars = List.fold_left2
+            (fun map (ty, n) value-> StringMap.add n (ty,value) map)
+            StringMap.empty formals args
+          in (Object({className = cn; instanceVars = vars ;}) , SConstruct(cn, args'))
 
       | Unop(op, e) as ex ->
           let (t, e') = expr e in
@@ -505,7 +528,7 @@ let check (globals, functions, classes) =
     (* Raise an exception if the given rvalue type cannot be assigned to
        the given lvalue type *)
     let check_assign lvaluet rvaluet err =
-       if lvaluet = rvaluet then lvaluet else raise (Failure err)
+      if lvaluet = rvaluet then lvaluet else raise (Failure err)
     in
 
     (* Build local symbol table of variables for this function *)

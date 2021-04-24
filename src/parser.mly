@@ -106,7 +106,7 @@ typ:
   | array_t { $1 }
   | ID { Object({
                 className = $1;
-                instanceVars = [];
+                instanceVars = StringMap.empty;
               })
             }
 
