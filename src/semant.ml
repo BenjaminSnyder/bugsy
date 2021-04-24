@@ -17,7 +17,7 @@ let rec zip_list (listy, li2) = match listy with
 let unzip tup = match tup with
     [] -> ([], [])
   | (elem, li)::li' -> (elem::unzip'(li'), li) *)
-    
+
 (* Semantic checking of the AST. Returns an SAST if successful,
    throws an exception if something is wrong.
    Check each global variable, then check each function *)
@@ -47,10 +47,10 @@ let check (globals, functions, classes) =
         _ when StringMap.mem n map -> make_err dup_err
       | _ ->  StringMap.add n cd map
   in
-  
-  
+
+
   (* Helper function for checking if a class is defined *)
-  let verify_class_name cname = 
+  let verify_class_name cname =
     (* Collect all class names into one symbol table *)
     (* TODO: Fix the unused class_decls here *)
     let class_decls = List.fold_left add_class (*built_in_class_decls*) StringMap.empty classes
@@ -109,7 +109,7 @@ let check (globals, functions, classes) =
       locals = []; fbody = [] } map
     in let func_map3 = List.fold_left add_bind3 func_map2 [
                             ("add_point", Pt);]
-    in *)
+    in
     let add_bind4 map (name, ty1, ty2) = StringMap.add name {
       typ = Void;
       fname = name;
@@ -117,30 +117,94 @@ let check (globals, functions, classes) =
       locals = []; fbody = [] } map
     in let func_map4 = List.fold_left add_bind4 func_map2 [
                             ("add_point_xy", Num, Num);]
-    in
-    let add_bind5 map (name, ty1, ty2, ty3) = StringMap.add name {
-      typ = Void;
+    in*)
+    let add_bind5 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
+      typ = String;
       fname = name;
-      formals = [(ty1, "x"); (ty2, "y"); (ty3, "r")];
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "r"); (ty4, "stroke"); (ty5, "thickness"); (ty6, "fill"); (ty7, "id")];
       locals = []; fbody = [] } map
-    in let func_map5 = List.fold_left add_bind5 func_map4 [
-                            ("add_circle", Num, Num, Num);]
+    in let func_map5 = List.fold_left add_bind5 func_map2 [
+                            ("add_circle", Num, Num, Num, String, Num, String, String);]
     in
-    let add_bind6 map (name, ty1, ty2, ty3) = StringMap.add name {
-      typ = Void;
+    let add_bind6 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
+      typ = String;
       fname = name;
-      formals = [(ty1, "x"); (ty2, "y"); (ty3, "size")];
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "size"); (ty4, "stroke"); (ty5, "thickness"); (ty6, "fill"); (ty7, "id")];
       locals = []; fbody = [] } map
     in let func_map6 = List.fold_left add_bind6 func_map5 [
-                            ("add_square", Num, Num, Num);]
+                            ("add_square", Num, Num, Num, String, Num, String, String);]
     in
     let add_bind7 map (name, ty1, ty2, ty3, ty4) = StringMap.add name {
       typ = Void;
       fname = name;
+      formals = [(ty1, "id"); (ty2, "translateX"); (ty3, "translateY"); (ty4, "speed")];
+      locals = []; fbody = [] } map
+    in let func_map7 = List.fold_left add_bind7 func_map6 [
+                            ("moveById", String, Num, Num, Num);]
+    in
+    let add_bind8 map (name, ty1, ty2, ty3, ty4) = StringMap.add name {
+      typ = Void;
+      fname = name;
       formals = [(ty1, "width"); (ty2, "height"); (ty3, "xOffset"); (ty4, "yOffset")];
       locals = []; fbody = [] } map
-    in List.fold_left add_bind7 func_map6 [
+    in let func_map8 = List.fold_left add_bind8 func_map7 [
                             ("add_canvas", Num, Num, Num, Num);]
+    in
+    let add_bind9 map (name, ty1, ty2, ty3) = StringMap.add name {
+      typ = Void;
+      fname = name;
+      formals = [(ty1, "id"); (ty2, "angle"); (ty3, "speed");];
+      locals = []; fbody = [] } map
+    in let func_map9 = List.fold_left add_bind9 func_map7 [
+                            ("rotateById", String, Num, Num);]
+    in
+    let add_bind10 map (name, ty1, ty2, ty3) = StringMap.add name {
+      typ = Void;
+      fname = name;
+      formals = [(ty1, "id"); (ty2, "scale"); (ty3, "speed")];
+      locals = []; fbody = [] } map
+    in let func_map10 = List.fold_left add_bind10 func_map9 [
+                            ("scaleById", String, Num, Num);]
+    in
+    let add_bind11 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7, ty8) = StringMap.add name {
+      typ = String;
+      fname = name;
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "b"); (ty4, "h"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "fill"); (ty8, "id")];
+      locals = []; fbody = [] } map
+    in let func_map11 = List.fold_left add_bind11 func_map10 [
+                            ("add_triangle", Num, Num, Num, Num, String, Num, String, String);]
+    in
+    let add_bind12 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7, ty8) = StringMap.add name {
+      typ = String;
+      fname = name;
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "w"); (ty4, "h"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "fill"); (ty8, "id")];
+      locals = []; fbody = [] } map
+    in let func_map12 = List.fold_left add_bind12 func_map11 [
+                            ("add_rectangle", Num, Num, Num, Num, String, Num, String, String);]
+    in
+    let add_bind13 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7, ty8) = StringMap.add name {
+      typ = String;
+      fname = name;
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "w"); (ty4, "h"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "fill"); (ty8, "id")];
+      locals = []; fbody = [] } map
+    in let func_map13 = List.fold_left add_bind13 func_map12 [
+                            ("add_ellipse", Num, Num, Num, Num, String, Num, String, String);]
+    in
+    let add_bind14 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7, ty8) = StringMap.add name {
+      typ = String;
+      fname = name;
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "n"); (ty4, "r"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "fill"); (ty8, "id")];
+      locals = []; fbody = [] } map
+    in let func_map14 = List.fold_left add_bind14 func_map13 [
+                            ("add_regagon", Num, Num, Num, Num, String, Num, String, String);]
+    in
+    let add_bind15 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
+      typ = String;
+      fname = name;
+      formals = [(ty1, "x1"); (ty2, "y1"); (ty3, "x2"); (ty4, "y2"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "id")];
+      locals = []; fbody = [] } map
+    in List.fold_left add_bind5 func_map14 [
+                            ("add_line", Num, Num, Num, Num, String, Num, String);]
   in
   (* Add function name to symbol table *)
   let add_func map fd =
@@ -208,7 +272,7 @@ let check (globals, functions, classes) =
       | Access (obj, var) ->
           let ctyp = string_of_typ (type_of_identifier obj) in (* Get class name from object name *)
           let _ = verify_class_name ctyp in (*make sure class exists *)
-          let class_object = get_class ctyp in (*get the class we need to check *) 
+          let class_object = get_class ctyp in (*get the class we need to check *)
 
           (* Build local symbol table of variables for this function *)
           let classSymbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
@@ -325,7 +389,7 @@ let check (globals, functions, classes) =
           let ctyp = string_of_typ (type_of_identifier cname) in (* Get class name from object name *)
           let _ = verify_class_name ctyp in
           let class_object = get_class ctyp in
-          let cfuncs = List.fold_left add_func StringMap.empty class_object.cdfuncs in 
+          let cfuncs = List.fold_left add_func StringMap.empty class_object.cdfuncs in
 
           (* Find the function in the class *)
           let find_func s =
@@ -398,17 +462,15 @@ let check (globals, functions, classes) =
           cname = name;
           cdvars = [];
           cdconst = []; cdfuncs = [] } map
-      in let func_map = List.fold_left add_bind StringMap.empty [
-                                       ("point", Num, Num);
-                                       ("ass_circle", Pt, Num);]
+      in List.fold_left add_bind StringMap.empty []
 
       in
-      let add_bind2 map (name) = StringMap.add name {
+    (*  let add_bind2 map (name) = StringMap.add name {
           cname = name;
           cdvars = [];
           cdconst = []; cdfuncs = [] } map
-      in List.fold_left add_bind2 func_map []
-  in
+      in List.fold_left add_bind2 func_map []*)
+
 
   (* Add class name to symbol table *)
   let add_class map cd =
@@ -464,10 +526,10 @@ let check (globals, functions, classes) =
       | StrLit l   -> (String, SStrLit l)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
-      | Access(obj, var) as ex -> 
+      | Access(obj, var) as ex ->
           let ctyp = string_of_typ (type_of_identifier obj) in (* Get class name from object name *)
           let _ = verify_class_name ctyp in (*make sure class exists *)
-          let class_object = get_class ctyp in (*get the class we need to check *) 
+          let class_object = get_class ctyp in (*get the class we need to check *)
           let vt = type_of_identifier var in
           (vt, SAccess(obj, var))
 

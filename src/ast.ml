@@ -125,7 +125,7 @@ let rec string_of_expr = function
   | ArrayAssign(a, e1, e2) -> a ^ "[" ^ string_of_expr e1 ^ "] = " ^ string_of_expr e2
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-  | ClassCall(c, f, el) -> 
+  | ClassCall(c, f, el) ->
       c ^ "." ^ f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | Noexpr -> ""
 
@@ -194,4 +194,3 @@ let string_of_program (vars, funcs, classes) =
   String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
   String.concat "" (List.map string_of_cdecl (add_level (classes, 1))) ^ "\n" ^
   String.concat "\n" (List.map string_of_fdecl (add_level (funcs, 1)))
-
