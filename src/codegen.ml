@@ -25,6 +25,10 @@ let translate (globals, camFunctions, classes) =
   (* Create the LLVM compilation module into which
      we will generate code *)
   let the_module = L.create_module context "Bugsy" in
+  
+  let convert_int = function
+          i -> 4
+  in
 
   (* Get types from the context *)
   let i32_t      = L.i32_type    context
@@ -34,7 +38,24 @@ let translate (globals, camFunctions, classes) =
   and ye_t       = L.float_type context
   and string_t   = L.pointer_type (L.i8_type context) (*new string type *)
   and array_t    = L.array_type
-  and void_t     = L.void_type   context in
+  and struct_t (classTyp:A.classTyp)  = 
+    let varTypes = List.map (fun (_, (t,_)) -> t) (StringMap.bindings classTyp.instanceVars) in
+    let arr = Array.of_list (List.map ltype_of_typ varTypes) in
+    L.struct_type context arr
+  and void_t     = L.void_type   context
+
+  (* Return the LLVM type for a Bugsy type *)
+  and rec ltype_of_typ = function
+      A.Num   -> float_t
+    | A.Bool  -> i1_t
+    | A.Void  -> void_t
+    | A.String -> string_t
+    | A.Int -> i32_t
+    | A.Array(typ, size) -> (match typ with
+          A.Num -> array_t float_t (convert_int size))
+    | A.Object(classTyp) -> L.pointer_type (struct_t classTyp)
+
+  in
 
 
 
@@ -43,21 +64,6 @@ let translate (globals, camFunctions, classes) =
   let objectref_type = L.named_struct_type context "objref" in
   L.struct_set_body objectref_type [|i32_t; objectptr_type|] false;
 
-  let convert_int = function
-          i -> 4
-  in
-
-  (* Return the LLVM type for a Bugsy type *)
-  let ltype_of_typ = function
-      A.Num   -> float_t
-    | A.Bool  -> i1_t
-    | A.Void  -> void_t
-    | A.String -> string_t
-    | A.Int -> i32_t
-    | A.Array(typ, size) -> (match typ with
-          A.Num -> array_t float_t (convert_int size))
-
-  in
 
   (*go through all functions, find main, and change main to return int *)
   (*let functions = List.map (fun x -> (x.styp <- A.Int); x) camFunctions in *)
@@ -195,6 +201,9 @@ let translate (globals, camFunctions, classes) =
       | SArrayLiteral (l, t) -> L.const_array (ltype_of_typ t) (Array.of_list (List.map (expr builder) l))
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'
+      | SConstruct(a,e) -> raise (Failure ("SConstruct not ready yet"))
+      | SClassCall(c, f, el) -> raise (Failure ("SClassCall not ready yet"))
+      | SAccess(c, v) -> raise (Failure ("SAccess not ready yet"))
       | SCrementop(e, op) ->
           let e' = expr builder e in
           let one = expr builder (A.Num, (Sast.SNumLit "1.0")) in

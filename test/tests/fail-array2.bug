@@ -1,0 +1,8 @@
+num main() {
+    int[] x;
+    string s;
+    x = [1,2,3,4,5];
+    s = "Hello";
+    x[0] = s;
+    return 0.0
+}
