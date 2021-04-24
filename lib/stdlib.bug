@@ -1,3 +1,27 @@
+class color {
+    num red;
+    num green;
+    num blue;
+
+    constructor(num r, num g, num b) {
+        red = r;
+        green = g;
+        blue = b;
+    }
+
+}
+
+class point {
+    num x;
+    num y;
+
+    constructor(num x_in, num y_in) {
+        x = x_in;
+        y = y_in;
+    }
+
+}
+
 class circle {
     num x;
     num y;
@@ -265,54 +289,4 @@ class line {
         void scale(num scale, num speed) {
             scaleById(id, scale, speed);
         }
-}
-
-
-class test{
-
-	num a;
-
-	constructor(num y){
-		a = y;
-	} //end constructor
-
-	num foo(){
-		num x;
-		num y;
-		x=0.0;
-		y=2.0;
-		if(true){
-			x=5.0;
-			print(x);
-		}
-		if(false){
-			x+y;
-		}
-		else{
-			y-x;
-			return y;
-		}
-		return x;
-	}
-
-	num foo2(num z){
-		return a + z;
-	}
-
-} //end class
-
-num main(){
-	num x;
-	num z;
-	num a1;
-	num a2;
-	test t;
-	t = new test(3.0);
-	circle c;
-	c = new circle(1.0, 2.0, 5.0, "0.5 0.5 0.5", 1.0, "0.2 0.2 0.2");
-	c.make();
-	a1 = t.foo();
-	a2 = t.foo2(20.0);
-	z = t.a;
-	return 0;
 }

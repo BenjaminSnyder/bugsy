@@ -30,9 +30,7 @@ type expr =
   | Noexpr
 
 
-type typ = Num | Bool | Void | Int |  String | Pt | Shape | Square | Rect |
-           Triangle | Circle | Ellipse | Regagon | Polygon |
-           Canvas | Line | Spline | Array of typ * expr | Object of classTyp
+type typ = Num | Bool | Void | Int |  String | Array of typ * expr | Object of classTyp
 
 and bind = typ * string
 
@@ -150,18 +148,6 @@ let rec string_of_typ = function
   | Bool -> "bool"
   | Void -> "void"
   | String -> "string"
-  | Pt -> "point"
-  | Shape -> "shape"
-  | Square -> "square"
-  | Rect -> "rect"
-  | Triangle -> "triangle"
-  | Circle -> "circle"
-  | Ellipse -> "ellipse"
-  | Regagon -> "regagon"
-  | Polygon -> "polygon"
-  | Canvas -> "canvas"
-  | Line -> "line"
-  | Spline -> "spline"
   | Array(t, e) -> string_of_typ t ^ "[" ^ string_of_expr e ^ "]"
   | Object(clas) -> clas.className
   | Int | _ -> raise ( Failure ("Not implemented in AST!"))
@@ -194,4 +180,3 @@ let string_of_program (vars, funcs, classes) =
   String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
   String.concat "" (List.map string_of_cdecl (add_level (classes, 1))) ^ "\n" ^
   String.concat "\n" (List.map string_of_fdecl (add_level (funcs, 1)))
-

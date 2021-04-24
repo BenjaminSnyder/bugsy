@@ -17,8 +17,6 @@ let trd  (_,_,tr)=tr
 %token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR NOT
 %token RETURN IF ELIF ELSE FOR WHILE
 %token BOOL VOID STRING CHAR NUM NULL
-%token POINT SHAPE SQUARE RECT CIRCLE ELLIPSE TRIANGLE
-%token POLYGON REGAGON CANVAS LINE SPLINE
 %token <bool> BLIT
 %token <string> ID NUMLIT STRLIT
 %token EOF
@@ -102,27 +100,12 @@ typ:
   | BOOL    { Bool }
   | VOID    { Void }
   | STRING  { String }
-  | shape   { $1 }
   | array_t { $1 }
   | ID { Object({
                 className = $1;
                 instanceVars = StringMap.empty;
               })
             }
-
-shape:
-    POINT      { Pt       }
-  | SHAPE      { Shape    }
-  | SQUARE     { Square   }
-  | RECT       { Rect     }
-  | TRIANGLE   { Triangle }
-  | CIRCLE     { Circle   }
-  | ELLIPSE    { Ellipse  }
-  | LINE       { Line     }
-  | CANVAS     { Canvas   }
-  | POLYGON    { Polygon  }
-  | REGAGON    { Regagon  }
-  | SPLINE     { Spline   }
 
 array_t:
   typ LSQBRACKET expr RSQBRACKET { Array($1, $3) }

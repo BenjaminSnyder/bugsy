@@ -68,20 +68,6 @@ rule token = parse
 | "catch"  { CATCH  }
 | "raise"  { RAISE  }
 
-(* Builtin Shapes Types *)
-| "pt"     { POINT  }
-| "shape"  { SHAPE  }
-| "square" { SQUARE }
-| "rect"   { RECT   }
-| "circle" { CIRCLE }
-| "ellipse"  { ELLIPSE  }
-| "triangle" { TRIANGLE }
-| "polygon"  { POLYGON  }
-| "regagon"  { REGAGON  }
-| "canvas" { CANVAS }
-| "line"   { LINE   }
-| "spline" { SPLINE }
-
 (* Builtin Types *)
 | "null"   { NULL   }
 | "num"    { NUM    }
