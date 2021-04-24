@@ -1,4 +1,4 @@
-class circleq {
+class circle {
     num x;
     num y;
     num r;
@@ -37,7 +37,7 @@ class circleq {
 
 
 
-class ellipseq {
+class ellipse {
     num x;
     num y;
     num w;
@@ -76,7 +76,7 @@ class ellipseq {
         }
 }
 
-class squareq {
+class square {
     num x;
     num y;
     num s;
@@ -113,7 +113,7 @@ class squareq {
         }
 }
 
-class triangleq {
+class triangle {
     num x;
     num y;
     num b;
@@ -152,7 +152,7 @@ class triangleq {
         }
 }
 
-class rectangleq {
+class rectangle {
     num x;
     num y;
     num w;
@@ -191,7 +191,7 @@ class rectangleq {
         }
 }
 
-class regagonq {
+class regagon {
     num x;
     num y;
     num n;
@@ -230,7 +230,7 @@ class regagonq {
         }
 }
 
-class lineq {
+class line {
     num x1;
     num y1;
     num x2;
@@ -308,8 +308,8 @@ num main(){
 	num a2;
 	test t;
 	t = new test(3.0);
-	circleq c;
-	c = new circleq(1.0, 2.0, 5.0, "0.5 0.5 0.5", 1.0, "0.2 0.2 0.2");
+	circle c;
+	c = new circle(1.0, 2.0, 5.0, "0.5 0.5 0.5", 1.0, "0.2 0.2 0.2");
 	c.make();
 	a1 = t.foo();
 	a2 = t.foo2(20.0);
