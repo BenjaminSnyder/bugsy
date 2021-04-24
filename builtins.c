@@ -25,8 +25,10 @@ struct Shape {
     double h;
     double b;
     double s;
-    double start[2];
-    double end[2];
+    double x1;
+    double y1;
+    double x2;
+    double y2;
     int num_points;
     char stroke[20];
     double thiccness;
@@ -106,14 +108,13 @@ void genId(char *dest, size_t length) {
     *dest = '\0';
 }
 
-void add_ellipse(double x, double y, double w, double h,  char* stroke, double thiccness, char* fill, char* id) {
+char* add_ellipse(double x, double y, double w, double h,  char* stroke, double thiccness, char* fill, char* id) {
 
     struct Shape shape;
 
 
-
+    char* shapeId = malloc(sizeof(char) * 100);
     if(id == NULL) {
-        char* shapeId = malloc(sizeof(char) * id_len);
         size_t len = id_len;
         genId(shapeId, len);
         strcpy(shape.shape, "ellipse");
@@ -192,17 +193,18 @@ void add_ellipse(double x, double y, double w, double h,  char* stroke, double t
            }
         glEnd();
     }
+    return shapeId;
 }
 
-void add_circle(double x, double y, double r, char* stroke, double thiccness, char* fill, char* id) {
+char* add_circle(double x, double y, double r, char* stroke, double thiccness, char* fill, char* id) {
 
     double* stroke_arr = str_to_arr(stroke);
     double* fill_arr = str_to_arr(fill);
 
     struct Shape shape;
 
+    char* shapeId = malloc(sizeof(char) * 100);
     if(id == NULL) {
-        char* shapeId = malloc(sizeof(char) * id_len);
         size_t len = id_len;
         genId(shapeId, len);
         strcpy(shape.shape, "circle");
@@ -259,17 +261,18 @@ void add_circle(double x, double y, double r, char* stroke, double thiccness, ch
         }
         glEnd();
     }
+    return shapeId;
 }
 
-void add_square(double x, double y, double size, char* stroke, double thiccness, char* fill, char* id) {
+char* add_square(double x, double y, double size, char* stroke, double thiccness, char* fill, char* id) {
 
     double* stroke_arr = str_to_arr(stroke);
     double* fill_arr = str_to_arr(fill);
 
     struct Shape shape;
 
+    char* shapeId = malloc(sizeof(char) * 100);
     if(id == NULL) {
-        char* shapeId = malloc(sizeof(char) * id_len);
         size_t len = id_len;
         genId(shapeId, len);
         strcpy(shape.shape, "square");
@@ -324,17 +327,18 @@ void add_square(double x, double y, double size, char* stroke, double thiccness,
             glVertex2f(x+(size/2.0), y-(size/2.0));
         glEnd();
     }
+    return shapeId;
 }
 
-void add_triangle(double x, double y, double b, double h, char* stroke, double thiccness, char* fill, char* id) {
+char* add_triangle(double x, double y, double b, double h, char* stroke, double thiccness, char* fill, char* id) {
 
     double* stroke_arr = str_to_arr(stroke);
     double* fill_arr = str_to_arr(fill);
 
     struct Shape shape;
 
+    char* shapeId = malloc(sizeof(char) * 100);
     if(id == NULL) {
-        char* shapeId = malloc(sizeof(char) * id_len);
         size_t len = id_len;
         genId(shapeId, len);
         strcpy(shape.shape, "triangle");
@@ -393,18 +397,18 @@ void add_triangle(double x, double y, double b, double h, char* stroke, double t
         glEnd();
 
     }
-
+    return shapeId;
 }
 
-void add_rectangle(double x, double y, double w, double h, char* stroke, double thiccness, char* fill, char* id) {
+char* add_rectangle(double x, double y, double w, double h, char* stroke, double thiccness, char* fill, char* id) {
 
     double* stroke_arr = str_to_arr(stroke);
     double* fill_arr = str_to_arr(fill);
 
     struct Shape shape;
 
+    char* shapeId = malloc(sizeof(char) * 100);
     if(id == NULL) {
-        char* shapeId = malloc(sizeof(char) * id_len);
         size_t len = id_len;
         genId(shapeId, len);
         strcpy(shape.shape, "rectangle");
@@ -460,24 +464,25 @@ void add_rectangle(double x, double y, double w, double h, char* stroke, double 
             glVertex2f(x+(w/2.0), y-(h/2.0));
         glEnd();
     }
+    return shapeId;
 }
 
-void add_line(double x1, double y1, double x2, double y2, char* stroke, double thiccness, char* id) {
+char* add_line(double x1, double y1, double x2, double y2, char* stroke, double thiccness, char* id) {
 
     double* stroke_arr = str_to_arr(stroke);
 
     struct Shape shape;
 
+    char* shapeId = malloc(sizeof(char) * 100);
     if(id == NULL) {
-        char* shapeId = malloc(sizeof(char) * 100);
         size_t len = 100;
         genId(shapeId, len);
         strcpy(shape.shape, "line");
         strcpy(shape.shapeId, shapeId);
-        shape.start[0] = x1;
-        shape.start[1] = y1;
-        shape.end[0] = x2;
-        shape.end[1] = y2;
+        shape.x1 = x1;
+        shape.y1 = y1;
+        shape.x2 = x2;
+        shape.y2 = y2;
         strcpy(shape.stroke, stroke);
         shape.thiccness = thiccness;
 
@@ -492,10 +497,10 @@ void add_line(double x1, double y1, double x2, double y2, char* stroke, double t
             if(strcmp(shapes[i].shapeId, id) == 0) {
                 strcpy(shapes[i].shape, "line");
                 strcpy(shapes[i].shapeId, id);
-                shapes[i].start[0] = x1;
-                shapes[i].start[1] = y1;
-                shapes[i].end[0] = x2;
-                shapes[i].end[1] = y2;
+                shapes[i].x1 = x1;
+                shapes[i].y1 = y1;
+                shapes[i].x2 = x2;
+                shapes[i].y2 = y2;
                 strcpy(shapes[i].stroke, stroke);
                 shapes[i].thiccness = thiccness;
             }
@@ -510,6 +515,7 @@ void add_line(double x1, double y1, double x2, double y2, char* stroke, double t
             glVertex2f(x2, y2);
         glEnd();
     }
+    return shapeId;
 }
 
 // void add_polygon(int num_points, double points[10][2], char* stroke, double thiccness, char* fill, char* id) {
@@ -581,7 +587,7 @@ void add_line(double x1, double y1, double x2, double y2, char* stroke, double t
 //
 // }
 
-void add_regagon(double x, double y, int n, double r, char* stroke, double thiccness, char* fill, char* id) {
+char* add_regagon(double x, double y, int n, double r, char* stroke, double thiccness, char* fill, char* id) {
 
     double* stroke_arr = str_to_arr(stroke);
     double* fill_arr = str_to_arr(fill);
@@ -589,9 +595,8 @@ void add_regagon(double x, double y, int n, double r, char* stroke, double thicc
     double a = 2 / (pi * n);
 
     struct Shape shape;
-
+    char* shapeId = malloc(sizeof(char) * id_len);
     if(id == NULL) {
-        char* shapeId = malloc(sizeof(char) * id_len);
         size_t len = id_len;
         genId(shapeId, len);
         strcpy(shape.shape, "regagon");
@@ -649,6 +654,8 @@ void add_regagon(double x, double y, int n, double r, char* stroke, double thicc
             }
         glEnd();
     }
+    return shapeId;
+
 }
 
 void scaleBy(struct Shape shape, double scale, double speed) {
@@ -720,27 +727,28 @@ void scaleBy(struct Shape shape, double scale, double speed) {
                                 shapes[i].y, shapes[i].s,
                                 shapes[i].stroke,
                                 shapes[i].thiccness, shapes[i].fill, shapes[i].shapeId);
-                } else if(strcmp(s.shape, "triangle") == 0) {
-                    add_triangle(s.x,
-                                s.y, s.b, s.h,
-                                s.stroke,
-                                s.thiccness, s.fill, s.shapeId);
-                } else if(strcmp(s.shape, "rectangle") == 0) {
-                    add_rectangle(s.x,
-                                s.y, s.w, s.h,
-                                s.stroke,
-                                s.thiccness, s.fill, s.shapeId);
-                } else if(strcmp(s.shape, "regagon") == 0) {
-                    add_regagon(s.x,
-                                s.y, s.n, s.r,
-                                s.stroke,
-                                s.thiccness, s.fill, s.shapeId);
-                } else if(strcmp(s.shape, "line") == 0) {
-                    add_line(s.start[0],
-                                s.start[1], s.end[0], s.end[1],
-                                s.stroke,
-                                s.thiccness, s.shapeId);
+                } else if(strcmp(shapes[i].shape, "triangle") == 0) {
+                    add_triangle(shapes[i].x,
+                                shapes[i].y, shapes[i].b, shapes[i].h,
+                                shapes[i].stroke,
+                                shapes[i].thiccness, shapes[i].fill, shapes[i].shapeId);
+                } else if(strcmp(shapes[i].shape, "rectangle") == 0) {
+                    add_rectangle(shapes[i].x,
+                                shapes[i].y, shapes[i].w, shapes[i].h,
+                                shapes[i].stroke,
+                                shapes[i].thiccness, shapes[i].fill, shapes[i].shapeId);
+                } else if(strcmp(shapes[i].shape, "regagon") == 0) {
+                    add_regagon(shapes[i].x,
+                                shapes[i].y, shapes[i].n, shapes[i].r,
+                                shapes[i].stroke,
+                                shapes[i].thiccness, shapes[i].fill, shapes[i].shapeId);
                 }
+                // else if(strcmp(s.shape, "line") == 0) {
+                //     add_line(s.start[0],
+                //                 s.start[1], s.end[0], s.end[1],
+                //                 s.stroke,
+                //                 s.thiccness, s.shapeId);
+                // }
             }
         }
 
@@ -820,23 +828,32 @@ void scaleBy(struct Shape shape, double scale, double speed) {
                 add_regagon(shape.x, shape.y,  shape.n, ri * scaled,
                         shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
             }
-        } else if(strcmp(shape.shape, "line") == 0) {
-            if(scale >= 1) {
-                add_line(shape.start[0] * (1 + scaled), shape.start[1], shape.end[0] * (1 + scaled),
-                        shape.end[1],
-                        shape.stroke, shape.thiccness, shape.shapeId);
-            } else {
-                add_line(shape.start[0] - scaled, shape.start[1], shape.end[0] + scaled,
-                        shape.end[1],
-                        shape.stroke, shape.thiccness, shape.shapeId);
-            }
-
         }
+        // else if(strcmp(shape.shape, "line") == 0) {
+        //     if(scale >= 1) {
+        //         add_line(shape.start[0] * (1 + scaled), shape.start[1], shape.end[0] * (1 + scaled),
+        //                 shape.end[1],
+        //                 shape.stroke, shape.thiccness, shape.shapeId);
+        //     } else {
+        //         add_line(shape.start[0] - scaled, shape.start[1], shape.end[0] + scaled,
+        //                 shape.end[1],
+        //                 shape.stroke, shape.thiccness, shape.shapeId);
+        //     }
+        //
+        // }
         // glPopMatrix();
         glFlush();
         usleep(time);
     }
 
+}
+
+void scaleById(char* id, double scale, double speed) {
+    for(int i = 0; i < count; i++) {
+        if(strcmp(shapes[i].shapeId, id) == 0) {
+            scaleBy(shapes[i], scale, speed);
+        }
+    }
 }
 
 void rotateBy(struct Shape shape, double angle, double speed) {
@@ -913,6 +930,14 @@ void rotateBy(struct Shape shape, double angle, double speed) {
     }
 }
 
+void rotateById(char* id, double angle, double speed) {
+    for(int i = 0; i < count; i++) {
+        if(strcmp(shapes[i].shapeId, id) == 0) {
+            rotateBy(shapes[i], angle, speed);
+        }
+    }
+}
+
 void moveBy(struct Shape shape, double translateX, double translateY, double speed) {
 
     double movedX = 0.0;
@@ -964,6 +989,11 @@ void moveBy(struct Shape shape, double translateX, double translateY, double spe
                                 s.y, s.n, s.r,
                                 s.stroke,
                                 s.thiccness, s.fill, s.shapeId);
+                } else if(strcmp(s.shape, "line") == 0) {
+                    add_line(s.x1,
+                                s.y1, s.x2, s.y2,
+                                s.stroke,
+                                s.thiccness, s.shapeId);
                 }
             }
         }
@@ -983,10 +1013,20 @@ void moveBy(struct Shape shape, double translateX, double translateY, double spe
             add_rectangle(shape.x + movedX, shape.y + movedY, shape.w, shape.h, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
         } else if(strcmp(shape.shape, "regagon") == 0) {
             add_regagon(shape.x + movedX, shape.y + movedY, shape.n, shape.r, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
+        } else if(strcmp(shape.shape, "line") == 0) {
+            add_line(shape.x1 + movedX, shape.y1 + movedY, shape.x2 + movedX, shape.y2 + movedY, shape.stroke, shape.thiccness, shape.shapeId);
         }
 
         glFlush();
         usleep(100000);
+    }
+}
+
+void moveById(char* id, double translateX, double translateY, double speed) {
+    for(int i = 0; i < count; i++) {
+        if(strcmp(shapes[i].shapeId, id) == 0) {
+            moveBy(shapes[i], translateX, translateY, speed);
+        }
     }
 }
 
@@ -1081,26 +1121,26 @@ void add_canvas(double width, double height, double xOffset, double yOffset) {
     // add_triangle_down(cx-90, cy+22, 30, 30, stroke, 5.0, fill);
     // add_triangle_down(cx-120, cy+22, 30, 30, stroke, 5.0, fill);
     //
-    add_ellipse(cx+25, cy, 100, 75, stroke, 5.0, fill, NULL);
+    // add_ellipse(cx+25, cy, 100, 75, stroke, 5.0, fill, NULL);
     // fill = "0.5 0.6 0.1";
     // add_ellipse(cx-100, cy+100, 50, 75, stroke, 5.0, fill, NULL);
     //
     // fill = "0.1 0.2 0.4";
-    add_square(cx-250, cy+75, 50, stroke, 3.0, fill, NULL);
+    // add_square(cx-250, cy+75, 50, stroke, 3.0, fill, NULL);
     //
-    add_triangle(cx-25, cy, 100, 75, stroke, 3.0, fill, NULL);
+    // add_triangle(cx-25, cy, 100, 75, stroke, 3.0, fill, NULL);
     // fprintf(stderr, "count: %d\n", count);
     // add_triangle(cx-200, cy, 100, 75, stroke, 3.0, fill, NULL);
     // for(int i = 0; i < 10; i++) {
     //     fprintf(stderr, "shape: %s: %s\n", shapes[i].shapeId, shapes[i].shape);
     // }
     //
-    add_regagon(cx, cy+50, 5, 50, stroke, 3.0, fill, NULL);
-    add_rectangle(cx-30, cy, 70, 20, stroke, 1.0, fill, NULL);
+    // add_regagon(cx, cy+50, 5, 50, stroke, 3.0, fill, NULL);
+    // add_rectangle(cx-30, cy, 100, 2, stroke, 1.0, fill, NULL);
     //
     // // scaleBy(shapes[1], 1.2, 1);
-    // stroke = "0.5 0.6 0.1";
-    // add_line(cx-100, cy+200, cx+50, cy+200, stroke, 3.0, NULL);
+    stroke = "0.5 0.6 0.1";
+    add_line(cx-100, cy+200, cx+50, cy+200, stroke, 3.0, NULL);
     //
     // for(int i = 0; i < 10; i++) {
     //     fprintf(stderr, "shape: %s\n", shapes[i].shape);
@@ -1115,7 +1155,7 @@ void add_canvas(double width, double height, double xOffset, double yOffset) {
     // scaleBy(shapes[4], 1.5, 5);
 
     moveBy(shapes[0], 100, 300, 1);
-    moveBy(shapes[1], 30, 30, 1);
+    // moveBy(shapes[1], 30, 30, 1);
 
 
     // for(int i = 0; i < 5; i++) {
