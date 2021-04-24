@@ -39,6 +39,15 @@ struct Shape {
 struct Shape* shapes;
 int id_len = 7;
 
+void printShapes() {
+    for(int i = 0; i < count; i++) {
+        struct Shape s = shapes[i];
+        fprintf(stderr, "\nShape: %s ID: %s\nx: %f y: %f\nn: %d r: %f\n", s.shape, s.shapeId, s.x, s.y, s.n, s.r);
+        fprintf(stderr, "w: %f h: %f\nb: %f s: %f\nx1: %f y1: %f\nx2: %f y2: %f\n", s.w, s.h, s.b, s.s, s.x1, s.y1, s.x2, s.y2);
+        fprintf(stderr, "stroke: %s thickness: %f\n:fill %s", s.stroke, s.thiccness, s.fill);
+    }
+}
+
 void myInit ()
 {
     // making background color black as first
