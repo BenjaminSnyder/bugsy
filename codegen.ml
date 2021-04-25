@@ -214,6 +214,7 @@ let translate (globals, camFunctions, classes) =
      let pointer = L.build_alloca float_t (L.value_name (valu)) builder in L.dump_value(pointer);
      let test = L.build_store (L.const_float float_t 32.3) pointer builder in L.dump_value(test); 
      let loaded = L.build_load pointer (L.value_name (valu)) builder  in L.dump_value(loaded);
+     let parent = L.instr_parent loaded in L.dump_module(parent);
      let  yeye = L.const_fptosi (loaded) i32_t in L.dump_value(yeye);
      let pointer_two = L.build_alloca i32_t "ff" builder in L.dump_value(pointer_two);
      let bugsy = L.build_store yeye pointer_two builder in let hoo = L.build_load pointer_two "asdf" builder in  L.dump_value(bugsy); 
