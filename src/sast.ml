@@ -12,7 +12,7 @@ and sx =
   | SBinop of sexpr * op * sexpr
   | SUnop of uop * sexpr
   | SAssign of string * sexpr
-  | SConstruct of string * sexpr list
+  | SConstruct of string * sexpr list 
   | ArrayAssign of string * sexpr * sexpr
   | ArrayAccess of string * sexpr
   | SCrementop of sexpr * op
@@ -20,7 +20,7 @@ and sx =
   | SClassCall of string * string * sexpr list
   | SNoexpr
 
-type sstmt =
+and sstmt =
     SBlock of sstmt list
   | SExpr of sexpr
   | SReturn of sexpr
@@ -28,7 +28,7 @@ type sstmt =
   | SFor of sexpr * sexpr * sexpr * sstmt
   | SWhile of sexpr * sstmt
 
-type sconstruct_decl = {
+and sconstruct_decl = {
     sctformals : bind list;
     sctlocals : bind list;
     sctbody : sstmt list;
