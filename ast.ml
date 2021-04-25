@@ -1,4 +1,5 @@
 (* Abstract Syntax Tree and functions for printing it *)
+module StringMap = Map.Make(String)
 
 type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
           And | Or  | Mod | Pluseq | Mineq | Multeq | Diveq |
@@ -14,22 +15,30 @@ type expr =
   | StrLit of string
   | BoolLit of bool
   | ArrayLit of expr list
+  | IntLiteral of int
   | Id of string
   | Access of string * string
   | Binop of expr * op * expr
   | Unop of uop * expr
   | Assign of string * expr
+  | Construct of string * expr list
   | ArrayAssign of string * expr * expr
   | ArrayAccess of string * expr
   | Crementop of expr * op
   | Call of string * expr list
+  | ClassCall of string * string * expr list
   | Noexpr
 
-type typ = Num | Bool | Void | String | Pt | Shape | Square | Rect |
-           Triangle | Circle | Ellipse | Regagon | Polygon |
-           Canvas | Line | Spline | Array of typ * expr
 
-type bind = typ * string
+type typ = Num | Bool | Void | Int |  String | Array of typ * expr | Object of classTyp
+
+and bind = typ * string
+
+and classTyp = {
+  className : string;
+  instanceVars : (typ * expr) StringMap.t;
+}
+
 
 type stmt =
     Block of stmt list
@@ -46,7 +55,7 @@ type construct_decl = {
 }
 
 type func_decl = {
-    typ : typ;
+    mutable typ : typ;
     fname : string;
     formals : bind list;
     locals : bind list;
@@ -91,6 +100,7 @@ let string_of_uop = function
 
 let rec string_of_expr = function
     NumLit(nl)  -> nl
+  | IntLiteral(l) -> string_of_int l
   | StrLit(str) -> "\"" ^ str ^ "\""
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"
@@ -108,10 +118,13 @@ let rec string_of_expr = function
     | _ -> "ERROR")
 
   | Assign(v, e) -> v ^ " = " ^ string_of_expr e
+  | Construct(a, e) -> "new " ^ a ^ "(" ^ String.concat ", " (List.map string_of_expr e) ^ ")"
   | ArrayAccess(a, e) -> a ^ "[" ^ string_of_expr e ^ "]"
   | ArrayAssign(a, e1, e2) -> a ^ "[" ^ string_of_expr e1 ^ "] = " ^ string_of_expr e2
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
+  | ClassCall(c, f, el) ->
+      c ^ "." ^ f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | Noexpr -> ""
 
 let rec add_level (listy, level) = match listy with
@@ -135,21 +148,11 @@ let rec string_of_typ = function
   | Bool -> "bool"
   | Void -> "void"
   | String -> "string"
-  | Pt -> "point"
-  | Shape -> "shape"
-  | Square -> "square"
-  | Rect -> "rect"
-  | Triangle -> "triangle"
-  | Circle -> "circle"
-  | Ellipse -> "ellipse"
-  | Regagon -> "regagon"
-  | Polygon -> "polygon"
-  | Canvas -> "canvas"
-  | Line -> "line"
-  | Spline -> "spline"
   | Array(t, e) -> string_of_typ t ^ "[" ^ string_of_expr e ^ "]"
+  | Object(clas) -> clas.className
+  | Int | _ -> raise ( Failure ("Not implemented in AST!"))
 
-let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
+and string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 
 let string_of_const_decl const_decl =
   "constructor(" ^ String.concat ", " (List.map snd const_decl.ctformals) ^
@@ -163,12 +166,12 @@ let string_of_fdecl (fdecl, level) =
   fdecl.fname ^ "(" ^ String.concat ", " (List.map snd fdecl.formals) ^
   ") {\n" ^ (String.make (level) '\t') ^
   String.concat (String.make level '\t') (List.map string_of_vdecl fdecl.locals) ^ (String.make level '\t') ^
-  String.concat (String.make level '\t') (List.map string_of_stmt (add_level (fdecl.fbody, (level+1)))) ^ (String.make (level-1) '\t') ^
+  String.concat (String.make level '\t') (List.map string_of_stmt (add_level (fdecl.fbody, (level+1)))) ^ (String.make (if level-1 < 0 then 0 else level-1) '\t') ^
   "}\n"
 
 let string_of_cdecl (cdecl, level) =
-  "class " ^ cdecl.cname ^ " {" ^ "\n" ^ "\t" ^
-  String.concat "\t" (List.map string_of_vdecl cdecl.cdvars) ^ "\t" ^
+  "class " ^ cdecl.cname ^ " {" ^ "\n" ^ (if (List.length cdecl.cdvars) < 1 then "" else "\t") ^
+  String.concat "\t" (List.map string_of_vdecl cdecl.cdvars) ^ (if (List.length cdecl.cdconst) < 1 then "" else "\t") ^
   String.concat "\t" (List.map string_of_const_decl cdecl.cdconst) ^ "\t" ^
   String.concat "\t" (List.map string_of_fdecl (add_level (cdecl.cdfuncs, (level+1)))) ^ (String.make (level-1) '\t') ^
   "}\n"
@@ -176,5 +179,4 @@ let string_of_cdecl (cdecl, level) =
 let string_of_program (vars, funcs, classes) =
   String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
   String.concat "" (List.map string_of_cdecl (add_level (classes, 1))) ^ "\n" ^
-  String.concat "\n" (List.map string_of_fdecl (add_level (funcs, 0)))
-
+  String.concat "\n" (List.map string_of_fdecl (add_level (funcs, 1)))
