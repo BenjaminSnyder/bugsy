@@ -875,7 +875,14 @@ void scaleBy(struct Shape shape, double scale, double speed) {
 void scaleById(char* id, double scale, double speed) {
     for(int i = 0; i < count; i++) {
         if(strcmp(shapes[i].shapeId, id) == 0) {
-            scaleBy(shapes[i], scale, speed);
+            struct Animation a;
+            a.shape = shapes[i];
+            strcpy(a.animation, "scale");
+            a.scale = scale;
+            a.speed = speed;
+            animations[animationCount] = a;
+            animationCount++;
+            //moveBy(shapes[i], translateX, translateY, speed);
         }
     }
 }
@@ -963,7 +970,14 @@ void rotateBy(struct Shape shape, double angle, double speed) {
 void rotateById(char* id, double angle, double speed) {
     for(int i = 0; i < count; i++) {
         if(strcmp(shapes[i].shapeId, id) == 0) {
-            rotateBy(shapes[i], angle, speed);
+            struct Animation a;
+            a.shape = shapes[i];
+            strcpy(a.animation, "rotate");
+            a.angle = angle;
+            a.speed = speed;
+            animations[animationCount] = a;
+            animationCount++;
+            //moveBy(shapes[i], translateX, translateY, speed);
         }
     }
 }
@@ -1260,6 +1274,12 @@ void add_canvas(double width, double height, double xOffset, double yOffset) {
             struct Animation a = animations[i];
             if(strcmp(a.animation, "move") == 0) {
                 moveBy(a.shape, a.translateX, a.translateY, a.speed);
+            }
+            else if(strcmp(a.animation, "rotate") == 0) {
+                rotateBy(a.shape, a.angle, a.speed);
+            }
+            else if(strcmp(a.animation, "scale") == 0) {
+                scaleBy(a.shape, a.scale, a.speed);
             }
         }
 

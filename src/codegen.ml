@@ -120,6 +120,10 @@ let translate (globals, camFunctions, classes) =
       L.function_type float_t [| string_t; float_t; float_t; float_t |] in
   let moveById_func : L.llvalue =
       L.declare_function "moveById" moveById_t the_module in
+  let scaleById_t : L.lltype =
+    L.function_type float_t [| string_t; float_t; float_t |] in
+  let scaleById_func : L.llvalue =
+      L.declare_function "scaleById" scaleById_t the_module in
 
   let init_canvas_t : L.lltype =
       L.function_type float_t [| |] in
@@ -303,6 +307,9 @@ let translate (globals, camFunctions, classes) =
       | SCall ("moveById", [e1; e2; e3; e4]) ->
         L.build_call moveById_func [| (expr builder e1); (expr builder e2); (expr builder e3); (expr builder e4);|]
         "moveById" builder
+      | SCall ("scaleById", [e1; e2; e3]) -> 
+        L.build_call scaleById_func [| (expr builder e1); (expr builder e2); (expr builder e3);|]
+        "scaleById" builder
       | SCall ("init_canvas", []) ->
         L.build_call init_canvas_func [| |]
         "init_canvas" builder
