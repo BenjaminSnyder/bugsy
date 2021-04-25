@@ -27,21 +27,22 @@ num main() {
     id2 = "";
 
     num xt;
-    xt = -400;
+    xt = -100;
     num yt;
-    yt = 400;
+    yt = 100;
 
     num thickness;
     thickness = 5;
 
     init_canvas();
     // add_ccanvas(c, d, a, b);
-    id = add_circle(x, y, g, stroke, thickness, fill, id);
+    // id = add_circle(x, y, g, stroke, thickness, fill, id);
+    id = add_ellipse(x, y, g, g*2, stroke, thickness, fill, id);
     // id2 = add_circle(x-100, y, g, stroke, thickness, fill, id2);
     // add_point_xy(c, d, id);
     moveById(id, xt, yt, thickness);
-    moveById(id, xt, yt, thickness);
-    // scaleById(id, 3, thickness);
+    scaleById(id, 2, thickness);
+    rotateById(id, 180, thickness);
     add_canvas(w, h, cx, cy);
 
 

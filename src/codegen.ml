@@ -113,22 +113,25 @@ let translate (globals, camFunctions, classes) =
       L.declare_function "add_triangle" add_triangle_t the_module in
 
   let add_square_t : L.lltype =
-      L.function_type float_t [| float_t; float_t; float_t; L.pointer_type i8_t; L.pointer_type i8_t |] in
+      L.function_type string_t [| float_t; float_t; float_t; string_t; float_t; string_t; string_t |] in
   let add_square_func : L.llvalue =
       L.declare_function "add_square" add_square_t the_module in
 
   let add_rectangle_t : L.lltype =
-      L.function_type float_t [| float_t; float_t; float_t; L.pointer_type i8_t; L.pointer_type i8_t |] in
+      L.function_type string_t [| float_t; float_t; float_t; float_t; string_t;
+      float_t; string_t; string_t |] in
   let add_rectangle_func : L.llvalue =
       L.declare_function "add_rectangle" add_rectangle_t the_module in
 
   let add_regagon_t : L.lltype =
-      L.function_type float_t [| float_t; float_t; float_t; L.pointer_type i8_t; L.pointer_type i8_t |] in
+      L.function_type string_t [| float_t; float_t; float_t; float_t; string_t;
+      float_t; string_t; string_t |] in
   let add_regagon_func : L.llvalue =
       L.declare_function "add_regagon" add_regagon_t the_module in
 
   let add_ellipse_t : L.lltype =
-      L.function_type float_t [| float_t; float_t; float_t; L.pointer_type i8_t; L.pointer_type i8_t |] in
+      L.function_type string_t [| float_t; float_t; float_t; float_t; string_t;
+      float_t; string_t; string_t |] in
   let add_ellipse_func : L.llvalue =
       L.declare_function "add_ellipse" add_ellipse_t the_module in
 
@@ -141,10 +144,16 @@ let translate (globals, camFunctions, classes) =
       L.function_type float_t [| string_t; float_t; float_t; float_t |] in
   let moveById_func : L.llvalue =
       L.declare_function "moveById" moveById_t the_module in
+
   let scaleById_t : L.lltype =
     L.function_type float_t [| string_t; float_t; float_t |] in
   let scaleById_func : L.llvalue =
       L.declare_function "scaleById" scaleById_t the_module in
+
+  let rotateById_t : L.lltype =
+    L.function_type float_t [| string_t; float_t; float_t |] in
+  let rotateById_func : L.llvalue =
+      L.declare_function "rotateById" rotateById_t the_module in
 
   let init_canvas_t : L.lltype =
       L.function_type float_t [| |] in
@@ -319,8 +328,10 @@ let translate (globals, camFunctions, classes) =
                                     (expr builder e4); (expr builder e5); (expr builder e6);
                                     (expr builder e7); |]
     "add_circle" builder
-    | SCall ("add_square", [e1; e2; e3]) ->
-      L.build_call add_square_func [| (expr builder e1); (expr builder e2); (expr builder e3);|]
+    | SCall ("add_square", [e1; e2; e3; e4; e5; e6; e7]) ->
+      L.build_call add_square_func [| (expr builder e1); (expr builder e2); (expr builder e3);
+                                    (expr builder e4); (expr builder e5); (expr builder e6);
+                                    (expr builder e7); |]
       "add_square" builder
     | SCall ("add_triangle", [e1; e2; e3; e4; e5; e6; e7; e8]) ->
       L.build_call add_triangle_func [| (expr builder e1); (expr builder e2); (expr builder e3);
@@ -328,15 +339,17 @@ let translate (globals, camFunctions, classes) =
       (expr builder e7); (expr builder e8)|]
       "add_triangle" builder
     | SCall ("add_rectangle", [e1; e2; e3; e4; e5; e6; e7; e8]) ->
-      L.build_call add_triangle_func [| (expr builder e1); (expr builder e2); (expr builder e3);
+      L.build_call add_rectangle_func [| (expr builder e1); (expr builder e2); (expr builder e3);
       (expr builder e4); (expr builder e5); (expr builder e6);
       (expr builder e7); (expr builder e8)|]
       "add_rectangle" builder
-    | SCall ("add_regagon", [e1; e2; e3; e4]) ->
-      L.build_call canvas_func [| (expr builder e1); (expr builder e2); (expr builder e3); (expr builder e4);|]
+    | SCall ("add_regagon", [e1; e2; e3; e4; e5; e6; e7; e8]) ->
+      L.build_call add_regagon_func [| (expr builder e1); (expr builder e2); (expr builder e3);
+      (expr builder e4); (expr builder e5); (expr builder e6);
+      (expr builder e7); (expr builder e8)|]
       "add_regagon" builder
     | SCall ("add_ellipse", [e1; e2; e3; e4; e5; e6; e7; e8]) ->
-      L.build_call add_triangle_func [| (expr builder e1); (expr builder e2); (expr builder e3);
+      L.build_call add_ellipse_func [| (expr builder e1); (expr builder e2); (expr builder e3);
       (expr builder e4); (expr builder e5); (expr builder e6);
       (expr builder e7); (expr builder e8)|]
       "add_ellipse" builder
@@ -346,9 +359,12 @@ let translate (globals, camFunctions, classes) =
     | SCall ("moveById", [e1; e2; e3; e4]) ->
       L.build_call moveById_func [| (expr builder e1); (expr builder e2); (expr builder e3); (expr builder e4);|]
       "moveById" builder
-    | SCall ("scaleById", [e1; e2; e3]) -> 
+    | SCall ("scaleById", [e1; e2; e3]) ->
       L.build_call scaleById_func [| (expr builder e1); (expr builder e2); (expr builder e3);|]
       "scaleById" builder
+    | SCall ("rotateById", [e1; e2; e3]) ->
+    L.build_call rotateById_func [| (expr builder e1); (expr builder e2); (expr builder e3);|]
+    "rotateById" builder
     | SCall ("init_canvas", []) ->
       L.build_call init_canvas_func [| |]
       "init_canvas" builder
