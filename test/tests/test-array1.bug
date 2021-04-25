@@ -1,0 +1,9 @@
+num main() {
+    num i;
+    num[] x;
+    x = [1.0, 2.0, 3.0, 4.0, 5.0];
+    for (i = 0; i < 5; i = i + 1) {
+        print(x[i]);
+    }
+    return 0.0;
+}

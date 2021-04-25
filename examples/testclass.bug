@@ -1,0 +1,318 @@
+class circle {
+    num x;
+    num y;
+    num r;
+    string stroke;
+    num thickness;
+    string fill;
+    string id;
+
+    constructor(num x_in, num y_in, num r_in, string stroke_in, num thickness_in, string fill_in) {
+        x = x_in;
+        y = y_in;
+        r = r_in;
+        stroke = stroke_in;
+        thickness = thickness_in;
+        fill = fill_in;
+    }
+
+    void make() {
+        id = add_circle(x, y, r, stroke, thickness, fill, id);
+    }
+
+    // TODO: update x, y positions
+    void move(num translateX, num translateY, num speed) {
+        moveById(id, translateX, translateY, speed);
+    }
+
+    void rotate(num angle, num speed) {
+        rotateById(id, angle, speed);
+    }
+
+    void scale(num scale, num speed) {
+        scaleById(id, scale, speed);
+    }
+
+}
+
+
+
+class ellipse {
+    num x;
+    num y;
+    num w;
+    num h;
+    string stroke;
+    num thickness;
+    string fill;
+    string id;
+
+    constructor(num x_in, num y_in, num w_in, num h_in, string stroke_in, num thickness_in, string fill_in) {
+        x = x_in;
+        y = y_in;
+        w = w_in;
+        h = h_in;
+        stroke = stroke_in;
+        thickness = thickness_in;
+        fill = fill_in;
+    }
+
+
+        void make() {
+            id = add_ellipse(x, y, w, h, stroke, thickness, fill, id);
+        }
+
+        // TODO: update x, y positions
+        void move(num translateX, num translateY, num speed) {
+            moveById(id, translateX, translateY, speed);
+        }
+
+        void rotate(num angle, num speed) {
+            rotateById(id, angle, speed);
+        }
+
+        void scale(num scale, num speed) {
+            scaleById(id, scale, speed);
+        }
+}
+
+class square {
+    num x;
+    num y;
+    num s;
+    string stroke;
+    num thickness;
+    string fill;
+    string id;
+
+    constructor(num x_in, num y_in, num s_in, string stroke_in, num thickness_in, string fill_in) {
+        x = x_in;
+        y = y_in;
+        s = s_in;
+        stroke = stroke_in;
+        thickness = thickness_in;
+        fill = fill_in;
+    }
+
+
+        void make() {
+            id = add_square(x, y, s, stroke, thickness, fill, id);
+        }
+
+        // TODO: update x, y positions
+        void move(num translateX, num translateY, num speed) {
+            moveById(id, translateX, translateY, speed);
+        }
+
+        void rotate(num angle, num speed) {
+            rotateById(id, angle, speed);
+        }
+
+        void scale(num scale, num speed) {
+            scaleById(id, scale, speed);
+        }
+}
+
+class triangle {
+    num x;
+    num y;
+    num b;
+    num h;
+    string stroke;
+    num thickness;
+    string fill;
+    string id;
+
+    constructor(num x_in, num y_in, num b_in, num h_in, string stroke_in, num thickness_in, string fill_in) {
+        x = x_in;
+        y = y_in;
+        b = b_in;
+        h = h_in;
+        stroke = stroke_in;
+        thickness = thickness_in;
+        fill = fill_in;
+    }
+
+
+        void make() {
+            id = add_triangle(x, y, b, h, stroke, thickness, fill, id);
+        }
+
+        // TODO: update x, y positions
+        void move(num translateX, num translateY, num speed) {
+            moveById(id, translateX, translateY, speed);
+        }
+
+        void rotate(num angle, num speed) {
+            rotateById(id, angle, speed);
+        }
+
+        void scale(num scale, num speed) {
+            scaleById(id, scale, speed);
+        }
+}
+
+class rectangle {
+    num x;
+    num y;
+    num w;
+    num h;
+    string stroke;
+    num thickness;
+    string fill;
+    string id;
+
+    constructor(num x_in, num y_in, num w_in, num h_in, string stroke_in, num thickness_in, string fill_in) {
+        x = x_in;
+        y = y_in;
+        w = w_in;
+        h = h_in;
+        stroke = stroke_in;
+        thickness = thickness_in;
+        fill = fill_in;
+    }
+
+
+        void make() {
+            id = add_rectangle(x, y, w, h, stroke, thickness, fill, id);
+        }
+
+        // TODO: update x, y positions
+        void move(num translateX, num translateY, num speed) {
+            moveById(id, translateX, translateY, speed);
+        }
+
+        void rotate(num angle, num speed) {
+            rotateById(id, angle, speed);
+        }
+
+        void scale(num scale, num speed) {
+            scaleById(id, scale, speed);
+        }
+}
+
+class regagon {
+    num x;
+    num y;
+    num n;
+    num r;
+    string stroke;
+    num thickness;
+    string fill;
+    string id;
+
+    constructor(num x_in, num y_in, num n_in, num r_in, string stroke_in, num thickness_in, string fill_in) {
+        x = x_in;
+        y = y_in;
+        n = n_in;
+        r = r_in;
+        stroke = stroke_in;
+        thickness = thickness_in;
+        fill = fill_in;
+    }
+
+
+        void make() {
+            id = add_regagon(x, y, n, r, stroke, thickness, fill, id);
+        }
+
+        // TODO: update x, y positions
+        void move(num translateX, num translateY, num speed) {
+            moveById(id, translateX, translateY, speed);
+        }
+
+        void rotate(num angle, num speed) {
+            rotateById(id, angle, speed);
+        }
+
+        void scale(num scale, num speed) {
+            scaleById(id, scale, speed);
+        }
+}
+
+class line {
+    num x1;
+    num y1;
+    num x2;
+    num y2;
+    string stroke;
+    num thickness;
+    string id;
+
+    constructor(num x1_in, num y1_in, num x2_in, num y2_in, string stroke_in, num thickness_in) {
+        x1 = x1_in;
+        y1 = y1_in;
+        x2 = x2_in;
+        y2 = y2_in;
+        stroke = stroke_in;
+        thickness = thickness_in;
+    }
+
+
+        void make() {
+            id = add_line(x1, y1, x2, y2, stroke, thickness, id);
+        }
+
+        // TODO: update x, y positions
+        void move(num translateX, num translateY, num speed) {
+            moveById(id, translateX, translateY, speed);
+        }
+
+        void rotate(num angle, num speed) {
+            rotateById(id, angle, speed);
+        }
+
+        void scale(num scale, num speed) {
+            scaleById(id, scale, speed);
+        }
+}
+
+
+class test{
+
+	num a;
+
+	constructor(num y){
+		a = y;
+	} //end constructor
+
+	num foo(){
+		num x;
+		num y;
+		x=0.0;
+		y=2.0;
+		if(true){
+			x=5.0;
+			print(x);
+		}
+		if(false){
+			x+y;
+		}
+		else{
+			y-x;
+			return y;
+		}
+		return x;
+	}
+
+	num foo2(num z){
+		return a + z;
+	}
+
+} //end class
+
+num main(){
+	num x;
+	num z;
+	num a1;
+	num a2;
+	test t;
+	t = new test(3.0);
+	circle c;
+	c = new circle(1.0, 2.0, 5.0, "0.5 0.5 0.5", 1.0, "0.2 0.2 0.2");
+	c.make();
+	a1 = t.foo();
+	a2 = t.foo2(20.0);
+	z = t.a;
+	return 0;
+}

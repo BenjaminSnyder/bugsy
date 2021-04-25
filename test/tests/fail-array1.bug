@@ -1,0 +1,9 @@
+num main() {
+    num a;
+    num z;
+    num[] x;
+    x = [34, 352, 53, 352];
+    a = 10;
+    z = x[a];
+    return 0.0
+}
