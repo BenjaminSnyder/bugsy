@@ -7,7 +7,7 @@ let snd' (_,sn,_)=sn
 let trd  (_,_,tr)=tr
 %}
 
-%token CONSTRUCTOR CLASS NULL
+%token CONSTRUCTOR CLASS NEW
 %token CONTINUE BREAK TRY CATCH RAISE
 %token LPAREN RPAREN LBRACE RBRACE LSQBRACKET RSQBRACKET
 %token COLON SEMI COMMA QMARK DOT
@@ -16,9 +16,7 @@ let trd  (_,_,tr)=tr
 %token PLUSEQ MINUSEQ MULTEQ DIVEQ
 %token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR NOT
 %token RETURN IF ELIF ELSE FOR WHILE
-%token BOOL VOID STRING CHAR NUM
-%token POINT SHAPE SQUARE RECT CIRCLE ELLIPSE TRIANGLE
-%token POLYGON REGAGON CANVAS LINE SPLINE
+%token BOOL VOID STRING CHAR NUM NULL
 %token <bool> BLIT
 %token <string> ID NUMLIT STRLIT
 %token EOF
@@ -69,7 +67,7 @@ cdecl:
 const_decl:
   CONSTRUCTOR LPAREN formals_opt RPAREN LBRACE body RBRACE
   { {
-    ctformals = $3;
+    ctformals = List.rev $3;
     ctlocals = List.rev (fst $6);
     ctbody = List.rev (snd $6);
   } }
@@ -98,26 +96,16 @@ formal_list:
   | formal_list COMMA typ ID { ($3,$4) :: $1 }
 
 typ:
-    NUM { Num  }
-  | BOOL { Bool }
-  | VOID { Void }
-  | STRING { String }
-  | shape { $1 }
+    NUM     { Num  }
+  | BOOL    { Bool }
+  | VOID    { Void }
+  | STRING  { String }
   | array_t { $1 }
-
-shape:
-    POINT      { Pt       }
-  | SHAPE      { Shape    }
-  | SQUARE     { Square   }
-  | RECT       { Rect     }
-  | TRIANGLE   { Triangle }
-  | CIRCLE     { Circle   }
-  | ELLIPSE    { Ellipse  }
-  | LINE       { Line     }
-  | CANVAS     { Canvas   }
-  | POLYGON    { Polygon  }
-  | REGAGON    { Regagon  }
-  | SPLINE     { Spline   }
+  | ID { Object({
+                className = $1;
+                instanceVars = StringMap.empty;
+              })
+            }
 
 array_t:
   typ LSQBRACKET expr RSQBRACKET { Array($1, $3) }
@@ -151,10 +139,12 @@ expr:
   | bool_expr        { $1 }
   | arithmetic       { $1 }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
-  | ID ASSIGN expr   { Assign($1, $3) }
-  | ID LSQBRACKET expr RSQBRACKET ASSIGN expr   { ArrayAssign($1, $3, $6) }
-  | ID LSQBRACKET expr RSQBRACKET               { ArrayAccess($1, $3) }
-  | LPAREN expr RPAREN { $2 } /* allow parentheses in arithmetic */
+  | ID DOT ID LPAREN actuals_opt RPAREN { ClassCall($1, $3, $5) }
+  | NEW ID LPAREN actuals_opt RPAREN { Construct($2, $4) }
+  | ID ASSIGN expr                   { Assign($1, $3) }
+  | ID LSQBRACKET expr RSQBRACKET ASSIGN expr           { ArrayAssign($1, $3, $6) }
+  | ID LSQBRACKET expr RSQBRACKET    { ArrayAccess($1, $3) }
+  | LPAREN expr RPAREN               { $2 } /* allow parentheses in arithmetic */
 
 literal:
     NUMLIT           { NumLit($1)  }
