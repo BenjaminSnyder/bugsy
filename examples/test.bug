@@ -13,5 +13,3 @@ num main() {
   /*  printf(y); */
     return 0;
 }
-
-

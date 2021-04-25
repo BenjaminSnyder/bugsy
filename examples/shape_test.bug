@@ -1,0 +1,33 @@
+num main() {
+    num a;
+    num b;
+
+    a = 0;
+    b = 0;
+    num c;
+    c = 500;
+
+    num d;
+    num e;
+    num f;
+    d = 500;
+    e = 50;
+    f = c + 2;
+    num g;
+    g = 10;
+    string stroke;
+    stroke = "0.0 0.3 0.5";
+    string fill;
+    fill = "0.2 0.2 0.2";
+    string id;
+    id = "qwerty";
+
+
+    add_canvas(c, d, a, b);
+
+    // add_ccanvas(c, d, a, b);
+    // xadd_circle(a, b, e, a);
+    // add_point_xy(c, d, id);
+
+    return 0;
+}

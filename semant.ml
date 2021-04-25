@@ -102,29 +102,29 @@ let check (globals, functions, classes) =
     in let func_map2 = List.fold_left add_bind2 func_map [
                                         ("demo");]
     in
-(*   let add_bind3 map (name, ty1) = StringMap.add name {
+(*    let add_bind3 map (name, ty1) = StringMap.add name {
       typ = Void;
       fname = name;
       formals = [(ty1, "point")];
       locals = []; fbody = [] } map
     in let func_map3 = List.fold_left add_bind3 func_map2 [
                             ("add_point", Pt);]
-    in*)
-    let add_bind4 map (name, ty1, ty2, ty3) = StringMap.add name {
+    in
+    let add_bind4 map (name, ty1, ty2) = StringMap.add name {
       typ = Void;
       fname = name;
-      formals = [(ty1, "x"); (ty2, "y"); (ty3, "id")];
+      formals = [(ty1, "x"); (ty2, "y")];
       locals = []; fbody = [] } map
     in let func_map4 = List.fold_left add_bind4 func_map2 [
-                            ("add_point_xy", Num, Num, String);]
-    in
-    let add_bind5 map (name, ty1, ty2, ty3, ty4) = StringMap.add name {
-      typ = Void;
+                            ("add_point_xy", Num, Num);]
+    in*)
+    let add_bind5 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
+      typ = String;
       fname = name;
-      formals = [(ty1, "x"); (ty2, "y"); (ty3, "r"); (ty4, "stroke");];
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "r"); (ty4, "stroke"); (ty5, "thickness"); (ty6, "fill"); (ty7, "id")];
       locals = []; fbody = [] } map
-    in let func_map5 = List.fold_left add_bind5 func_map4 [
-                            ("xadd_circle", Num, Num, Num, Num);]
+    in let func_map5 = List.fold_left add_bind5 func_map2 [
+                            ("add_circle", Num, Num, Num, String, Num, String, String);]
     in
     let add_bind6 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
       typ = String;
@@ -155,7 +155,7 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [(ty1, "id"); (ty2, "angle"); (ty3, "speed");];
       locals = []; fbody = [] } map
-    in let func_map9 = List.fold_left add_bind9 func_map8 [
+    in let func_map9 = List.fold_left add_bind9 func_map7 [
                             ("rotateById", String, Num, Num);]
     in
     let add_bind10 map (name, ty1, ty2, ty3) = StringMap.add name {
@@ -198,20 +198,12 @@ let check (globals, functions, classes) =
     in let func_map14 = List.fold_left add_bind14 func_map13 [
                             ("add_regagon", Num, Num, Num, Num, String, Num, String, String);]
     in
-    let add_bind15 map (name, ty1, ty2, ty3, ty4) = StringMap.add name {
-      typ = Void;
-      fname = name;
-      formals = [(ty1, "width"); (ty2, "height"); (ty3, "xOffset"); (ty4, "yOffset")];
-      locals = []; fbody = [] } map
-    in let func_map15 = List.fold_left add_bind15 func_map14 [
-                            ("add_ccanvas", Num, Num, Num, Num);]
-    in
-    let add_bind16 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
+    let add_bind15 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
       typ = String;
       fname = name;
       formals = [(ty1, "x1"); (ty2, "y1"); (ty3, "x2"); (ty4, "y2"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "id")];
       locals = []; fbody = [] } map
-    in List.fold_left add_bind16 func_map15 [
+    in List.fold_left add_bind5 func_map14 [
                             ("add_line", Num, Num, Num, Num, String, Num, String);]
   in
   (* Add function name to symbol table *)

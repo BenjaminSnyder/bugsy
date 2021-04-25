@@ -13,7 +13,7 @@ bugsy.native :
 		bugsy.native
 
 builtins.o:
-	gcc src/builtins.c -c -o _build/builtins.o
+	gcc src/builtins.c -c -o _build/builtins.o 
 
 # "make clean" removes all generated files
 
