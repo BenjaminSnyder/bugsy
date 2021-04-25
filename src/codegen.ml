@@ -38,14 +38,12 @@ let translate (globals, camFunctions, classes) =
   and ye_t       = L.float_type context
   and string_t   = L.pointer_type (L.i8_type context) (*new string type *)
   and array_t    = L.array_type
-  and struct_t (classTyp:A.classTyp)  = 
-    let varTypes = List.map (fun (_, (t,_)) -> t) (StringMap.bindings classTyp.instanceVars) in
-    let arr = Array.of_list (List.map ltype_of_typ varTypes) in
-    L.struct_type context arr
+  and struct_t arr = L.struct_type context arr
   and void_t     = L.void_type   context
+  in 
 
   (* Return the LLVM type for a Bugsy type *)
-  and rec ltype_of_typ = function
+  let rec ltype_of_typ = function
       A.Num   -> float_t
     | A.Bool  -> i1_t
     | A.Void  -> void_t
@@ -53,8 +51,11 @@ let translate (globals, camFunctions, classes) =
     | A.Int -> i32_t
     | A.Array(typ, size) -> (match typ with
           A.Num -> array_t float_t (convert_int size))
-    | A.Object(classTyp) -> L.pointer_type (struct_t classTyp)
+    | A.Object(classTyp) -> L.pointer_type (struct_t (struct_t_to_arr classTyp))
 
+  and struct_t_to_arr classTyp =
+    let varTypes = List.map (fun (_, (t,_)) -> t) (StringMap.bindings classTyp.instanceVars) in
+    Array.of_list (List.map ltype_of_typ varTypes)
   in
 
 
