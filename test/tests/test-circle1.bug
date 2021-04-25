@@ -1,0 +1,28 @@
+num main() {
+    num x;
+    num y;
+    num r;
+    num h;
+    num w;
+    num cx;
+    num cy;
+    string stroke;
+    string fill;
+    num thickness;
+    string id;
+    id = "";
+    fill = "0.2 0.2 0.2";
+    stroke = "0.0 0.3 0.5";
+    cx = 0;
+    cy = 0;
+    h = 1000;
+    w = 1500;
+    x = h / 2;
+    y = h / 2;
+    r = 100;
+    thickness = 5;
+    init_canvas();
+    id = add_circle(x, y, r, stroke, thickness, fill, id);
+    add_canvas(w, h, cx, cy);
+    return 0;
+}
