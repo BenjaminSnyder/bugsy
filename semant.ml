@@ -5,6 +5,19 @@ open Sast
 
 module StringMap = Map.Make(String)
 
+
+let rec zip_list (listy, li2) = match listy with
+    [] -> []
+  | hd::li' -> (hd, li2)::zip_list(li', li2)
+
+(* let rec unzip' (tup) = match tup with
+    [] -> []
+  | (elem, li)::li' -> elem::unzip'(li')
+
+let unzip tup = match tup with
+    [] -> ([], [])
+  | (elem, li)::li' -> (elem::unzip'(li'), li) *)
+
 (* Semantic checking of the AST. Returns an SAST if successful,
    throws an exception if something is wrong.
    Check each global variable, then check each function *)
@@ -22,6 +35,42 @@ let check (globals, functions, classes) =
 	  raise (Failure ("duplicate " ^ kind ^ " " ^ n1))
       | _ :: t -> dups t
     in dups (List.sort (fun (_,a) (_,b) -> compare a b) binds)
+  in
+
+  (* Add Class Helper *)
+  let add_class map cd =
+    let built_in_err = "class " ^ cd.cname ^ " may not be defined"
+    and dup_err = "duplicate class " ^ cd.cname
+    and make_err er = raise (Failure er)
+    and n = cd.cname (* Name of the class *)
+    in match cd with (* No duplicate classes or redefinitions of built-ins *)
+        _ when StringMap.mem n map -> make_err dup_err
+      | _ ->  StringMap.add n cd map
+  in
+
+
+  (* Helper function for checking if a class is defined *)
+  let verify_class_name cname =
+    (* Collect all class names into one symbol table *)
+    (* TODO: Fix the unused class_decls here *)
+    let class_decls = List.fold_left add_class (*built_in_class_decls*) StringMap.empty classes
+    in
+    let find_class s =
+      try StringMap.find s class_decls
+      with Not_found -> raise (Failure ("unrecognized class " ^ s))
+    in
+    find_class cname
+  in
+
+  (* Find class *)
+  let get_class cname =
+    let class_decls = List.fold_left add_class StringMap.empty classes
+    in
+    let find_class s =
+      try StringMap.find s class_decls
+      with Not_found -> raise (Failure ("unrecognized class " ^ s))
+    in
+    find_class cname (* Return the class from its name *)
   in
 
   (**** Check global variables ****)
@@ -60,7 +109,7 @@ let check (globals, functions, classes) =
       locals = []; fbody = [] } map
     in let func_map3 = List.fold_left add_bind3 func_map2 [
                             ("add_point", Pt);]
-    in *)
+    in
     let add_bind4 map (name, ty1, ty2) = StringMap.add name {
       typ = Void;
       fname = name;
@@ -68,38 +117,94 @@ let check (globals, functions, classes) =
       locals = []; fbody = [] } map
     in let func_map4 = List.fold_left add_bind4 func_map2 [
                             ("add_point_xy", Num, Num);]
-    in
-    let add_bind5 map (name, ty1, ty2, ty3, ty4, ty5, ty6) = StringMap.add name {
-      typ = Void;
+    in*)
+    let add_bind5 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
+      typ = String;
       fname = name;
-      formals = [(ty1, "x"); (ty2, "y"); (ty3, "r"); (ty4, "stroke"); (ty5, "thiccness"); (ty6, "fill")];
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "r"); (ty4, "stroke"); (ty5, "thickness"); (ty6, "fill"); (ty7, "id")];
       locals = []; fbody = [] } map
-    in let func_map5 = List.fold_left add_bind5 func_map4 [
-                            ("add_circle", Num, Num, Num, String, Num, String);]
+    in let func_map5 = List.fold_left add_bind5 func_map2 [
+                            ("add_circle", Num, Num, Num, String, Num, String, String);]
     in
-    let add_bind6 map (name, ty1, ty2, ty3, ty4, ty5, ty6) = StringMap.add name {
-      typ = Void;
+    let add_bind6 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
+      typ = String;
       fname = name;
-      formals = [(ty1, "x"); (ty2, "y"); (ty3, "size"); (ty4, "stroke"); (ty5, "thiccness"); (ty6, "fill")];
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "size"); (ty4, "stroke"); (ty5, "thickness"); (ty6, "fill"); (ty7, "id")];
       locals = []; fbody = [] } map
     in let func_map6 = List.fold_left add_bind6 func_map5 [
-                            ("add_square", Num, Num, Num, String, Num, String);]
+                            ("add_square", Num, Num, Num, String, Num, String, String);]
     in
-    let add_bind7 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
+    let add_bind7 map (name, ty1, ty2, ty3, ty4) = StringMap.add name {
       typ = Void;
       fname = name;
-      formals = [(ty1, "x"); (ty2, "y"); (ty3, "w"); (ty4, "h"); (ty5, "stroke"); (ty6, "thiccness"); (ty7, "fill")];
+      formals = [(ty1, "id"); (ty2, "translateX"); (ty3, "translateY"); (ty4, "speed")];
       locals = []; fbody = [] } map
     in let func_map7 = List.fold_left add_bind7 func_map6 [
-                            ("add_rectangle", Num, Num, Num, Num, String, Num, String);]
+                            ("moveById", String, Num, Num, Num);]
     in
     let add_bind8 map (name, ty1, ty2, ty3, ty4) = StringMap.add name {
       typ = Void;
       fname = name;
       formals = [(ty1, "width"); (ty2, "height"); (ty3, "xOffset"); (ty4, "yOffset")];
       locals = []; fbody = [] } map
-    in List.fold_left add_bind8 func_map7 [
+    in let func_map8 = List.fold_left add_bind8 func_map7 [
                             ("add_canvas", Num, Num, Num, Num);]
+    in
+    let add_bind9 map (name, ty1, ty2, ty3) = StringMap.add name {
+      typ = Void;
+      fname = name;
+      formals = [(ty1, "id"); (ty2, "angle"); (ty3, "speed");];
+      locals = []; fbody = [] } map
+    in let func_map9 = List.fold_left add_bind9 func_map7 [
+                            ("rotateById", String, Num, Num);]
+    in
+    let add_bind10 map (name, ty1, ty2, ty3) = StringMap.add name {
+      typ = Void;
+      fname = name;
+      formals = [(ty1, "id"); (ty2, "scale"); (ty3, "speed")];
+      locals = []; fbody = [] } map
+    in let func_map10 = List.fold_left add_bind10 func_map9 [
+                            ("scaleById", String, Num, Num);]
+    in
+    let add_bind11 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7, ty8) = StringMap.add name {
+      typ = String;
+      fname = name;
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "b"); (ty4, "h"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "fill"); (ty8, "id")];
+      locals = []; fbody = [] } map
+    in let func_map11 = List.fold_left add_bind11 func_map10 [
+                            ("add_triangle", Num, Num, Num, Num, String, Num, String, String);]
+    in
+    let add_bind12 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7, ty8) = StringMap.add name {
+      typ = String;
+      fname = name;
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "w"); (ty4, "h"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "fill"); (ty8, "id")];
+      locals = []; fbody = [] } map
+    in let func_map12 = List.fold_left add_bind12 func_map11 [
+                            ("add_rectangle", Num, Num, Num, Num, String, Num, String, String);]
+    in
+    let add_bind13 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7, ty8) = StringMap.add name {
+      typ = String;
+      fname = name;
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "w"); (ty4, "h"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "fill"); (ty8, "id")];
+      locals = []; fbody = [] } map
+    in let func_map13 = List.fold_left add_bind13 func_map12 [
+                            ("add_ellipse", Num, Num, Num, Num, String, Num, String, String);]
+    in
+    let add_bind14 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7, ty8) = StringMap.add name {
+      typ = String;
+      fname = name;
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "n"); (ty4, "r"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "fill"); (ty8, "id")];
+      locals = []; fbody = [] } map
+    in let func_map14 = List.fold_left add_bind14 func_map13 [
+                            ("add_regagon", Num, Num, Num, Num, String, Num, String, String);]
+    in
+    let add_bind15 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
+      typ = String;
+      fname = name;
+      formals = [(ty1, "x1"); (ty2, "y1"); (ty3, "x2"); (ty4, "y2"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "id")];
+      locals = []; fbody = [] } map
+    in List.fold_left add_bind5 func_map14 [
+                            ("add_line", Num, Num, Num, Num, String, Num, String);]
   in
   (* Add function name to symbol table *)
   let add_func map fd =
@@ -126,7 +231,10 @@ let check (globals, functions, classes) =
 
   let _ = find_func "main" in (* Ensure "main" is defined *)
 
-  let check_function func =
+  let check_function tup =
+    let func = fst tup in (* function declaration *)
+    let opt_class = snd tup in (* Class binds if the function is nested in a class *)
+
     (* Make sure no formals or locals are void or duplicates *)
     check_binds "formal" func.formals;
     check_binds "local" func.locals;
@@ -134,12 +242,32 @@ let check (globals, functions, classes) =
     (* Raise an exception if the given rvalue type cannot be assigned to
        the given lvalue type *)
     let check_assign lvaluet rvaluet err =
-       if lvaluet = rvaluet then lvaluet else raise (Failure err)
+      let className  =  match lvaluet with
+        Object(o) -> (match o with
+              {className; instanceVars} -> className
+            | _ -> raise ( Failure ("Something went horribly wrong."))
+            )
+        | _ -> ""
+      in
+      (* check if there is a class *)
+      if not (String.equal className "") then
+        (* check if the class lt is same as class rt *)
+        if not (String.equal className
+        (
+        match rvaluet with
+          Object(o) -> match o with
+                {className; instanceVars} -> className
+              | _ -> raise ( Failure ("Something went horribly wrong."))
+          | _ -> ""
+          (*if not, then raise an err, otherwise return lvalue*)
+        )) then raise (Failure err) else lvaluet
+        (* otherwise if not a class, then run normal check_assign *)
+      else (if lvaluet = rvaluet then lvaluet else raise (Failure err))
     in
 
     (* Build local symbol table of variables for this function *)
     let symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
-	                StringMap.empty (globals @ func.formals @ func.locals )
+	                StringMap.empty (globals @ func.formals @ func.locals @ opt_class)
     in
 
     (* Return a variable from our local symbol table *)
@@ -150,17 +278,81 @@ let check (globals, functions, classes) =
 
     (* Return a semantically-checked expression, i.e., with a type *)
     let rec expr = function
-        NumLit l   -> (Num, SNumLit l)
+             NumLit l   -> (Num, SNumLit l)
+           | ArrayLit l ->
+
+        let test = string_of_int (List.length l) in
+        (Array (Num, NumLit(test)), SArrayLiteral(List.map expr l, Array(Num, IntLiteral(List.length l))))
+
+      | IntLiteral l -> (Num, SIntLiteral l)
       | BoolLit l  -> (Bool, SBoolLit l)
       | StrLit l   -> (String, SStrLit l)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
+      | Access (obj, var) ->
+          let ctyp = string_of_typ (type_of_identifier obj) in (* Get class name from object name *)
+          let _ = verify_class_name ctyp in (*make sure class exists *)
+          let class_object = get_class ctyp in (*get the class we need to check *)
+
+          (* Build local symbol table of variables for this function *)
+          let classSymbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
+          StringMap.empty (class_object.cdvars)
+          in
+          (* Find the variable in the class *)
+          let find_var s =
+            try StringMap.find s classSymbols
+            with Not_found -> raise (Failure ("unrecognized variable " ^ s))
+          in
+          let cv = find_var var in
+          (cv, SAccess(obj, var))
       | Assign(var, e) as ex ->
           let lt = type_of_identifier var
           and (rt, e') = expr e in
           let err = "illegal assignment " ^ string_of_typ lt ^ " = " ^
             string_of_typ rt ^ " in " ^ string_of_expr ex
           in (check_assign lt rt err, SAssign(var, (rt, e')))
+      | Construct(cn, args) as construct ->
+          (* Add class name to symbol table *)
+          let add_class map cd =
+            let dup_err = "duplicate class " ^ cd.cname
+            and make_err er = raise (Failure er)
+            and n = cd.cname (* Name of the class *)
+            in match cd with (* No duplicate classes or redefinitions of built-ins *)
+               | _ when StringMap.mem n map -> make_err dup_err
+               | _ ->  StringMap.add n cd map
+          in
+
+          (* Collect all class names into one symbol table *)
+          (* TODO: Fix the unused class_decls here *)
+          let class_decls = List.fold_left add_class StringMap.empty classes
+          in
+
+          let find_class s =
+            try StringMap.find s class_decls
+            with Not_found -> raise (Failure ("unrecognized class " ^ s))
+          in
+
+          let _class = find_class cn in (* Ensure class cn is defined *)
+          (*_class.ctformals *)
+          let ct = List.nth _class.cdconst 0 in
+          let formals = ct.ctformals in
+          let param_length = List.length formals in
+          let empty = StringMap.empty in
+          if List.length args != param_length then
+            raise (Failure ("expecting " ^ string_of_int param_length ^
+                            " arguments in " ^ string_of_expr construct ))
+          else let check_const_call (formal_typ,_) e =
+            let (et, e') = expr e in
+            let err = "illegal argument found " ^ string_of_typ et ^
+              " expected " ^ string_of_typ formal_typ ^ " in " ^ string_of_expr e
+            in (check_assign formal_typ et err, e')
+          in
+          let args' = List.map2 check_const_call formals args in
+          let vars = List.fold_left2
+            (fun map (ty, n) value-> StringMap.add n (ty,value) map)
+            StringMap.empty formals args
+          in (Object({className = cn; instanceVars = vars ;}) , SConstruct(cn, args'))
+
       | Unop(op, e) as ex ->
           let (t, e') = expr e in
           let ty = match op with
@@ -171,6 +363,17 @@ let check (globals, functions, classes) =
                                  string_of_uop op ^ string_of_typ t ^
                                  " in " ^ string_of_expr ex))
           in (ty, SUnop(op, (t, e')))
+      | Crementop(e, op) as ex ->
+          let (t, e') = expr e in
+          let ty = match op with
+            PreInc  when t = Num -> Num
+          | PostInc when t = Num -> Num
+          | PreDec  when t = Num -> Num
+          | PostDec when t = Num -> Num
+          | _ -> raise (Failure ("illegal increment/decrement operator " ^
+                                   string_of_op op ^ string_of_typ t ^
+                                   " in " ^ string_of_expr ex))
+          in (ty, SCrementop((t, e'), op))
       | Binop(e1, op, e2) as e ->
           let (t1, e1') = expr e1
           and (t2, e2') = expr e2 in
@@ -205,6 +408,31 @@ let check (globals, functions, classes) =
           in
           let args' = List.map2 check_call fd.formals args
           in (fd.typ, SCall(fname, args'))
+      | ClassCall(cname, fname, args) as classcall ->
+          let ctyp = string_of_typ (type_of_identifier cname) in (* Get class name from object name *)
+          let _ = verify_class_name ctyp in
+          let class_object = get_class ctyp in
+          let cfuncs = List.fold_left add_func StringMap.empty class_object.cdfuncs in
+
+          (* Find the function in the class *)
+          let find_func s =
+            try StringMap.find fname cfuncs
+            with Not_found -> raise (Failure ("unrecognized function " ^ cname ^ "." ^ fname))
+          in
+          let cf = find_func fname in
+          let param_length = List.length cf.formals in
+          if List.length args != param_length then
+            raise (Failure ("expecting " ^ string_of_int param_length ^
+                            " arguments in " ^ string_of_expr classcall))
+          else let check_call (ft, _) e =
+            let (et, e') = expr e in
+            let err = "illegal argument found " ^ string_of_typ et ^
+              " expected " ^ string_of_typ ft ^ " in " ^ string_of_expr e
+            in (check_assign ft et err, e')
+          in
+          let args' = List.map2 check_call cf.formals args
+          in (cf.typ, SClassCall(cname, fname, args'))
+
     in
 
     let check_bool_expr e =
@@ -253,21 +481,19 @@ let check (globals, functions, classes) =
   (* Collect class declarations for built-in classes: no bodies *)
 
   let built_in_class_decls =
-      let add_bind map (name, ty1, ty2) = StringMap.add name {
+      let add_bind map (name, _, _) = StringMap.add name {
           cname = name;
           cdvars = [];
           cdconst = []; cdfuncs = [] } map
-      in let func_map = List.fold_left add_bind StringMap.empty [
-                                       ("point", Num, Num);
-                                       ("ass_circle", Pt, Num);]
+      in List.fold_left add_bind StringMap.empty []
 
       in
-      let add_bind2 map (name) = StringMap.add name {
+    (*  let add_bind2 map (name) = StringMap.add name {
           cname = name;
           cdvars = [];
           cdconst = []; cdfuncs = [] } map
-      in List.fold_left add_bind2 func_map []
-  in
+      in List.fold_left add_bind2 func_map []*)
+
 
   (* Add class name to symbol table *)
   let add_class map cd =
@@ -282,6 +508,7 @@ let check (globals, functions, classes) =
   in
 
   (* Collect all class names into one symbol table *)
+  (* TODO: Fix the unused class_decls here *)
   let class_decls = List.fold_left add_class built_in_class_decls classes
   in
 
@@ -301,17 +528,17 @@ let check (globals, functions, classes) =
     (* Raise an exception if the given rvalue type cannot be assigned to
        the given lvalue type *)
     let check_assign lvaluet rvaluet err =
-       if lvaluet = rvaluet then lvaluet else raise (Failure err)
+      if lvaluet = rvaluet then lvaluet else raise (Failure err)
     in
 
     (* Build local symbol table of variables for this function *)
-    let symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
+    let class_symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
 	                StringMap.empty (globals @ _class.cdvars )
     in
 
     (* Return a variable from our local symbol table *)
     let type_of_identifier s =
-      try StringMap.find s symbols
+      try StringMap.find s class_symbols
       with Not_found -> raise (Failure ("undeclared identifier " ^ s))
     in
 
@@ -322,6 +549,13 @@ let check (globals, functions, classes) =
       | StrLit l   -> (String, SStrLit l)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
+      | Access(obj, var) as ex ->
+          let ctyp = string_of_typ (type_of_identifier obj) in (* Get class name from object name *)
+          let _ = verify_class_name ctyp in (*make sure class exists *)
+          let class_object = get_class ctyp in (*get the class we need to check *)
+          let vt = type_of_identifier var in
+          (vt, SAccess(obj, var))
+
       | Assign(var, e) as ex ->
           let lt = type_of_identifier var
           and (rt, e') = expr e in
@@ -412,23 +646,30 @@ let check (globals, functions, classes) =
       in
 
       (* Build local symbol table of variables for this function *)
-      let symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
+      let local_symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
                       StringMap.empty (globals @ const.ctformals @ const.ctlocals )
       in
 
       (* Return a variable from our local symbol table *)
       let type_of_identifier s =
-        try StringMap.find s symbols
+        try StringMap.find s (StringMap.merge (fun k xo yo -> match xo,yo with
+        | Some x, Some y -> Some (x)
+        | None, yo -> yo
+        | xo, None -> xo
+        ) class_symbols local_symbols)
         with Not_found -> raise (Failure ("undeclared identifier " ^ s))
       in
 
       (* Return a semantically-checked expression, i.e., with a type *)
       let rec expr = function
-          NumLit l   -> (Num, SNumLit l)
+              | ArrayLit l -> (Array (Num, IntLiteral(List.length l)), SArrayLiteral(List.map expr l, Array(Num, IntLiteral(List.length l))))
+        | IntLiteral l -> (Num, SIntLiteral l)
+        | NumLit l   -> (Num, SNumLit l)
         | BoolLit l  -> (Bool, SBoolLit l)
         | StrLit l   -> (String, SStrLit l)
         | Noexpr     -> (Void, SNoexpr)
         | Id s       -> (type_of_identifier s, SId s)
+        | Access (s1, s2) -> (type_of_identifier s2, SAccess(s1, s2))
         | Assign(var, e) as ex ->
             let lt = type_of_identifier var
             and (rt, e') = expr e in
@@ -445,6 +686,17 @@ let check (globals, functions, classes) =
                                    string_of_uop op ^ string_of_typ t ^
                                    " in " ^ string_of_expr ex))
             in (ty, SUnop(op, (t, e')))
+        | Crementop(e, op) as ex ->
+          let (t, e') = expr e in
+          let ty = match op with
+            PreInc  when t = Num -> Num
+          | PostInc when t = Num -> Num
+          | PreDec  when t = Num -> Num
+          | PostDec when t = Num -> Num
+          | _ -> raise (Failure ("illegal increment/decrement operator " ^
+                                   string_of_op op ^ string_of_typ t ^
+                                   " in " ^ string_of_expr ex))
+          in (ty, SCrementop((t, e'), op))
         | Binop(e1, op, e2) as e ->
             let (t1, e1') = expr e1
             and (t2, e2') = expr e2 in
@@ -491,6 +743,7 @@ let check (globals, functions, classes) =
               | s :: ss         -> check_stmt s :: check_stmt_list ss
               | []              -> []
             in SBlock(check_stmt_list sl)
+        | _ -> raise (Failure ("Not semantically valid. You might've returned in a constructor."))
 
       in (* body of check_function *)
       {
@@ -528,6 +781,6 @@ let check (globals, functions, classes) =
       scname = _class.cname;
       scdvars = _class.cdvars;
       scdconst = List.map check_constructor _class.cdconst;
-      scdfuncs = List.map check_function _class.cdfuncs
+      scdfuncs = List.map check_function (zip_list (_class.cdfuncs, _class.cdvars));
     }
-  in (globals, List.map check_function functions, List.map check_class classes)
+  in (globals, List.map check_function (zip_list (functions, [])), List.map check_class classes)
