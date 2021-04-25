@@ -120,7 +120,7 @@ let rec string_of_expr = function
   | Assign(v, e) -> v ^ " = " ^ string_of_expr e
   | Construct(a, e) -> "new " ^ a ^ "(" ^ String.concat ", " (List.map string_of_expr e) ^ ")"
   | ArrayAccess(a, e) -> a ^ "[" ^ string_of_expr e ^ "]"
-  | ArrayAssign(a, e1, e2) -> a ^ "[" ^ string_of_expr e1 ^ "] = " ^ string_of_expr e2
+  | ArrayAssign(a, e1, e2) -> begin a ^ "[" ^ string_of_expr e1 ^ "] = " ^ string_of_expr e2; end
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | ClassCall(c, f, el) ->

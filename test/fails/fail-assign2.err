@@ -1,1 +1,1 @@
-Fatal error: exception Failure("illegal assignment bool = num in b = 48")
+Fatal error: exception Failure("illegal assignment v1 bool = num in b = 48")

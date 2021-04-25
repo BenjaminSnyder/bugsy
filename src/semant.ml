@@ -249,8 +249,10 @@ let check (globals, functions, classes) =
 
     (* Raise an exception if the given rvalue type cannot be assigned to
        the given lvalue type *)
-    let check_assign lvaluet rvaluet err =
+    let rec check_assign lvaluet rvaluet err =       (* haww *)
+        (* get class name *)
       let className  =  match lvaluet with
+      (* if it's an object, pull out the class name *)
         Object(o) -> (match o with
               {className; instanceVars} -> className
             | _ -> raise ( Failure ("Something went horribly wrong."))
@@ -258,9 +260,15 @@ let check (globals, functions, classes) =
         | _ -> ""
       in
       (* check if there is a class *)
-      if not (String.equal className "") then
-        (* check if the class lt is same as class rt *)
-        if not (String.equal className
+      match className with
+
+      "" -> ( match rvaluet with
+       Array(t1, _) -> (match t1 with
+            Num -> check_assign t1 Num err
+            | _ -> raise (Failure err))
+         | _ ->  if lvaluet = rvaluet then lvaluet else raise (Failure err))
+
+      | s -> if not (String.equal s
         (
         match rvaluet with
           Object(o) -> match o with
@@ -269,8 +277,6 @@ let check (globals, functions, classes) =
           | _ -> ""
           (*if not, then raise an err, otherwise return lvalue*)
         )) then raise (Failure err) else lvaluet
-        (* otherwise if not a class, then run normal check_assign *)
-      else (if lvaluet = rvaluet then lvaluet else raise (Failure err))
     in
 
     (* Build local symbol table of variables for this function *)
@@ -284,6 +290,11 @@ let check (globals, functions, classes) =
       with Not_found -> raise (Failure ("undeclared identifier " ^ s))
     in
 
+    let access_type = function
+            Array(t, _) -> t
+       | _ -> raise (Failure("illegal array access"))
+    in
+
     (* Return a semantically-checked expression, i.e., with a type *)
     let rec expr = function
              NumLit l   -> (Num, SNumLit l)
@@ -291,6 +302,9 @@ let check (globals, functions, classes) =
 
         let test = string_of_int (List.length l) in
         (Array (Num, NumLit(test)), SArrayLiteral(List.map expr l, Array(Num, IntLiteral(List.length l))))
+
+      | ArrayAccess(a, e) -> check_int e; (type_of_identifier a, SArrayAccess(a, expr e, access_type (type_of_identifier a)))
+      | ArrayAssign(var, idx, num) -> check_int num; check_int idx; (type_of_identifier var, SArrayAssign(var, expr idx, expr num))
 
       | IntLiteral l -> (Num, SIntLiteral l)
       | BoolLit l  -> (Bool, SBoolLit l)
@@ -316,7 +330,7 @@ let check (globals, functions, classes) =
       | Assign(var, e) as ex ->
           let lt = type_of_identifier var
           and (rt, e') = expr e in
-          let err = "illegal assignment " ^ string_of_typ lt ^ " = " ^
+          let err = "illegal assignment v1 " ^ string_of_typ lt ^ " = " ^
             string_of_typ rt ^ " in " ^ string_of_expr ex
           in (check_assign lt rt err, SAssign(var, (rt, e')))
       | Construct(cn, args) as construct ->
@@ -416,7 +430,8 @@ let check (globals, functions, classes) =
           in
           let args' = List.map2 check_call fd.formals args
           in (fd.typ, SCall(fname, args'))
-      | ClassCall(cname, fname, args) as classcall ->
+
+        | ClassCall(cname, fname, args) as classcall ->
           let ctyp = string_of_typ (type_of_identifier cname) in (* Get class name from object name *)
           let _ = verify_class_name ctyp in
           let class_object = get_class ctyp in
@@ -440,6 +455,10 @@ let check (globals, functions, classes) =
           in
           let args' = List.map2 check_call cf.formals args
           in (cf.typ, SClassCall(cname, fname, args'))
+and check_int e =
+          let (t', e') = expr e
+          and err = "expected Int expression in " ^ string_of_expr e
+          in if t' != Num then raise (Failure err) else ignore e'
 
     in
 
@@ -567,7 +586,7 @@ let check (globals, functions, classes) =
       | Assign(var, e) as ex ->
           let lt = type_of_identifier var
           and (rt, e') = expr e in
-          let err = "illegal assignment " ^ string_of_typ lt ^ " = " ^
+          let err = "illegal assignment v2 " ^ string_of_typ lt ^ " = " ^
             string_of_typ rt ^ " in " ^ string_of_expr ex
           in (check_assign lt rt err, SAssign(var, (rt, e')))
       | Unop(op, e) as ex ->
@@ -668,9 +687,19 @@ let check (globals, functions, classes) =
         with Not_found -> raise (Failure ("undeclared identifier " ^ s))
       in
 
+ let access_type = function
+            Array(t, _) -> t
+       | _ -> raise (Failure("illegal array access"))
+    in
+
+
+
+      (*beans bookmark*)
       (* Return a semantically-checked expression, i.e., with a type *)
       let rec expr = function
               | ArrayLit l -> (Array (Num, IntLiteral(List.length l)), SArrayLiteral(List.map expr l, Array(Num, IntLiteral(List.length l))))
+| ArrayAccess(a, e) -> check_int e; (type_of_identifier a, SArrayAccess(a, expr e, access_type (type_of_identifier a)))
+
         | IntLiteral l -> (Num, SIntLiteral l)
         | NumLit l   -> (Num, SNumLit l)
         | BoolLit l  -> (Bool, SBoolLit l)
@@ -681,7 +710,7 @@ let check (globals, functions, classes) =
         | Assign(var, e) as ex ->
             let lt = type_of_identifier var
             and (rt, e') = expr e in
-            let err = "illegal assignment " ^ string_of_typ lt ^ " = " ^
+            let err = "illegal assignment v3 " ^ string_of_typ lt ^ " = " ^
               string_of_typ rt ^ " in " ^ string_of_expr ex
             in (check_assign lt rt err, SAssign(var, (rt, e')))
         | Unop(op, e) as ex ->
@@ -725,7 +754,14 @@ let check (globals, functions, classes) =
                          string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
                          string_of_typ t2 ^ " in " ^ string_of_expr e))
             in (ty, SBinop((t1, e1'), op, (t2, e2')))
+
+      and check_int e =
+         let (t', e') = expr e
+         and err = "expected Int expression in " ^ string_of_expr e
+         in if t' != Num then raise (Failure err) else ignore e'
+  
       in
+ 
 
       let check_bool_expr e =
         let (t', e') = expr e

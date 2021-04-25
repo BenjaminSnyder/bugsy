@@ -1,0 +1,3579 @@
+   0  $accept : %entry% $end
+
+   1  program : decls EOF
+
+   2  decls :
+   3        | decls vdecl
+   4        | decls fdecl
+   5        | decls cdecl
+
+   6  cddecls :
+   7          | cddecls vdecl
+   8          | cddecls const_decl
+   9          | cddecls fdecl
+
+  10  cdecl : CLASS ID LBRACE cddecls RBRACE
+
+  11  const_decl : CONSTRUCTOR LPAREN formals_opt RPAREN LBRACE body RBRACE
+
+  12  fdecl : typ ID LPAREN formals_opt RPAREN LBRACE body RBRACE
+
+  13  body :
+  14       | body vdecl
+  15       | body stmt
+
+  16  formals_opt :
+  17              | formal_list
+
+  18  formal_list : typ ID
+  19              | formal_list COMMA typ ID
+
+  20  typ : NUM
+  21      | BOOL
+  22      | VOID
+  23      | STRING
+  24      | shape
+  25      | array_t
+
+  26  shape : POINT
+  27        | SHAPE
+  28        | SQUARE
+  29        | RECT
+  30        | TRIANGLE
+  31        | CIRCLE
+  32        | ELLIPSE
+  33        | LINE
+  34        | CANVAS
+  35        | POLYGON
+  36        | REGAGON
+  37        | SPLINE
+
+  38  array_t : typ LSQBRACKET expr RSQBRACKET
+
+  39  vdecl : typ ID SEMI
+
+  40  stmt_list :
+  41            | stmt_list stmt
+
+  42  stmt : expr SEMI
+  43       | RETURN SEMI
+  44       | RETURN expr SEMI
+  45       | LBRACE stmt_list RBRACE
+  46       | IF LPAREN expr RPAREN stmt
+  47       | IF LPAREN expr RPAREN stmt ELSE stmt
+  48       | FOR LPAREN expr_opt SEMI expr SEMI expr_opt RPAREN stmt
+  49       | WHILE LPAREN expr RPAREN stmt
+
+  50  expr_opt :
+  51           | expr
+
+  52  expr : ID
+  53       | ID DOT ID
+  54       | literal
+  55       | bool_expr
+  56       | arithmetic
+  57       | ID LPAREN actuals_opt RPAREN
+  58       | ID ASSIGN expr
+  59       | ID LSQBRACKET expr RSQBRACKET ASSIGN expr
+  60       | ID LSQBRACKET expr RSQBRACKET
+  61       | LPAREN expr RPAREN
+
+  62  literal : NUMLIT
+  63          | STRLIT
+  64          | BLIT
+  65          | LSQBRACKET arr_contents RSQBRACKET
+
+  66  arr_contents : expr
+  67               | arr_contents COMMA expr
+
+  68  bool_expr : expr EQ expr
+  69            | expr NEQ expr
+  70            | expr LT expr
+  71            | expr LEQ expr
+  72            | expr GT expr
+  73            | expr GEQ expr
+  74            | expr AND expr
+  75            | expr OR expr
+  76            | NOT expr
+
+  77  arithmetic : expr PLUS expr
+  78             | expr MINUS expr
+  79             | expr MULT expr
+  80             | expr DIV expr
+  81             | expr MODULO expr
+  82             | expr PLUSEQ expr
+  83             | expr MINUSEQ expr
+  84             | expr MULTEQ expr
+  85             | expr DIVEQ expr
+  86             | expr INCREMENT
+  87             | INCREMENT expr
+  88             | expr DECREMENT
+  89             | DECREMENT expr
+  90             | MINUS expr
+
+  91  actuals_opt :
+  92              | actuals_list
+
+  93  actuals_list : expr
+  94               | actuals_list COMMA expr
+
+  95  %entry% : '\001' program
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . program  (95)
+	decls : .  (2)
+
+	.  reduce 2
+
+	program  goto 3
+	decls  goto 4
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	%entry% : '\001' program .  (95)
+
+	.  reduce 95
+
+
+state 4
+	program : decls . EOF  (1)
+	decls : decls . vdecl  (3)
+	decls : decls . fdecl  (4)
+	decls : decls . cdecl  (5)
+
+	CLASS  shift 5
+	BOOL  shift 6
+	VOID  shift 7
+	STRING  shift 8
+	NUM  shift 9
+	POINT  shift 10
+	SHAPE  shift 11
+	SQUARE  shift 12
+	RECT  shift 13
+	CIRCLE  shift 14
+	ELLIPSE  shift 15
+	TRIANGLE  shift 16
+	POLYGON  shift 17
+	REGAGON  shift 18
+	CANVAS  shift 19
+	LINE  shift 20
+	SPLINE  shift 21
+	EOF  shift 22
+	.  error
+
+	vdecl  goto 23
+	fdecl  goto 24
+	cdecl  goto 25
+	typ  goto 26
+	shape  goto 27
+	array_t  goto 28
+
+
+state 5
+	cdecl : CLASS . ID LBRACE cddecls RBRACE  (10)
+
+	ID  shift 29
+	.  error
+
+
+state 6
+	typ : BOOL .  (21)
+
+	.  reduce 21
+
+
+state 7
+	typ : VOID .  (22)
+
+	.  reduce 22
+
+
+state 8
+	typ : STRING .  (23)
+
+	.  reduce 23
+
+
+state 9
+	typ : NUM .  (20)
+
+	.  reduce 20
+
+
+state 10
+	shape : POINT .  (26)
+
+	.  reduce 26
+
+
+state 11
+	shape : SHAPE .  (27)
+
+	.  reduce 27
+
+
+state 12
+	shape : SQUARE .  (28)
+
+	.  reduce 28
+
+
+state 13
+	shape : RECT .  (29)
+
+	.  reduce 29
+
+
+state 14
+	shape : CIRCLE .  (31)
+
+	.  reduce 31
+
+
+state 15
+	shape : ELLIPSE .  (32)
+
+	.  reduce 32
+
+
+state 16
+	shape : TRIANGLE .  (30)
+
+	.  reduce 30
+
+
+state 17
+	shape : POLYGON .  (35)
+
+	.  reduce 35
+
+
+state 18
+	shape : REGAGON .  (36)
+
+	.  reduce 36
+
+
+state 19
+	shape : CANVAS .  (34)
+
+	.  reduce 34
+
+
+state 20
+	shape : LINE .  (33)
+
+	.  reduce 33
+
+
+state 21
+	shape : SPLINE .  (37)
+
+	.  reduce 37
+
+
+state 22
+	program : decls EOF .  (1)
+
+	.  reduce 1
+
+
+state 23
+	decls : decls vdecl .  (3)
+
+	.  reduce 3
+
+
+state 24
+	decls : decls fdecl .  (4)
+
+	.  reduce 4
+
+
+state 25
+	decls : decls cdecl .  (5)
+
+	.  reduce 5
+
+
+state 26
+	fdecl : typ . ID LPAREN formals_opt RPAREN LBRACE body RBRACE  (12)
+	array_t : typ . LSQBRACKET expr RSQBRACKET  (38)
+	vdecl : typ . ID SEMI  (39)
+
+	LSQBRACKET  shift 30
+	ID  shift 31
+	.  error
+
+
+state 27
+	typ : shape .  (24)
+
+	.  reduce 24
+
+
+state 28
+	typ : array_t .  (25)
+
+	.  reduce 25
+
+
+state 29
+	cdecl : CLASS ID . LBRACE cddecls RBRACE  (10)
+
+	LBRACE  shift 32
+	.  error
+
+
+state 30
+	array_t : typ LSQBRACKET . expr RSQBRACKET  (38)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 43
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 31
+	fdecl : typ ID . LPAREN formals_opt RPAREN LBRACE body RBRACE  (12)
+	vdecl : typ ID . SEMI  (39)
+
+	LPAREN  shift 47
+	SEMI  shift 48
+	.  error
+
+
+state 32
+	cdecl : CLASS ID LBRACE . cddecls RBRACE  (10)
+	cddecls : .  (6)
+
+	.  reduce 6
+
+	cddecls  goto 49
+
+
+state 33
+	expr : LPAREN . expr RPAREN  (61)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 50
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 34
+	literal : LSQBRACKET . arr_contents RSQBRACKET  (65)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 51
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+	arr_contents  goto 52
+
+
+state 35
+	arithmetic : MINUS . expr  (90)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 53
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 36
+	arithmetic : INCREMENT . expr  (87)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 54
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 37
+	arithmetic : DECREMENT . expr  (89)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 55
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 38
+	bool_expr : NOT . expr  (76)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 56
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 39
+	literal : BLIT .  (64)
+
+	.  reduce 64
+
+
+state 40
+	expr : ID .  (52)
+	expr : ID . DOT ID  (53)
+	expr : ID . LPAREN actuals_opt RPAREN  (57)
+	expr : ID . ASSIGN expr  (58)
+	expr : ID . LSQBRACKET expr RSQBRACKET ASSIGN expr  (59)
+	expr : ID . LSQBRACKET expr RSQBRACKET  (60)
+
+	LPAREN  shift 57
+	LSQBRACKET  shift 58
+	DOT  shift 59
+	ASSIGN  shift 60
+	RPAREN  reduce 52
+	RSQBRACKET  reduce 52
+	SEMI  reduce 52
+	COMMA  reduce 52
+	PLUS  reduce 52
+	MINUS  reduce 52
+	MULT  reduce 52
+	DIV  reduce 52
+	MODULO  reduce 52
+	INCREMENT  reduce 52
+	DECREMENT  reduce 52
+	PLUSEQ  reduce 52
+	MINUSEQ  reduce 52
+	MULTEQ  reduce 52
+	DIVEQ  reduce 52
+	EQ  reduce 52
+	NEQ  reduce 52
+	LT  reduce 52
+	LEQ  reduce 52
+	GT  reduce 52
+	GEQ  reduce 52
+	AND  reduce 52
+	OR  reduce 52
+
+
+state 41
+	literal : NUMLIT .  (62)
+
+	.  reduce 62
+
+
+state 42
+	literal : STRLIT .  (63)
+
+	.  reduce 63
+
+
+state 43
+	array_t : typ LSQBRACKET expr . RSQBRACKET  (38)
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	RSQBRACKET  shift 61
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	OR  shift 80
+	.  error
+
+
+state 44
+	expr : literal .  (54)
+
+	.  reduce 54
+
+
+state 45
+	expr : bool_expr .  (55)
+
+	.  reduce 55
+
+
+state 46
+	expr : arithmetic .  (56)
+
+	.  reduce 56
+
+
+state 47
+	fdecl : typ ID LPAREN . formals_opt RPAREN LBRACE body RBRACE  (12)
+	formals_opt : .  (16)
+
+	BOOL  shift 6
+	VOID  shift 7
+	STRING  shift 8
+	NUM  shift 9
+	POINT  shift 10
+	SHAPE  shift 11
+	SQUARE  shift 12
+	RECT  shift 13
+	CIRCLE  shift 14
+	ELLIPSE  shift 15
+	TRIANGLE  shift 16
+	POLYGON  shift 17
+	REGAGON  shift 18
+	CANVAS  shift 19
+	LINE  shift 20
+	SPLINE  shift 21
+	RPAREN  reduce 16
+
+	formals_opt  goto 81
+	typ  goto 82
+	formal_list  goto 83
+	shape  goto 27
+	array_t  goto 28
+
+
+state 48
+	vdecl : typ ID SEMI .  (39)
+
+	.  reduce 39
+
+
+state 49
+	cddecls : cddecls . vdecl  (7)
+	cddecls : cddecls . const_decl  (8)
+	cddecls : cddecls . fdecl  (9)
+	cdecl : CLASS ID LBRACE cddecls . RBRACE  (10)
+
+	CONSTRUCTOR  shift 84
+	RBRACE  shift 85
+	BOOL  shift 6
+	VOID  shift 7
+	STRING  shift 8
+	NUM  shift 9
+	POINT  shift 10
+	SHAPE  shift 11
+	SQUARE  shift 12
+	RECT  shift 13
+	CIRCLE  shift 14
+	ELLIPSE  shift 15
+	TRIANGLE  shift 16
+	POLYGON  shift 17
+	REGAGON  shift 18
+	CANVAS  shift 19
+	LINE  shift 20
+	SPLINE  shift 21
+	.  error
+
+	vdecl  goto 86
+	fdecl  goto 87
+	const_decl  goto 88
+	typ  goto 26
+	shape  goto 27
+	array_t  goto 28
+
+
+state 50
+	expr : LPAREN expr . RPAREN  (61)
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	RPAREN  shift 89
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	OR  shift 80
+	.  error
+
+
+state 51
+	arr_contents : expr .  (66)
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	OR  shift 80
+	RSQBRACKET  reduce 66
+	COMMA  reduce 66
+
+
+state 52
+	literal : LSQBRACKET arr_contents . RSQBRACKET  (65)
+	arr_contents : arr_contents . COMMA expr  (67)
+
+	RSQBRACKET  shift 90
+	COMMA  shift 91
+	.  error
+
+
+state 53
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+	arithmetic : MINUS expr .  (90)
+
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	RPAREN  reduce 90
+	RSQBRACKET  reduce 90
+	SEMI  reduce 90
+	COMMA  reduce 90
+	PLUS  reduce 90
+	MINUS  reduce 90
+	MULT  reduce 90
+	DIV  reduce 90
+	MODULO  reduce 90
+	PLUSEQ  reduce 90
+	MINUSEQ  reduce 90
+	MULTEQ  reduce 90
+	DIVEQ  reduce 90
+	EQ  reduce 90
+	NEQ  reduce 90
+	LT  reduce 90
+	LEQ  reduce 90
+	GT  reduce 90
+	GEQ  reduce 90
+	AND  reduce 90
+	OR  reduce 90
+
+
+state 54
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : INCREMENT expr .  (87)
+	arithmetic : expr . DECREMENT  (88)
+
+	.  reduce 87
+
+
+state 55
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+	arithmetic : DECREMENT expr .  (89)
+
+	.  reduce 89
+
+
+state 56
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	bool_expr : NOT expr .  (76)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	RPAREN  reduce 76
+	RSQBRACKET  reduce 76
+	SEMI  reduce 76
+	COMMA  reduce 76
+	PLUS  reduce 76
+	MINUS  reduce 76
+	MULT  reduce 76
+	DIV  reduce 76
+	MODULO  reduce 76
+	PLUSEQ  reduce 76
+	MINUSEQ  reduce 76
+	MULTEQ  reduce 76
+	DIVEQ  reduce 76
+	EQ  reduce 76
+	NEQ  reduce 76
+	LT  reduce 76
+	LEQ  reduce 76
+	GT  reduce 76
+	GEQ  reduce 76
+	AND  reduce 76
+	OR  reduce 76
+
+
+state 57
+	expr : ID LPAREN . actuals_opt RPAREN  (57)
+	actuals_opt : .  (91)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	RPAREN  reduce 91
+
+	expr  goto 92
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+	actuals_opt  goto 93
+	actuals_list  goto 94
+
+
+state 58
+	expr : ID LSQBRACKET . expr RSQBRACKET ASSIGN expr  (59)
+	expr : ID LSQBRACKET . expr RSQBRACKET  (60)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 95
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 59
+	expr : ID DOT . ID  (53)
+
+	ID  shift 96
+	.  error
+
+
+state 60
+	expr : ID ASSIGN . expr  (58)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 97
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 61
+	array_t : typ LSQBRACKET expr RSQBRACKET .  (38)
+
+	.  reduce 38
+
+
+state 62
+	arithmetic : expr PLUS . expr  (77)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 98
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 63
+	arithmetic : expr MINUS . expr  (78)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 99
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 64
+	arithmetic : expr MULT . expr  (79)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 100
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 65
+	arithmetic : expr DIV . expr  (80)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 101
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 66
+	arithmetic : expr MODULO . expr  (81)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 102
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 67
+	arithmetic : expr INCREMENT .  (86)
+
+	.  reduce 86
+
+
+state 68
+	arithmetic : expr DECREMENT .  (88)
+
+	.  reduce 88
+
+
+state 69
+	arithmetic : expr PLUSEQ . expr  (82)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 103
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 70
+	arithmetic : expr MINUSEQ . expr  (83)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 104
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 71
+	arithmetic : expr MULTEQ . expr  (84)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 105
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 72
+	arithmetic : expr DIVEQ . expr  (85)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 106
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 73
+	bool_expr : expr EQ . expr  (68)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 107
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 74
+	bool_expr : expr NEQ . expr  (69)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 108
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 75
+	bool_expr : expr LT . expr  (70)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 109
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 76
+	bool_expr : expr LEQ . expr  (71)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 110
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 77
+	bool_expr : expr GT . expr  (72)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 111
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 78
+	bool_expr : expr GEQ . expr  (73)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 112
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 79
+	bool_expr : expr AND . expr  (74)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 113
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 80
+	bool_expr : expr OR . expr  (75)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 114
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 81
+	fdecl : typ ID LPAREN formals_opt . RPAREN LBRACE body RBRACE  (12)
+
+	RPAREN  shift 115
+	.  error
+
+
+state 82
+	formal_list : typ . ID  (18)
+	array_t : typ . LSQBRACKET expr RSQBRACKET  (38)
+
+	LSQBRACKET  shift 30
+	ID  shift 116
+	.  error
+
+
+state 83
+	formals_opt : formal_list .  (17)
+	formal_list : formal_list . COMMA typ ID  (19)
+
+	COMMA  shift 117
+	RPAREN  reduce 17
+
+
+state 84
+	const_decl : CONSTRUCTOR . LPAREN formals_opt RPAREN LBRACE body RBRACE  (11)
+
+	LPAREN  shift 118
+	.  error
+
+
+state 85
+	cdecl : CLASS ID LBRACE cddecls RBRACE .  (10)
+
+	.  reduce 10
+
+
+state 86
+	cddecls : cddecls vdecl .  (7)
+
+	.  reduce 7
+
+
+state 87
+	cddecls : cddecls fdecl .  (9)
+
+	.  reduce 9
+
+
+state 88
+	cddecls : cddecls const_decl .  (8)
+
+	.  reduce 8
+
+
+state 89
+	expr : LPAREN expr RPAREN .  (61)
+
+	.  reduce 61
+
+
+state 90
+	literal : LSQBRACKET arr_contents RSQBRACKET .  (65)
+
+	.  reduce 65
+
+
+state 91
+	arr_contents : arr_contents COMMA . expr  (67)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 119
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 92
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+	actuals_list : expr .  (93)
+
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	OR  shift 80
+	RPAREN  reduce 93
+	COMMA  reduce 93
+
+
+state 93
+	expr : ID LPAREN actuals_opt . RPAREN  (57)
+
+	RPAREN  shift 120
+	.  error
+
+
+state 94
+	actuals_opt : actuals_list .  (92)
+	actuals_list : actuals_list . COMMA expr  (94)
+
+	COMMA  shift 121
+	RPAREN  reduce 92
+
+
+state 95
+	expr : ID LSQBRACKET expr . RSQBRACKET ASSIGN expr  (59)
+	expr : ID LSQBRACKET expr . RSQBRACKET  (60)
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	RSQBRACKET  shift 122
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	OR  shift 80
+	.  error
+
+
+state 96
+	expr : ID DOT ID .  (53)
+
+	.  reduce 53
+
+
+state 97
+	expr : ID ASSIGN expr .  (58)
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	OR  shift 80
+	RPAREN  reduce 58
+	RSQBRACKET  reduce 58
+	SEMI  reduce 58
+	COMMA  reduce 58
+
+
+state 98
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr PLUS expr .  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	RPAREN  reduce 77
+	RSQBRACKET  reduce 77
+	SEMI  reduce 77
+	COMMA  reduce 77
+	PLUS  reduce 77
+	MINUS  reduce 77
+	EQ  reduce 77
+	NEQ  reduce 77
+	LT  reduce 77
+	LEQ  reduce 77
+	GT  reduce 77
+	GEQ  reduce 77
+	AND  reduce 77
+	OR  reduce 77
+
+
+state 99
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr MINUS expr .  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	RPAREN  reduce 78
+	RSQBRACKET  reduce 78
+	SEMI  reduce 78
+	COMMA  reduce 78
+	PLUS  reduce 78
+	MINUS  reduce 78
+	EQ  reduce 78
+	NEQ  reduce 78
+	LT  reduce 78
+	LEQ  reduce 78
+	GT  reduce 78
+	GEQ  reduce 78
+	AND  reduce 78
+	OR  reduce 78
+
+
+state 100
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr MULT expr .  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	RPAREN  reduce 79
+	RSQBRACKET  reduce 79
+	SEMI  reduce 79
+	COMMA  reduce 79
+	PLUS  reduce 79
+	MINUS  reduce 79
+	MULT  reduce 79
+	DIV  reduce 79
+	MODULO  reduce 79
+	PLUSEQ  reduce 79
+	MINUSEQ  reduce 79
+	EQ  reduce 79
+	NEQ  reduce 79
+	LT  reduce 79
+	LEQ  reduce 79
+	GT  reduce 79
+	GEQ  reduce 79
+	AND  reduce 79
+	OR  reduce 79
+
+
+state 101
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr DIV expr .  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	RPAREN  reduce 80
+	RSQBRACKET  reduce 80
+	SEMI  reduce 80
+	COMMA  reduce 80
+	PLUS  reduce 80
+	MINUS  reduce 80
+	MULT  reduce 80
+	DIV  reduce 80
+	MODULO  reduce 80
+	PLUSEQ  reduce 80
+	MINUSEQ  reduce 80
+	EQ  reduce 80
+	NEQ  reduce 80
+	LT  reduce 80
+	LEQ  reduce 80
+	GT  reduce 80
+	GEQ  reduce 80
+	AND  reduce 80
+	OR  reduce 80
+
+
+state 102
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr MODULO expr .  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	RPAREN  reduce 81
+	RSQBRACKET  reduce 81
+	SEMI  reduce 81
+	COMMA  reduce 81
+	PLUS  reduce 81
+	MINUS  reduce 81
+	MULT  reduce 81
+	DIV  reduce 81
+	MODULO  reduce 81
+	PLUSEQ  reduce 81
+	MINUSEQ  reduce 81
+	EQ  reduce 81
+	NEQ  reduce 81
+	LT  reduce 81
+	LEQ  reduce 81
+	GT  reduce 81
+	GEQ  reduce 81
+	AND  reduce 81
+	OR  reduce 81
+
+
+state 103
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr PLUSEQ expr .  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	RPAREN  reduce 82
+	RSQBRACKET  reduce 82
+	SEMI  reduce 82
+	COMMA  reduce 82
+	PLUS  reduce 82
+	MINUS  reduce 82
+	PLUSEQ  reduce 82
+	MINUSEQ  reduce 82
+	EQ  reduce 82
+	NEQ  reduce 82
+	LT  reduce 82
+	LEQ  reduce 82
+	GT  reduce 82
+	GEQ  reduce 82
+	AND  reduce 82
+	OR  reduce 82
+
+
+state 104
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr MINUSEQ expr .  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	RPAREN  reduce 83
+	RSQBRACKET  reduce 83
+	SEMI  reduce 83
+	COMMA  reduce 83
+	PLUS  reduce 83
+	MINUS  reduce 83
+	PLUSEQ  reduce 83
+	MINUSEQ  reduce 83
+	EQ  reduce 83
+	NEQ  reduce 83
+	LT  reduce 83
+	LEQ  reduce 83
+	GT  reduce 83
+	GEQ  reduce 83
+	AND  reduce 83
+	OR  reduce 83
+
+
+state 105
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr MULTEQ expr .  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	RPAREN  reduce 84
+	RSQBRACKET  reduce 84
+	SEMI  reduce 84
+	COMMA  reduce 84
+	PLUS  reduce 84
+	MINUS  reduce 84
+	MULT  reduce 84
+	DIV  reduce 84
+	MODULO  reduce 84
+	PLUSEQ  reduce 84
+	MINUSEQ  reduce 84
+	MULTEQ  reduce 84
+	DIVEQ  reduce 84
+	EQ  reduce 84
+	NEQ  reduce 84
+	LT  reduce 84
+	LEQ  reduce 84
+	GT  reduce 84
+	GEQ  reduce 84
+	AND  reduce 84
+	OR  reduce 84
+
+
+state 106
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr DIVEQ expr .  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	RPAREN  reduce 85
+	RSQBRACKET  reduce 85
+	SEMI  reduce 85
+	COMMA  reduce 85
+	PLUS  reduce 85
+	MINUS  reduce 85
+	MULT  reduce 85
+	DIV  reduce 85
+	MODULO  reduce 85
+	PLUSEQ  reduce 85
+	MINUSEQ  reduce 85
+	MULTEQ  reduce 85
+	DIVEQ  reduce 85
+	EQ  reduce 85
+	NEQ  reduce 85
+	LT  reduce 85
+	LEQ  reduce 85
+	GT  reduce 85
+	GEQ  reduce 85
+	AND  reduce 85
+	OR  reduce 85
+
+
+state 107
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr EQ expr .  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	RPAREN  reduce 68
+	RSQBRACKET  reduce 68
+	SEMI  reduce 68
+	COMMA  reduce 68
+	EQ  reduce 68
+	NEQ  reduce 68
+	AND  reduce 68
+	OR  reduce 68
+
+
+state 108
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr NEQ expr .  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	RPAREN  reduce 69
+	RSQBRACKET  reduce 69
+	SEMI  reduce 69
+	COMMA  reduce 69
+	EQ  reduce 69
+	NEQ  reduce 69
+	AND  reduce 69
+	OR  reduce 69
+
+
+state 109
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr LT expr .  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	RPAREN  reduce 70
+	RSQBRACKET  reduce 70
+	SEMI  reduce 70
+	COMMA  reduce 70
+	EQ  reduce 70
+	NEQ  reduce 70
+	LT  reduce 70
+	LEQ  reduce 70
+	GT  reduce 70
+	GEQ  reduce 70
+	AND  reduce 70
+	OR  reduce 70
+
+
+state 110
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr LEQ expr .  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	RPAREN  reduce 71
+	RSQBRACKET  reduce 71
+	SEMI  reduce 71
+	COMMA  reduce 71
+	EQ  reduce 71
+	NEQ  reduce 71
+	LT  reduce 71
+	LEQ  reduce 71
+	GT  reduce 71
+	GEQ  reduce 71
+	AND  reduce 71
+	OR  reduce 71
+
+
+state 111
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr GT expr .  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	RPAREN  reduce 72
+	RSQBRACKET  reduce 72
+	SEMI  reduce 72
+	COMMA  reduce 72
+	EQ  reduce 72
+	NEQ  reduce 72
+	LT  reduce 72
+	LEQ  reduce 72
+	GT  reduce 72
+	GEQ  reduce 72
+	AND  reduce 72
+	OR  reduce 72
+
+
+state 112
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr GEQ expr .  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	RPAREN  reduce 73
+	RSQBRACKET  reduce 73
+	SEMI  reduce 73
+	COMMA  reduce 73
+	EQ  reduce 73
+	NEQ  reduce 73
+	LT  reduce 73
+	LEQ  reduce 73
+	GT  reduce 73
+	GEQ  reduce 73
+	AND  reduce 73
+	OR  reduce 73
+
+
+state 113
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr AND expr .  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	RPAREN  reduce 74
+	RSQBRACKET  reduce 74
+	SEMI  reduce 74
+	COMMA  reduce 74
+	AND  reduce 74
+	OR  reduce 74
+
+
+state 114
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	bool_expr : expr OR expr .  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	RPAREN  reduce 75
+	RSQBRACKET  reduce 75
+	SEMI  reduce 75
+	COMMA  reduce 75
+	OR  reduce 75
+
+
+state 115
+	fdecl : typ ID LPAREN formals_opt RPAREN . LBRACE body RBRACE  (12)
+
+	LBRACE  shift 123
+	.  error
+
+
+state 116
+	formal_list : typ ID .  (18)
+
+	.  reduce 18
+
+
+state 117
+	formal_list : formal_list COMMA . typ ID  (19)
+
+	BOOL  shift 6
+	VOID  shift 7
+	STRING  shift 8
+	NUM  shift 9
+	POINT  shift 10
+	SHAPE  shift 11
+	SQUARE  shift 12
+	RECT  shift 13
+	CIRCLE  shift 14
+	ELLIPSE  shift 15
+	TRIANGLE  shift 16
+	POLYGON  shift 17
+	REGAGON  shift 18
+	CANVAS  shift 19
+	LINE  shift 20
+	SPLINE  shift 21
+	.  error
+
+	typ  goto 124
+	shape  goto 27
+	array_t  goto 28
+
+
+state 118
+	const_decl : CONSTRUCTOR LPAREN . formals_opt RPAREN LBRACE body RBRACE  (11)
+	formals_opt : .  (16)
+
+	BOOL  shift 6
+	VOID  shift 7
+	STRING  shift 8
+	NUM  shift 9
+	POINT  shift 10
+	SHAPE  shift 11
+	SQUARE  shift 12
+	RECT  shift 13
+	CIRCLE  shift 14
+	ELLIPSE  shift 15
+	TRIANGLE  shift 16
+	POLYGON  shift 17
+	REGAGON  shift 18
+	CANVAS  shift 19
+	LINE  shift 20
+	SPLINE  shift 21
+	RPAREN  reduce 16
+
+	formals_opt  goto 125
+	typ  goto 82
+	formal_list  goto 83
+	shape  goto 27
+	array_t  goto 28
+
+
+state 119
+	arr_contents : arr_contents COMMA expr .  (67)
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	OR  shift 80
+	RSQBRACKET  reduce 67
+	COMMA  reduce 67
+
+
+state 120
+	expr : ID LPAREN actuals_opt RPAREN .  (57)
+
+	.  reduce 57
+
+
+state 121
+	actuals_list : actuals_list COMMA . expr  (94)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 126
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 122
+	expr : ID LSQBRACKET expr RSQBRACKET . ASSIGN expr  (59)
+	expr : ID LSQBRACKET expr RSQBRACKET .  (60)
+
+	ASSIGN  shift 127
+	RPAREN  reduce 60
+	RSQBRACKET  reduce 60
+	SEMI  reduce 60
+	COMMA  reduce 60
+	PLUS  reduce 60
+	MINUS  reduce 60
+	MULT  reduce 60
+	DIV  reduce 60
+	MODULO  reduce 60
+	INCREMENT  reduce 60
+	DECREMENT  reduce 60
+	PLUSEQ  reduce 60
+	MINUSEQ  reduce 60
+	MULTEQ  reduce 60
+	DIVEQ  reduce 60
+	EQ  reduce 60
+	NEQ  reduce 60
+	LT  reduce 60
+	LEQ  reduce 60
+	GT  reduce 60
+	GEQ  reduce 60
+	AND  reduce 60
+	OR  reduce 60
+
+
+state 123
+	fdecl : typ ID LPAREN formals_opt RPAREN LBRACE . body RBRACE  (12)
+	body : .  (13)
+
+	.  reduce 13
+
+	body  goto 128
+
+
+state 124
+	formal_list : formal_list COMMA typ . ID  (19)
+	array_t : typ . LSQBRACKET expr RSQBRACKET  (38)
+
+	LSQBRACKET  shift 30
+	ID  shift 129
+	.  error
+
+
+state 125
+	const_decl : CONSTRUCTOR LPAREN formals_opt . RPAREN LBRACE body RBRACE  (11)
+
+	RPAREN  shift 130
+	.  error
+
+
+state 126
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+	actuals_list : actuals_list COMMA expr .  (94)
+
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	OR  shift 80
+	RPAREN  reduce 94
+	COMMA  reduce 94
+
+
+state 127
+	expr : ID LSQBRACKET expr RSQBRACKET ASSIGN . expr  (59)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 131
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 128
+	fdecl : typ ID LPAREN formals_opt RPAREN LBRACE body . RBRACE  (12)
+	body : body . vdecl  (14)
+	body : body . stmt  (15)
+
+	LPAREN  shift 33
+	LBRACE  shift 132
+	RBRACE  shift 133
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	RETURN  shift 134
+	IF  shift 135
+	FOR  shift 136
+	WHILE  shift 137
+	BOOL  shift 6
+	VOID  shift 7
+	STRING  shift 8
+	NUM  shift 9
+	POINT  shift 10
+	SHAPE  shift 11
+	SQUARE  shift 12
+	RECT  shift 13
+	CIRCLE  shift 14
+	ELLIPSE  shift 15
+	TRIANGLE  shift 16
+	POLYGON  shift 17
+	REGAGON  shift 18
+	CANVAS  shift 19
+	LINE  shift 20
+	SPLINE  shift 21
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	vdecl  goto 138
+	typ  goto 139
+	stmt  goto 140
+	shape  goto 27
+	array_t  goto 28
+	expr  goto 141
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 129
+	formal_list : formal_list COMMA typ ID .  (19)
+
+	.  reduce 19
+
+
+state 130
+	const_decl : CONSTRUCTOR LPAREN formals_opt RPAREN . LBRACE body RBRACE  (11)
+
+	LBRACE  shift 142
+	.  error
+
+
+state 131
+	expr : ID LSQBRACKET expr RSQBRACKET ASSIGN expr .  (59)
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	OR  shift 80
+	RPAREN  reduce 59
+	RSQBRACKET  reduce 59
+	SEMI  reduce 59
+	COMMA  reduce 59
+
+
+state 132
+	stmt : LBRACE . stmt_list RBRACE  (45)
+	stmt_list : .  (40)
+
+	.  reduce 40
+
+	stmt_list  goto 143
+
+
+state 133
+	fdecl : typ ID LPAREN formals_opt RPAREN LBRACE body RBRACE .  (12)
+
+	.  reduce 12
+
+
+state 134
+	stmt : RETURN . SEMI  (43)
+	stmt : RETURN . expr SEMI  (44)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	SEMI  shift 144
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 145
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 135
+	stmt : IF . LPAREN expr RPAREN stmt  (46)
+	stmt : IF . LPAREN expr RPAREN stmt ELSE stmt  (47)
+
+	LPAREN  shift 146
+	.  error
+
+
+state 136
+	stmt : FOR . LPAREN expr_opt SEMI expr SEMI expr_opt RPAREN stmt  (48)
+
+	LPAREN  shift 147
+	.  error
+
+
+state 137
+	stmt : WHILE . LPAREN expr RPAREN stmt  (49)
+
+	LPAREN  shift 148
+	.  error
+
+
+state 138
+	body : body vdecl .  (14)
+
+	.  reduce 14
+
+
+state 139
+	array_t : typ . LSQBRACKET expr RSQBRACKET  (38)
+	vdecl : typ . ID SEMI  (39)
+
+	LSQBRACKET  shift 30
+	ID  shift 149
+	.  error
+
+
+state 140
+	body : body stmt .  (15)
+
+	.  reduce 15
+
+
+state 141
+	stmt : expr . SEMI  (42)
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	SEMI  shift 150
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	OR  shift 80
+	.  error
+
+
+state 142
+	const_decl : CONSTRUCTOR LPAREN formals_opt RPAREN LBRACE . body RBRACE  (11)
+	body : .  (13)
+
+	.  reduce 13
+
+	body  goto 151
+
+
+state 143
+	stmt_list : stmt_list . stmt  (41)
+	stmt : LBRACE stmt_list . RBRACE  (45)
+
+	LPAREN  shift 33
+	LBRACE  shift 132
+	RBRACE  shift 152
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	RETURN  shift 134
+	IF  shift 135
+	FOR  shift 136
+	WHILE  shift 137
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	stmt  goto 153
+	expr  goto 141
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 144
+	stmt : RETURN SEMI .  (43)
+
+	.  reduce 43
+
+
+state 145
+	stmt : RETURN expr . SEMI  (44)
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	SEMI  shift 154
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	OR  shift 80
+	.  error
+
+
+state 146
+	stmt : IF LPAREN . expr RPAREN stmt  (46)
+	stmt : IF LPAREN . expr RPAREN stmt ELSE stmt  (47)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 155
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 147
+	stmt : FOR LPAREN . expr_opt SEMI expr SEMI expr_opt RPAREN stmt  (48)
+	expr_opt : .  (50)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	SEMI  reduce 50
+
+	expr  goto 156
+	expr_opt  goto 157
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 148
+	stmt : WHILE LPAREN . expr RPAREN stmt  (49)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 158
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 149
+	vdecl : typ ID . SEMI  (39)
+
+	SEMI  shift 48
+	.  error
+
+
+state 150
+	stmt : expr SEMI .  (42)
+
+	.  reduce 42
+
+
+state 151
+	const_decl : CONSTRUCTOR LPAREN formals_opt RPAREN LBRACE body . RBRACE  (11)
+	body : body . vdecl  (14)
+	body : body . stmt  (15)
+
+	LPAREN  shift 33
+	LBRACE  shift 132
+	RBRACE  shift 159
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	RETURN  shift 134
+	IF  shift 135
+	FOR  shift 136
+	WHILE  shift 137
+	BOOL  shift 6
+	VOID  shift 7
+	STRING  shift 8
+	NUM  shift 9
+	POINT  shift 10
+	SHAPE  shift 11
+	SQUARE  shift 12
+	RECT  shift 13
+	CIRCLE  shift 14
+	ELLIPSE  shift 15
+	TRIANGLE  shift 16
+	POLYGON  shift 17
+	REGAGON  shift 18
+	CANVAS  shift 19
+	LINE  shift 20
+	SPLINE  shift 21
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	vdecl  goto 138
+	typ  goto 139
+	stmt  goto 140
+	shape  goto 27
+	array_t  goto 28
+	expr  goto 141
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 152
+	stmt : LBRACE stmt_list RBRACE .  (45)
+
+	.  reduce 45
+
+
+state 153
+	stmt_list : stmt_list stmt .  (41)
+
+	.  reduce 41
+
+
+state 154
+	stmt : RETURN expr SEMI .  (44)
+
+	.  reduce 44
+
+
+state 155
+	stmt : IF LPAREN expr . RPAREN stmt  (46)
+	stmt : IF LPAREN expr . RPAREN stmt ELSE stmt  (47)
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	RPAREN  shift 160
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	OR  shift 80
+	.  error
+
+
+state 156
+	expr_opt : expr .  (51)
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	OR  shift 80
+	RPAREN  reduce 51
+	SEMI  reduce 51
+
+
+state 157
+	stmt : FOR LPAREN expr_opt . SEMI expr SEMI expr_opt RPAREN stmt  (48)
+
+	SEMI  shift 161
+	.  error
+
+
+state 158
+	stmt : WHILE LPAREN expr . RPAREN stmt  (49)
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	RPAREN  shift 162
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	OR  shift 80
+	.  error
+
+
+state 159
+	const_decl : CONSTRUCTOR LPAREN formals_opt RPAREN LBRACE body RBRACE .  (11)
+
+	.  reduce 11
+
+
+state 160
+	stmt : IF LPAREN expr RPAREN . stmt  (46)
+	stmt : IF LPAREN expr RPAREN . stmt ELSE stmt  (47)
+
+	LPAREN  shift 33
+	LBRACE  shift 132
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	RETURN  shift 134
+	IF  shift 135
+	FOR  shift 136
+	WHILE  shift 137
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	stmt  goto 163
+	expr  goto 141
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 161
+	stmt : FOR LPAREN expr_opt SEMI . expr SEMI expr_opt RPAREN stmt  (48)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	expr  goto 164
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 162
+	stmt : WHILE LPAREN expr RPAREN . stmt  (49)
+
+	LPAREN  shift 33
+	LBRACE  shift 132
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	RETURN  shift 134
+	IF  shift 135
+	FOR  shift 136
+	WHILE  shift 137
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	stmt  goto 165
+	expr  goto 141
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 163
+	stmt : IF LPAREN expr RPAREN stmt .  (46)
+	stmt : IF LPAREN expr RPAREN stmt . ELSE stmt  (47)
+
+	ELSE  shift 166
+	LPAREN  reduce 46
+	LBRACE  reduce 46
+	RBRACE  reduce 46
+	LSQBRACKET  reduce 46
+	MINUS  reduce 46
+	INCREMENT  reduce 46
+	DECREMENT  reduce 46
+	NOT  reduce 46
+	RETURN  reduce 46
+	IF  reduce 46
+	FOR  reduce 46
+	WHILE  reduce 46
+	BOOL  reduce 46
+	VOID  reduce 46
+	STRING  reduce 46
+	NUM  reduce 46
+	POINT  reduce 46
+	SHAPE  reduce 46
+	SQUARE  reduce 46
+	RECT  reduce 46
+	CIRCLE  reduce 46
+	ELLIPSE  reduce 46
+	TRIANGLE  reduce 46
+	POLYGON  reduce 46
+	REGAGON  reduce 46
+	CANVAS  reduce 46
+	LINE  reduce 46
+	SPLINE  reduce 46
+	BLIT  reduce 46
+	ID  reduce 46
+	NUMLIT  reduce 46
+	STRLIT  reduce 46
+
+
+state 164
+	stmt : FOR LPAREN expr_opt SEMI expr . SEMI expr_opt RPAREN stmt  (48)
+	bool_expr : expr . EQ expr  (68)
+	bool_expr : expr . NEQ expr  (69)
+	bool_expr : expr . LT expr  (70)
+	bool_expr : expr . LEQ expr  (71)
+	bool_expr : expr . GT expr  (72)
+	bool_expr : expr . GEQ expr  (73)
+	bool_expr : expr . AND expr  (74)
+	bool_expr : expr . OR expr  (75)
+	arithmetic : expr . PLUS expr  (77)
+	arithmetic : expr . MINUS expr  (78)
+	arithmetic : expr . MULT expr  (79)
+	arithmetic : expr . DIV expr  (80)
+	arithmetic : expr . MODULO expr  (81)
+	arithmetic : expr . PLUSEQ expr  (82)
+	arithmetic : expr . MINUSEQ expr  (83)
+	arithmetic : expr . MULTEQ expr  (84)
+	arithmetic : expr . DIVEQ expr  (85)
+	arithmetic : expr . INCREMENT  (86)
+	arithmetic : expr . DECREMENT  (88)
+
+	SEMI  shift 167
+	PLUS  shift 62
+	MINUS  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODULO  shift 66
+	INCREMENT  shift 67
+	DECREMENT  shift 68
+	PLUSEQ  shift 69
+	MINUSEQ  shift 70
+	MULTEQ  shift 71
+	DIVEQ  shift 72
+	EQ  shift 73
+	NEQ  shift 74
+	LT  shift 75
+	LEQ  shift 76
+	GT  shift 77
+	GEQ  shift 78
+	AND  shift 79
+	OR  shift 80
+	.  error
+
+
+state 165
+	stmt : WHILE LPAREN expr RPAREN stmt .  (49)
+
+	.  reduce 49
+
+
+state 166
+	stmt : IF LPAREN expr RPAREN stmt ELSE . stmt  (47)
+
+	LPAREN  shift 33
+	LBRACE  shift 132
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	RETURN  shift 134
+	IF  shift 135
+	FOR  shift 136
+	WHILE  shift 137
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	stmt  goto 168
+	expr  goto 141
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 167
+	stmt : FOR LPAREN expr_opt SEMI expr SEMI . expr_opt RPAREN stmt  (48)
+	expr_opt : .  (50)
+
+	LPAREN  shift 33
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	RPAREN  reduce 50
+
+	expr  goto 156
+	expr_opt  goto 169
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 168
+	stmt : IF LPAREN expr RPAREN stmt ELSE stmt .  (47)
+
+	.  reduce 47
+
+
+state 169
+	stmt : FOR LPAREN expr_opt SEMI expr SEMI expr_opt . RPAREN stmt  (48)
+
+	RPAREN  shift 170
+	.  error
+
+
+state 170
+	stmt : FOR LPAREN expr_opt SEMI expr SEMI expr_opt RPAREN . stmt  (48)
+
+	LPAREN  shift 33
+	LBRACE  shift 132
+	LSQBRACKET  shift 34
+	MINUS  shift 35
+	INCREMENT  shift 36
+	DECREMENT  shift 37
+	NOT  shift 38
+	RETURN  shift 134
+	IF  shift 135
+	FOR  shift 136
+	WHILE  shift 137
+	BLIT  shift 39
+	ID  shift 40
+	NUMLIT  shift 41
+	STRLIT  shift 42
+	.  error
+
+	stmt  goto 171
+	expr  goto 141
+	literal  goto 44
+	bool_expr  goto 45
+	arithmetic  goto 46
+
+
+state 171
+	stmt : FOR LPAREN expr_opt SEMI expr SEMI expr_opt RPAREN stmt .  (48)
+
+	.  reduce 48
+
+
+75 terminals, 25 nonterminals
+96 grammar rules, 172 states

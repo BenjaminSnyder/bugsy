@@ -150,7 +150,7 @@ literal:
     NUMLIT           { NumLit($1)  }
   | STRLIT           { StrLit($1)  }
   | BLIT             { BoolLit($1) }
-  | LSQBRACKET arr_contents RSQBRACKET { ArrayLit($2) }
+  | LSQBRACKET arr_contents RSQBRACKET { ArrayLit(List.rev $2) }
 
 arr_contents:
     expr            { [$1] }

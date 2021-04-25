@@ -1,6 +1,50 @@
 num main() {
 
-   num[2] x;
+   num[5] x;
+   num a;
+   num b;
+   num c;
+   num d;
+   num e;
+   x = [10.9, 30.6, 10.3, 5.4, 6.7];
 
-   x = [10.9, 30.6];
+   printf("The array should be [10.9, 30.6, 10.3, 5.4, 6.7]");
+   printf("The first element is");
+   print(x[0]);
+ 
+
+   a = 2.1;
+
+   b = 2;
+
+   e = x[b];
+
+   e = 4.0;
+   
+   x[2] = a;
+
+   c = 3.4;
+   x[3] = c;
+
+
+   x[4] = 9.0;
+   
+   printf("sirs second element is");
+   printf("sirs third element is");
+   print(x[3]);
+   printf("sirs fourth element is");
+   print(x[4]);
+
+
+  /* for (c = 0; c < 4; c++){
+    printf("element number");
+    print(c);
+    printf("is");
+    d  = x[e];
+    print(d);
+  } */
+
+
+
+
 }

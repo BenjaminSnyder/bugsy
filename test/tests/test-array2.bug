@@ -1,5 +1,5 @@
 num main() {
-    num[] arr;
+    num[2] arr;
     num x;
     x = 5.0;
     arr = [1.0, 2.0];

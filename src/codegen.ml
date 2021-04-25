@@ -16,6 +16,7 @@ module L = Llvm
 module A = Ast
 open Sast
 
+
 module StringMap = Map.Make(String)
 
 (* translate : Sast.program -> Llvm.module *)
@@ -27,20 +28,23 @@ let translate (globals, camFunctions, classes) =
   let the_module = L.create_module context "Bugsy" in
 
   let convert_int = function
-          i -> 4
+      A.IntLiteral(i) -> i |
+      A.NumLit(i) -> int_of_string i
   in
 
   (* Get types from the context *)
-  let i32_t      = L.i32_type    context
+  let i64_t      = L.i64_type    context
+  and i32_t      = L.i32_type    context
+  and i16_t      = L.i16_type    context
   and i8_t       = L.i8_type     context
   and i1_t       = L.i1_type     context
   and float_t    = L.double_type context
   and ye_t       = L.float_type context
   and string_t   = L.pointer_type (L.i8_type context) (*new string type *)
   and array_t    = L.array_type
+  and void_t     = L.void_type   context 
   and struct_t arr = L.struct_type context arr
-  and void_t     = L.void_type   context
-  in
+  in 
 
   (* Return the LLVM type for a Bugsy type *)
   let rec ltype_of_typ = function
@@ -50,7 +54,8 @@ let translate (globals, camFunctions, classes) =
     | A.String -> string_t
     | A.Int -> i32_t
     | A.Array(typ, size) -> (match typ with
-          A.Num -> array_t float_t (convert_int size))
+          A.Num -> array_t float_t (convert_int size)
+    )
     | A.Object(classTyp) -> L.pointer_type (struct_t (struct_t_to_arr classTyp))
 
   and struct_t_to_arr classTyp =
@@ -81,7 +86,7 @@ let translate (globals, camFunctions, classes) =
     List.fold_left global_var StringMap.empty globals in
 
   let printf_t : L.lltype =
-      L.function_type float_t [| L.pointer_type i8_t |] in
+      L.var_arg_function_type float_t [| L.pointer_type i8_t |] in
   let printf_func : L.llvalue =
       L.declare_function "printf" printf_t the_module in
 
@@ -197,9 +202,6 @@ let translate (globals, camFunctions, classes) =
 
   let _ = find_func "main" in (* Ensure "main" is defined *)
 
-
-
-
   (* Fill in the body of the given function *)
   let build_function_body fdecl =
     let (the_function, _) = StringMap.find fdecl.sfname function_decls in
@@ -238,12 +240,66 @@ let translate (globals, camFunctions, classes) =
                    with Not_found -> raise (Failure ("ur sus"))
     in
 
+   (* let conversion x = L.int64_of_const x in *)
+   (* ayy *)
+    let conversion x =
+            match x with
+            float_t -> L.const_fptosi x i32_t
+            | _ -> raise(Failure "failure")
+    
+
+    in 
+   
     (* Construct code for an expression; return its value *)
     let rec expr builder ((_, e) : sexpr) = match e with
-        SStrLit s -> L.build_global_stringptr s "str" builder
+         SIntLiteral i -> L.const_int i32_t i
+      |  SStrLit s -> L.build_global_stringptr s "str" builder
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SNumLit nl -> L.const_float_of_string float_t nl
       | SNoexpr     -> L.const_int i32_t 0
+     
+      | SArrayAccess(a, e, l) -> let valu = (expr builder e) in
+     
+
+
+   (*  let test = L.build_ptrtoint valu float_t "a" builder in
+       L.dump_value(test);
+
+       let haw = L.build_fptosi (test) float_t "a" builder  in
+
+
+      L.dump_value(haw); *)
+    
+     let pointer = L.build_alloca float_t (L.value_name (valu)) builder in L.dump_value(pointer);
+     let test = L.build_store (L.const_float float_t 32.3) pointer builder in L.dump_value(test);
+     let tester = L.build_sitofp (L.const_float float_t 2.0) float_t "aa" builder in 
+     let loaded = L.build_load pointer (L.value_name (valu)) builder  in L.dump_value(loaded);
+    let aha = L.build_fptosi (valu) i32_t "aasf" builder in L.dump_value(aha);
+     (* let  yeye = L.build_fptosi aha i32_t "a" builder in L.dump_value(yeye); 
+     let pointer_two = L.build_alloca i32_t "ff" builder in L.dump_value(pointer_two);
+     let bugsy = L.build_store yeye pointer_two builder in let hoo = L.build_load pointer_two "asdf" builder in  L.dump_value(bugsy);  *)
+
+   (* let haw = valu in
+    L.set_volatile true haw; 
+   let yeye = L.const_fptosi (haw) i32_t in  *) 
+   
+    let beans =  L.build_in_bounds_gep (lookup a) [| L.const_int i32_t 0; aha |] a builder in L.build_load beans a builder;  
+
+
+    
+
+
+      (* | SArrayAccess(a, e, l) -> let yeye = match e with (expr builder e)
+    in (match e with  
+    
+    float_t  -> let beans =  L.build_in_bounds_gep (lookup a) [| L.const_int i32_t 0; conversion (yeye) |] a builder in L.dump_value (beans); L.build_load beans a builder 
+
+      | _ -> raise(Failure "failed"); ) *)
+
+
+      (* | SArrayAccess(a, e, l) -> let yeye = conversion (expr builder e)  in L.build_load (L.build_gep (lookup a) [| L.const_int i32_t 0; yeye |] a builder) a builder  *) 
+      | SArrayAssign (s, e1, e2) ->
+              let left = let yeye = conversion (expr builder e1) in L.build_gep (lookup s) [| L.const_int i32_t 0; yeye |] s builder in let right = expr builder e2 in ignore (L.build_store right left builder); right
       | SId s       -> L.build_load (lookup s) s builder
       | SArrayLiteral (l, t) -> L.const_array (ltype_of_typ t) (Array.of_list (List.map (expr builder) l))
       | SAssign (s, e) -> let e' = expr builder e in
@@ -375,6 +431,9 @@ let translate (globals, camFunctions, classes) =
                         A.Void -> ""
                       | _ -> f ^ "_result") in
          L.build_call fdef (Array.of_list llargs) result builder
+    and 
+    get_address a el builder = begin (*print_endline(L.string_of_llvalue(lookup a)); *) L.build_gep (lookup a) end
+    [| (L.const_float float_t 0.0); (expr builder el) |] a builder 
     in
 
     (* LLVM insists each basic block end with exactly one "terminator"
