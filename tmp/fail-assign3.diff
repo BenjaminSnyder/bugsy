@@ -1,0 +1,4 @@
+1c1
+< Fatal error: exception Failure("illegal assignment num = void in i = myvoid()")
+---
+> Fatal error: exception Failure("illegal assignment v1 num = void in i = myvoid()")

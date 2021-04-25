@@ -3,18 +3,25 @@ num main(){
    num x;
    num[5] y;
    num z;
+   string a;
 
    z = 0;
 
    x = 3;
 
+   a = "asdfasf";
+
 
    y = [1.7, 2, 4.3, 4, 5];
 
 
+   print(y[1.6]);
+
    for (z = 0; z < 5; z++){
        print(y[z]);
        }
+
+    printf(a);
 
 
 
