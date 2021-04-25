@@ -30,6 +30,7 @@ let translate (globals, camFunctions, classes) =
   (* Get types from the context *)
   let i64_t      = L.i64_type    context
   and i32_t      = L.i32_type    context
+  and i16_t      = L.i16_type    context
   and i8_t       = L.i8_type     context
   and i1_t       = L.i1_type     context
   and float_t    = L.double_type context
@@ -153,9 +154,6 @@ let translate (globals, camFunctions, classes) =
 
   let _ = find_func "main" in (* Ensure "main" is defined *)
 
-
-
-
   (* Fill in the body of the given function *)
   let build_function_body fdecl =
     let (the_function, _) = StringMap.find fdecl.sfname function_decls in
@@ -210,10 +208,20 @@ let translate (globals, camFunctions, classes) =
       | SNumLit nl -> L.const_float_of_string float_t nl
       | SNoexpr     -> L.const_int i32_t 0
      
+      | SArrayAccess(a, e, l) -> let valu = (expr builder e) in
+     
+      L.dump_value(valu);
+     let pointer = L.build_alloca float_t (L.value_name (valu)) builder in L.dump_value(pointer);
+     let test = L.build_store (L.const_float float_t 32.3) pointer builder in L.dump_value(test); 
+     let loaded = L.build_load pointer (L.value_name (valu)) builder  in L.dump_value(loaded);
+     let  yeye = L.const_fptosi (loaded) i32_t in L.dump_value(yeye);
+     let pointer_two = L.build_alloca i32_t "ff" builder in L.dump_value(pointer_two);
+     let bugsy = L.build_store yeye pointer_two builder in let hoo = L.build_load pointer_two "asdf" builder in  L.dump_value(bugsy); 
 
-      | SArrayAccess(a, e, l) -> let valu = (expr builder e) in let yeye = L.const_fptosi (valu) i32_t in 
-
-       let beans =  L.build_in_bounds_gep (lookup a) [| L.const_int i32_t 0;  (yeye) |] a builder in L.dump_value (beans); L.build_load beans a builder 
+    (* let haw = valu in
+    L.set_volatile true haw; *)
+   (* let yeye = L.const_fptosi (haw) i32_t in   *) 
+    let beans =  L.build_in_bounds_gep (lookup a) [| L.const_int i32_t 0;  (hoo) |] a builder in L.build_load beans a builder;  
 
 
     

@@ -2,7 +2,6 @@ num main(){
     
    num x;
    num[5] y;
-   num z;
 
    x = 2;
 
@@ -10,7 +9,8 @@ num main(){
    y = [1.7, 2, 4.3, 4, 5];
 
 
-   z = y[x];
+   y[x]; 
+
 
     
 }
