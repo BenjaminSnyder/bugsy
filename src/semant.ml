@@ -118,13 +118,13 @@ let check (globals, functions, classes) =
     in let func_map4 = List.fold_left add_bind4 func_map2 [
                             ("add_point_xy", Num, Num, String);]
     in
-    let add_bind5 map (name, ty1, ty2, ty3, ty4) = StringMap.add name {
-      typ = Void;
+    let add_bind5 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
+      typ = String;
       fname = name;
-      formals = [(ty1, "x"); (ty2, "y"); (ty3, "r"); (ty4, "stroke");];
+      formals = [(ty1, "x"); (ty2, "y"); (ty3, "r"); (ty4, "stroke"); (ty5, "thickness"); (ty6, "fill"); (ty7, "id")];
       locals = []; fbody = [] } map
     in let func_map5 = List.fold_left add_bind5 func_map4 [
-                            ("xadd_circle", Num, Num, Num, Num);]
+                            ("add_circle", Num, Num, Num, String, Num, String, String);]
     in
     let add_bind6 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
       typ = String;
@@ -198,13 +198,13 @@ let check (globals, functions, classes) =
     in let func_map14 = List.fold_left add_bind14 func_map13 [
                             ("add_regagon", Num, Num, Num, Num, String, Num, String, String);]
     in
-    let add_bind15 map (name, ty1, ty2, ty3, ty4) = StringMap.add name {
+    let add_bind15 map (name) = StringMap.add name {
       typ = Void;
       fname = name;
-      formals = [(ty1, "width"); (ty2, "height"); (ty3, "xOffset"); (ty4, "yOffset")];
+      formals = [];
       locals = []; fbody = [] } map
     in let func_map15 = List.fold_left add_bind15 func_map14 [
-                            ("add_ccanvas", Num, Num, Num, Num);]
+                            ("init_canvas");]
     in
     let add_bind16 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
       typ = String;

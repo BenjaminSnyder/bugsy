@@ -25,7 +25,7 @@ let translate (globals, camFunctions, classes) =
   (* Create the LLVM compilation module into which
      we will generate code *)
   let the_module = L.create_module context "Bugsy" in
-  
+
   let convert_int = function
           i -> 4
   in
@@ -40,7 +40,7 @@ let translate (globals, camFunctions, classes) =
   and array_t    = L.array_type
   and struct_t arr = L.struct_type context arr
   and void_t     = L.void_type   context
-  in 
+  in
 
   (* Return the LLVM type for a Bugsy type *)
   let rec ltype_of_typ = function
@@ -81,7 +81,7 @@ let translate (globals, camFunctions, classes) =
     List.fold_left global_var StringMap.empty globals in
 
   let printf_t : L.lltype =
-      L.var_arg_function_type float_t [| L.pointer_type i8_t |] in
+      L.function_type float_t [| L.pointer_type i8_t |] in
   let printf_func : L.llvalue =
       L.declare_function "printf" printf_t the_module in
 
@@ -96,14 +96,15 @@ let translate (globals, camFunctions, classes) =
       L.declare_function "demo" demo_t the_module in
 
   let add_point_xy_t : L.lltype =
-      L.function_type float_t [| float_t; float_t; |] in
+      L.function_type float_t [| float_t; float_t; string_t |] in
   let add_point_xy_func : L.llvalue =
       L.declare_function "add_point_xy" add_point_xy_t the_module in
 
-  let circle_t : L.lltype =
-      L.function_type float_t [| float_t; float_t; float_t |] in
-  let circle_func : L.llvalue =
-      L.declare_function "add_circle" circle_t the_module in
+  let add_circle_t : L.lltype =
+      L.function_type string_t [| float_t; float_t; float_t; string_t;
+      float_t; string_t; string_t |] in
+  let add_circle_func : L.llvalue =
+      L.declare_function "add_circle" add_circle_t the_module in
 
   let square_t : L.lltype =
       L.function_type float_t [| float_t; float_t; float_t; L.pointer_type i8_t; L.pointer_type i8_t |] in
@@ -114,6 +115,16 @@ let translate (globals, camFunctions, classes) =
       L.function_type float_t [| float_t; float_t; float_t; float_t |] in
   let canvas_func : L.llvalue =
       L.declare_function "add_canvas" canvas_t the_module in
+
+  let moveById_t : L.lltype =
+      L.function_type float_t [| string_t; float_t; float_t; float_t |] in
+  let moveById_func : L.llvalue =
+      L.declare_function "moveById" moveById_t the_module in
+
+  let init_canvas_t : L.lltype =
+      L.function_type float_t [| |] in
+  let init_canvas_func : L.llvalue =
+      L.declare_function "init_canvas" init_canvas_t the_module in
 
   (* Define each function (arguments and return type) so we can
      call it even before we've created its body *)
@@ -189,7 +200,8 @@ let translate (globals, camFunctions, classes) =
     (* Return the value for a variable or formal argument.
        Check local names first, then global names *)
     let lookup n = try StringMap.find n local_vars
-                   with Not_found -> StringMap.find n global_vars
+                   with Not_found -> try StringMap.find n global_vars
+                   with Not_found -> raise (Failure ("ur sus"))
     in
 
     (* Construct code for an expression; return its value *)
@@ -274,18 +286,26 @@ let translate (globals, camFunctions, classes) =
     | SCall ("printf", [e]) ->
 	    L.build_call printf_func [| string_format_str ; (expr builder e) |]
 	    "printf" builder
-    | SCall ("add_point_xy", [e1; e2]) ->
-      L.build_call add_point_xy_func [| (expr builder e1); (expr builder e2); |]
+    | SCall ("add_point_xy", [e1; e2; e3]) ->
+      L.build_call add_point_xy_func [| (expr builder e1); (expr builder e2); (expr builder e3)|]
       "add_point_xy" builder
-    | SCall ("add_circle", [e1; e2; e3]) ->
-      L.build_call circle_func [| (expr builder e1); (expr builder e2); (expr builder e3);|]
-      "add_circle" builder
+    | SCall ("add_circle", [e1; e2; e3; e4; e5; e6; e7]) ->
+      L.build_call add_circle_func [| (expr builder e1); (expr builder e2); (expr builder e3);
+                                    (expr builder e4); (expr builder e5); (expr builder e6);
+                                    (expr builder e7); |]
+    "add_circle" builder
     | SCall ("add_square", [e1; e2; e3]) ->
       L.build_call square_func [| (expr builder e1); (expr builder e2); (expr builder e3);|]
       "add_square" builder
     | SCall ("add_canvas", [e1; e2; e3; e4]) ->
       L.build_call canvas_func [| (expr builder e1); (expr builder e2); (expr builder e3); (expr builder e4);|]
       "add_canvas" builder
+      | SCall ("moveById", [e1; e2; e3; e4]) ->
+        L.build_call moveById_func [| (expr builder e1); (expr builder e2); (expr builder e3); (expr builder e4);|]
+        "moveById" builder
+      | SCall ("init_canvas", []) ->
+        L.build_call init_canvas_func [| |]
+        "init_canvas" builder
     | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
 	 let llargs = List.rev (List.map (expr builder) (List.rev args)) in

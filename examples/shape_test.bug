@@ -1,33 +1,42 @@
 num main() {
-    num a;
-    num b;
+    num cx;
+    num cy;
 
-    a = 0;
-    b = 0;
-    num c;
-    c = 500;
+    cx = 0;
+    cy = 0;
+    num w;
+    w = 1500;
 
-    num d;
-    num e;
-    num f;
-    d = 500;
-    e = 50;
-    f = c + 2;
+    num h;
+    num x;
+    num y;
+    h = 1000;
+    x = w / 2;
+    y = h / 2;
     num g;
-    g = 10;
+    g = 100;
     string stroke;
     stroke = "0.0 0.3 0.5";
     string fill;
     fill = "0.2 0.2 0.2";
     string id;
-    id = "qwerty";
+    id = "";
 
+    num xt;
+    xt = 800;
+    num yt;
+    yt = 800;
 
-    add_canvas(c, d, a, b);
+    num thickness;
+    thickness = 5;
 
+    init_canvas();
     // add_ccanvas(c, d, a, b);
-    // xadd_circle(a, b, e, a);
+    id = add_circle(x, y, g, stroke, thickness, fill, id);
     // add_point_xy(c, d, id);
+    moveById(id, xt, yt, thickness);
+    add_canvas(w, h, cx, cy);
+
 
     return 0;
 }

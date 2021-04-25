@@ -13,15 +13,15 @@ bugsy.native :
 		bugsy.native
 
 builtins.o:
-	gcc src/builtins.c -c -o _build/builtins.o 
+	cc -c -o _build/builtins.o  src/builtins.c -lm
 
 # "make clean" removes all generated files
 
 .PHONY : clean
 clean :
 	ocamlbuild -clean
-	rm -rf testall.log *.diff bugsy scanner.ml parser.ml parser.mli
-	rm -rf builtins.o
+	rm -rf testall.log *.diff bugsy.native scanner.ml parser.ml parser.mli
+	rm -rf _build/builtins.o
 	rm -rf *.cmx *.cmi *.cmo *.cmx *.o *.s *.ll *.out *.exe
 	rm -rf _build tmp
 
