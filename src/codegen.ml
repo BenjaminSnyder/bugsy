@@ -387,9 +387,23 @@ let translate (globals, functions', classes) =
 (* separating functions from constructors *)
 
 
-let const_decls : (L.llvalue * sconst_decl) StringMap.t = 
-        let const_decl  m ctdecl = 
-           let name = ctdecl. "constructor" + "_test"
+ let const_decls : (L.llvalue * sconst_decl) StringMap.t = 
+    let const_decl  m cdecl =
+        let ct = List.nth 0 cdecl.scdconst in
+
+        let cname = cdecl.scname in
+
+       let name = cname ^ "_constructor"
+
+       and formal_types =
+
+           Array.of_list (List.map (fun (t, _) -> ltype_of_typ t) cdecl.ctformals)
+    in let ctype = L.function_type (ltype_of_type i32_t)
+
+
+    in
+
+List.fold_left const_decl StringMap.empty classes in 
 
 
 
