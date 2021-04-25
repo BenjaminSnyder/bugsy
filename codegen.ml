@@ -16,6 +16,7 @@ module L = Llvm
 module A = Ast
 open Sast
 
+
 module StringMap = Map.Make(String)
 
 (* translate : Sast.program -> Llvm.module *)
@@ -37,6 +38,8 @@ let translate (globals, camFunctions, classes) =
   and array_t    = L.array_type
   and void_t     = L.void_type   context in
 
+
+  let tester = L.dump_module the_module in
 
 
   let object_type = L.named_struct_type context "obj" in
@@ -194,8 +197,8 @@ let translate (globals, camFunctions, classes) =
    (* ayy *)
     let conversion x =
             match x with
-            float_t -> begin L.const_fptoui x i64_t end;
-            | _ -> begin print_endline("sususus"); L.const_fptoui x i32_t end
+            float_t -> L.const_fptosi x i32_t
+            | _ -> raise(Failure "failure")
             
     in 
    
@@ -208,14 +211,22 @@ let translate (globals, camFunctions, classes) =
       | SNoexpr     -> L.const_int i32_t 0
      
 
-      | SArrayAccess(a, e, l) -> let yeye = (expr builder e)
-    in (match e with 
+      | SArrayAccess(a, e, l) -> let valu = (expr builder e) in let yeye = L.const_fptosi (valu) i32_t in 
+
+       let beans =  L.build_in_bounds_gep (lookup a) [| L.const_int i32_t 0;  (yeye) |] a builder in L.dump_value (beans); L.build_load beans a builder 
+
+
     
-    float_t  -> let beans =  L.build_gep (lookup a) [| L.const_int i32_t 0; conversion (yeye) |] a builder in L.build_load beans a builder 
 
-   | string_t -> let beans =  L.build_gep (lookup a) [| L.const_int i32_t 0; L.const_int i32_t 2; |] a builder in L.build_load beans a builder 
 
-      | _ -> let beans =  L.build_gep (lookup a) [| L.const_int i32_t 0; L.const_int i32_t 3 |] a builder in L.build_load beans a builder )
+      (* | SArrayAccess(a, e, l) -> let yeye = match e with (expr builder e)
+    in (match e with  
+    
+    float_t  -> let beans =  L.build_in_bounds_gep (lookup a) [| L.const_int i32_t 0; conversion (yeye) |] a builder in L.dump_value (beans); L.build_load beans a builder 
+
+      | _ -> raise(Failure "failed"); ) *)
+
+
       (* | SArrayAccess(a, e, l) -> let yeye = conversion (expr builder e)  in L.build_load (L.build_gep (lookup a) [| L.const_int i32_t 0; yeye |] a builder) a builder  *) 
       | SArrayAssign (s, e1, e2) ->
               let left = let yeye = conversion (expr builder e1) in L.build_gep (lookup s) [| L.const_int i32_t 0; yeye |] s builder in let right = expr builder e2 in ignore (L.build_store right left builder); right
