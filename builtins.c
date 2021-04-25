@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 #include <GL/glut.h>
-#include <GL/freeglut.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
