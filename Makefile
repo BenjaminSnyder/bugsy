@@ -66,12 +66,12 @@ parser.cmi : ast.cmo
 
 #TESTS = hello add beans bool
 
-TESTS = add1 arith1 arith2 arith3 fib for1 for2 func1 func2 func3	\
+TESTS = add1 arith1 arith2 arith3 array1 array2 circle decrement1 decrement2 ellipse fib for1 for2 func1 func2 func3	\
     func4 func5 func6 func7 func8 gcd2 gcd global1 global2 global3	\
-    hello if1 if2 if3 if4 if5 local1 local2 ops1 ops2 var1 var2		\
+    hello if1 if2 if3 if4 if5 increment1 increment2 local1 local2 moveBy ops1 ops2 rectangle regagon rotateBy scaleBy square triangle var1 var2		\
     while1 while2
 
-FAILS = assign1 assign2 assign3 dead1 dead2 expr1 expr2 for1 for2	\
+FAILS = array assign1 assign2 assign3 dead1 dead2 expr1 expr2 for1 for2	\
     for3 for4 for5 func1 func2 func3 func4 func5 func6 func7 func8	\
     func9 global1 global2 if1 if2 if3 nomain return1 return2 while1	\
     while2
