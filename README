@@ -81,15 +81,34 @@ CMD ["bash"]
 To run and test:
 
 $ make
-ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,+a-4 bugsy.native
-Finished, 22 targets (0 cached) in 00:00:01.
-cc    -c -o printbig.o printbig.c
+ocamlbuild -clean
+Finished, 0 targets (0 cached) in 00:00:00.
+00:00:00 0    (0   ) STARTING                                                                                                                                                                                               -------- |rm -rf testall.log *.diff bugsy.native scanner.ml parser.ml parser.mli
+rm -rf _build/builtins.o
+rm -rf *.cmx *.cmi *.cmo *.cmx *.o *.s *.ll *.out *.exe
+rm -rf _build tmp
+ocamlbuild -I src -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,+a-4-42 \
+bugsy.native
+Finished, 25 targets (0 cached) in 00:00:01.
+cc -c -o _build/builtins.o  src/builtins.c -lm
+
 $ ./scripts/testall.sh
+test-add1...OK
 test-arith1...OK
 test-arith2...OK
-test-arith3...OK
-test-fib...OK
+.
+.
+.
+test-circle...OK
+test-ellipse...OK
+test-moveBy...OK
+test-rectangle...OK
+test-regagon...OK
+test-rotateBy...OK
+test-scaleBy...OK
+test-square...OK
+test-triangle...OK
 ...
-fail-while1...OK
-fail-while2...OK
-
+fail-array...OK
+fail-assign1...OK
+fail-assign2...OK
