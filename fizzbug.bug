@@ -1,0 +1,67 @@
+  num modulus(num a, num b){
+       num ret;
+       num mod;
+
+       if (a < 0){
+           
+           a = -1 * a;
+        }
+
+        if (b < 0){
+            
+          b = -1 * b;
+
+        }
+
+        mod = a;
+
+        while (mod >= b){
+            mod = mod - b;
+            
+        }
+
+        if (a < 0){
+            
+            return -1 * mod;
+            }
+
+        return mod;
+       
+        
+        }
+
+
+num main(){
+
+    
+    num n;
+    num i;
+
+    n = 100;
+
+      for (i = 1; i <= n; i++){
+        if (modulus(i, 15) =? 0){
+            printf("FizzBug");
+            
+            }
+        else {
+            
+        if (modulus(i, 5) =? 0){
+            printf("Bug");
+            }
+
+        else
+        {
+            if (modulus(i, 3) =? 0){
+            printf("Fizz");
+            }
+
+        else {
+            print(i);
+            }
+        }
+        } 
+      }
+    
+    return 0;
+    }

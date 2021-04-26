@@ -1,16 +1,33 @@
 num main(){
+    
+   num x;
+   num[5] y;
+   string[5] b;
+   num z;
+   string a;
 
-num x;
-num z;
-num[5] y;
+   z = 0;
 
-x = 5.0;
+   x = 4.3;
 
-z = x + z;
+   a = "asdfasf";
 
 
-y = [1, 2, 3, 4, 6];
+   y = [1.7, 2, 4.3, 4, 5];
+
+   // b = ["asdf", "asdf", "sadgsdgf", "asdga", "asdfasdf"];
+
+   y[-2] = 8;
+   // print(y[1.6]);
+
+   print(y[-2]);
+   for (z = 0; z < 5; z++){
+       //print(y[z]);
+       }
+
+    printf(a);
 
 
 
+    
 }

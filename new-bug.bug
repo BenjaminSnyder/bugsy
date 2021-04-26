@@ -1,0 +1,9 @@
+num main(){
+    
+    string[5] b;
+
+    b = ["asdf", "asdf", "ffds", "sadfsdfa", "sadfaf"];
+
+    return 0;
+    
+    }

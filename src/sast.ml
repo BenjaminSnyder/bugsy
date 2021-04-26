@@ -76,7 +76,7 @@ let rec string_of_sexpr (t, e) =
       c ^ "." ^ f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
   | SArrayLiteral(el, t) -> string_of_typ t ^ "[" ^ String.concat ", " (List.map (fun e -> string_of_sexpr e) el) ^ "]"
   | SArrayAccess(a, e, t) -> string_of_typ t ^ " " ^ a ^ "[" ^ string_of_sexpr e ^ "]"
-  | SArrayAssign(a, e1, e2) -> a ^ "[" ^ string_of_sexpr e1 ^ "] = " ^ string_of_sexpr e2
+  | SArrayAssign(a, left, right) -> a ^ "[" ^ string_of_sexpr left ^ "] = " ^ string_of_sexpr right
 
   | SNoexpr -> ""
   | _ -> raise (Failure "something was not implemented to print...")

@@ -20,7 +20,7 @@ open Sast
 module StringMap = Map.Make(String)
 
 (* translate : Sast.program -> Llvm.module *)
-let translate (globals, camFunctions, _) =
+let translate (globals, functions', classes) =
   let context    = L.global_context () in
 
   (* Create the LLVM compilation module into which
@@ -73,7 +73,7 @@ let translate (globals, camFunctions, _) =
 
   (*go through all functions, find main, and change main to return int *)
   (*let functions = List.map (fun x -> (x.styp <- A.Int); x) camFunctions in *)
-  let functions = List.map (fun x -> if x.sfname = "main" then ((x.styp <- A.Int); x) else x) camFunctions in
+  let functions = List.map (fun x -> if x.sfname = "main" then ((x.styp <- A.Int); x) else x) functions' in
 
 
   (* Create a map of global variables after creating each *)
@@ -181,10 +181,9 @@ let translate (globals, camFunctions, _) =
       print_endline(L.string_of_lltype(float_t);); *)
 
       (*beans *)
-      let ye = L.function_type (ltype_of_typ A.Int) formal_types in
 
 
-      let ret_type = if name = "main" then ye else ftype in
+      let ret_type = ftype in
    (*   if name = "main" then let ret_type = ye in else let ret_type = ftype in *)
 
       StringMap.add name (L.define_function name ret_type  the_module, fdecl) m in
@@ -240,15 +239,6 @@ let translate (globals, camFunctions, _) =
                    with Not_found -> raise (Failure ("ur sus"))
     in
 
-   (* let conversion x = L.int64_of_const x in *)
-   (* ayy *)
-    let conversion x =
-            match x with
-            _ -> L.const_fptosi x i32_t
-          (*  | _ -> raise(Failure "failure") *)
-    
-
-    in 
    
     (* Construct code for an expression; return its value *)
     let rec expr builder ((_, e) : sexpr) = match e with
@@ -260,46 +250,28 @@ let translate (globals, camFunctions, _) =
      
       | SArrayAccess(a, e, _) -> let valu = (expr builder e) in
      
+    (*  convert nums to ints   *)
+    let truncated = L.build_fptosi (valu) i32_t "trunc" builder in L.dump_value(truncated);
+ 
+    (* get element pointer to element we're accessing *)
+    let result =  L.build_in_bounds_gep (lookup a) [| L.const_int i32_t 0; truncated |] a builder in L.build_load result a builder 
 
 
-   (*  let test = L.build_ptrtoint valu float_t "a" builder in
-       L.dump_value(test);
-
-       let haw = L.build_fptosi (test) float_t "a" builder  in
-
-
-      L.dump_value(haw); *)
-    
-     let pointer = L.build_alloca float_t (L.value_name (valu)) builder in L.dump_value(pointer);
-     let test = L.build_store (L.const_float float_t 32.3) pointer builder in L.dump_value(test);
-     (* let tester = L.build_sitofp (L.const_float float_t 2.0) float_t "aa" builder in *)
-     let loaded = L.build_load pointer (L.value_name (valu)) builder  in L.dump_value(loaded);
-    let aha = L.build_fptosi (valu) i32_t "aasf" builder in L.dump_value(aha);
-     (* let  yeye = L.build_fptosi aha i32_t "a" builder in L.dump_value(yeye); 
-     let pointer_two = L.build_alloca i32_t "ff" builder in L.dump_value(pointer_two);
-     let bugsy = L.build_store yeye pointer_two builder in let hoo = L.build_load pointer_two "asdf" builder in  L.dump_value(bugsy);  *)
-
-   (* let haw = valu in
-    L.set_volatile true haw; 
-   let yeye = L.const_fptosi (haw) i32_t in  *) 
-   
-    let beans =  L.build_in_bounds_gep (lookup a) [| L.const_int i32_t 0; aha |] a builder in L.build_load beans a builder;  
-
-
-    
-
-
-      (* | SArrayAccess(a, e, l) -> let yeye = match e with (expr builder e)
-    in (match e with  
-    
-    float_t  -> let beans =  L.build_in_bounds_gep (lookup a) [| L.const_int i32_t 0; conversion (yeye) |] a builder in L.dump_value (beans); L.build_load beans a builder 
-
-      | _ -> raise(Failure "failed"); ) *)
-
-
-      (* | SArrayAccess(a, e, l) -> let yeye = conversion (expr builder e)  in L.build_load (L.build_gep (lookup a) [| L.const_int i32_t 0; yeye |] a builder) a builder  *) 
       | SArrayAssign (s, e1, e2) ->
-              let left = let yeye = conversion (expr builder e1) in L.build_gep (lookup s) [| L.const_int i32_t 0; yeye |] s builder in let right = expr builder e2 in ignore (L.build_store right left builder); right
+              let left_value = (expr builder e1) in
+
+               let left_truncated = L.build_fptosi (left_value) i32_t "trunc" builder in
+
+
+               let left_real =  L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t 3 |] s builder in 
+
+
+              let right_value = (expr builder e2) in
+
+              let right_truncated = L.build_fptosi (right_value) i32_t "trunc" builder in 
+
+              ignore (L.build_store right_value left_real builder); right_truncated 
+
       | SId s       -> L.build_load (lookup s) s builder
       | SArrayLiteral (l, t) -> L.const_array (ltype_of_typ t) (Array.of_list (List.map (expr builder) l))
       | SAssign (s, e) -> let e' = expr builder e in
