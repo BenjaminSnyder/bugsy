@@ -20,7 +20,7 @@ open Sast
 module StringMap = Map.Make(String)
 
 (* translate : Sast.program -> Llvm.module *)
-let translate (globals, camFunctions, classes) =
+let translate (globals, camFunctions, _) =
   let context    = L.global_context () in
 
   (* Create the LLVM compilation module into which
@@ -34,13 +34,10 @@ let translate (globals, camFunctions, classes) =
   in
 
   (* Get types from the context *)
-  let i64_t      = L.i64_type    context
-  and i32_t      = L.i32_type    context
-  and i16_t      = L.i16_type    context
+  let i32_t      = L.i32_type    context
   and i8_t       = L.i8_type     context
   and i1_t       = L.i1_type     context
   and float_t    = L.double_type context
-  and ye_t       = L.float_type context
   and string_t   = L.pointer_type (L.i8_type context) (*new string type *)
   and array_t    = L.array_type
   and void_t     = L.void_type   context 
@@ -59,7 +56,7 @@ let translate (globals, camFunctions, classes) =
         | _ -> raise (Failure "Error: Not implemented in codegen")
     )
     | A.Object(classTyp) -> L.pointer_type (struct_t (struct_t_to_arr classTyp))
-    | _ -> raise (Failure "Error: Not implemented in codegen")
+  (*  | _ -> raise (Failure "Error: Not implemented in codegen") *)
 
   and struct_t_to_arr classTyp =
     let varTypes = List.map (fun (_, (t,_)) -> t) (StringMap.bindings classTyp.A.instanceVars) in
@@ -247,8 +244,8 @@ let translate (globals, camFunctions, classes) =
    (* ayy *)
     let conversion x =
             match x with
-            float_t -> L.const_fptosi x i32_t
-            | _ -> raise(Failure "failure")
+            _ -> L.const_fptosi x i32_t
+          (*  | _ -> raise(Failure "failure") *)
     
 
     in 
@@ -261,7 +258,7 @@ let translate (globals, camFunctions, classes) =
       | SNumLit nl -> L.const_float_of_string float_t nl
       | SNoexpr     -> L.const_int i32_t 0
      
-      | SArrayAccess(a, e, l) -> let valu = (expr builder e) in
+      | SArrayAccess(a, e, _) -> let valu = (expr builder e) in
      
 
 
@@ -275,7 +272,7 @@ let translate (globals, camFunctions, classes) =
     
      let pointer = L.build_alloca float_t (L.value_name (valu)) builder in L.dump_value(pointer);
      let test = L.build_store (L.const_float float_t 32.3) pointer builder in L.dump_value(test);
-     let tester = L.build_sitofp (L.const_float float_t 2.0) float_t "aa" builder in 
+     (* let tester = L.build_sitofp (L.const_float float_t 2.0) float_t "aa" builder in *)
      let loaded = L.build_load pointer (L.value_name (valu)) builder  in L.dump_value(loaded);
     let aha = L.build_fptosi (valu) i32_t "aasf" builder in L.dump_value(aha);
      (* let  yeye = L.build_fptosi aha i32_t "a" builder in L.dump_value(yeye); 
@@ -307,9 +304,9 @@ let translate (globals, camFunctions, classes) =
       | SArrayLiteral (l, t) -> L.const_array (ltype_of_typ t) (Array.of_list (List.map (expr builder) l))
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'
-      | SConstruct(a,e) -> raise (Failure ("SConstruct not ready yet"))
-      | SClassCall(c, f, el) -> raise (Failure ("SClassCall not ready yet"))
-      | SAccess(c, v) -> raise (Failure ("SAccess not ready yet"))
+      | SConstruct(_,_) -> raise (Failure ("SConstruct not ready yet"))
+      | SClassCall(_, _, _) -> raise (Failure ("SClassCall not ready yet"))
+      | SAccess(_, _) -> raise (Failure ("SAccess not ready yet"))
       | SCrementop(e, op) ->
           let e' = expr builder e in
           let one = expr builder (A.Num, (Sast.SNumLit "1.0")) in
@@ -441,8 +438,8 @@ let translate (globals, camFunctions, classes) =
       
     | _ -> raise (Failure "Error: Not implemented in codegen")
 
-    and get_address a el builder =
-        L.build_gep (lookup a) [| (L.const_float float_t 0.0); (expr builder el) |] a builder
+    (* and get_address a el builder =
+        L.build_gep (lookup a) [| (L.const_float float_t 0.0); (expr builder el) |] a builder *)
     in
 
     (* LLVM insists each basic block end with exactly one "terminator"
