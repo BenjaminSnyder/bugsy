@@ -131,6 +131,7 @@ void genId(char *dest, size_t length) {
 char* add_ellipse(double x, double y, double w, double h,  char* stroke, double thiccness, char* fill, char* id) {
 
     struct Shape shape;
+    memset(&shape, 0, sizeof shape);
 
     char* shapeId = malloc(sizeof(char) * 100);
     if(strcmp(id, "") == 0) {
@@ -229,6 +230,7 @@ char* add_circle(double x, double y, double r, char* stroke, double thiccness, c
     double* fill_arr = str_to_arr(fill);
 
     struct Shape shape;
+    memset(&shape, 0, sizeof shape);
     // fprintf(stderr, "Adding circle ");
     char* shapeId = malloc(sizeof(char) * 100);
     if(strcmp(id, "") == 0) {
@@ -306,6 +308,7 @@ char* add_square(double x, double y, double size, char* stroke, double thiccness
     double* fill_arr = str_to_arr(fill);
 
     struct Shape shape;
+    memset(&shape, 0, sizeof shape);
 
     char* shapeId = malloc(sizeof(char) * 100);
     if(strcmp(id, "") == 0) {
@@ -378,11 +381,10 @@ char* add_triangle(double x, double y, double b, double h, char* stroke, double 
     double* fill_arr = str_to_arr(fill);
 
     struct Shape shape;
-    fprintf(stderr, "Adding triangle\n ");
+    memset(&shape, 0, sizeof shape);
 
     char* shapeId = malloc(sizeof(char) * 100);
     if(strcmp(id, "") == 0) {
-        fprintf(stderr, "Adding triangasdasdle\n ");
         size_t len = id_len;
         genId(shapeId, len);
         strcpy(shape.shape, "triangle");
@@ -399,7 +401,6 @@ char* add_triangle(double x, double y, double b, double h, char* stroke, double 
         count++;
 
     } else {
-        fprintf(stderr, "Addidsdng triangasdasdle\n ");
 
         for(int i = 0; i < count; i++) {
             // struct Shape s = *(shapes + sizeof(struct Shape) * i);
@@ -457,6 +458,7 @@ char* add_rectangle(double x, double y, double w, double h, char* stroke, double
     double* fill_arr = str_to_arr(fill);
 
     struct Shape shape;
+    memset(&shape, 0, sizeof shape);
 
     char* shapeId = malloc(sizeof(char) * 100);
     if(strcmp(id, "") == 0) {
@@ -529,6 +531,7 @@ char* add_line(double x1, double y1, double x2, double y2, char* stroke, double 
     double* stroke_arr = str_to_arr(stroke);
 
     struct Shape shape;
+    memset(&shape, 0, sizeof shape);
 
     char* shapeId = malloc(sizeof(char) * 100);
     if(strcmp(id, "") == 0) {
@@ -589,6 +592,8 @@ char* add_regagon(double x, double y, double n_in, double r, char* stroke, doubl
     double a = 2 / (pi * n);
 
     struct Shape shape;
+    memset(&shape, 0, sizeof shape);
+    
     char* shapeId = malloc(sizeof(char) * id_len);
     if(strcmp(id, "") == 0) {
         size_t len = id_len;
@@ -866,13 +871,15 @@ void scaleById(char* id, double scale, double speed) {
 void rotateBy(struct Shape shape, double angle, double speed) {
 
     double rotated = 0.0;
-    double inc = 1 * (angle / abs(angle)) * speed;
+    double inc = 0.01 * (angle / abs(angle)) * speed;
 
     double abs_val = angle;
     if(abs_val < 0) {
         abs_val *= -1;
     }
     double time = (speed * 1000000) / (abs_val / inc);
+    double x_orig = shape.x;
+    double y_orig = shape.y;
 
     struct Shape* front = shapes;
     while(rotated < angle) {
@@ -941,6 +948,22 @@ void rotateBy(struct Shape shape, double angle, double speed) {
         glFlush();
         usleep(time);
     }
+
+    // if(strcmp(shape.shape, "ellipse") == 0) {
+    //     add_ellipse(x_orig, y_orig, shape.w, shape.h, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
+    // } else if(strcmp(shape.shape, "circle") == 0) {
+    //     add_circle(x_orig, y_orig, shape.r, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
+    // } else if(strcmp(shape.shape, "square") == 0) {
+    //     add_square(x_orig, y_orig, shape.s, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
+    // } else if(strcmp(shape.shape, "triangle") == 0) {
+    //     add_triangle(x_orig, y_orig, shape.b, shape.h, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
+    // } else if(strcmp(shape.shape, "rectangle") == 0) {
+    //     add_rectangle(x_orig, y_orig, shape.w, shape.h, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
+    // } else if(strcmp(shape.shape, "regagon") == 0) {
+    //     add_regagon(x_orig, y_orig, shape.n, shape.r, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
+    // }
+    // glFlush();
+
 }
 
 void rotateById(char* id, double angle, double speed) {
