@@ -2,6 +2,7 @@ num main(){
     
    num x;
    num[5] y;
+   string[5] b;
    num z;
    string a;
 
@@ -13,6 +14,8 @@ num main(){
 
 
    y = [1.7, 2, 4.3, 4, 5];
+
+   //b = ["asdf", "asdf", "sadgsdgf", "asdga", "asdfasdf"];
 
 
    print(y[1.6]);

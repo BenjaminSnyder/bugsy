@@ -257,6 +257,7 @@ let check (globals, functions, classes) =
       "" -> ( match rvaluet with
        Array(t1, _) -> (match t1 with
             Num -> check_assign t1 Num err
+            | String -> check_assign t1 String err
             | _ -> raise (Failure err))
          | _ ->  if lvaluet = rvaluet then lvaluet else raise (Failure err))
 

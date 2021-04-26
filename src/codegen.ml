@@ -20,7 +20,7 @@ open Sast
 module StringMap = Map.Make(String)
 
 (* translate : Sast.program -> Llvm.module *)
-let translate (globals, camFunctions, classes) =
+let translate (globals, functions', classes) =
   let context    = L.global_context () in
 
   (* Create the LLVM compilation module into which
@@ -55,6 +55,7 @@ let translate (globals, camFunctions, classes) =
     | A.Int -> i32_t
     | A.Array(typ, size) -> (match typ with
           A.Num -> array_t float_t (convert_int size)
+          | A.String -> array_t string_t (convert_int size)
     )
     | A.Object(classTyp) -> L.pointer_type (struct_t (struct_t_to_arr classTyp))
 
@@ -73,7 +74,7 @@ let translate (globals, camFunctions, classes) =
 
   (*go through all functions, find main, and change main to return int *)
   (*let functions = List.map (fun x -> (x.styp <- A.Int); x) camFunctions in *)
-  let functions = List.map (fun x -> if x.sfname = "main" then ((x.styp <- A.Int); x) else x) camFunctions in
+  let functions = List.map (fun x -> if x.sfname = "main" then ((x.styp <- A.Int); x) else x) functions' in
 
 
   (* Create a map of global variables after creating each *)
@@ -136,10 +137,9 @@ let translate (globals, camFunctions, classes) =
       print_endline(L.string_of_lltype(float_t);); *)
 
       (*beans *)
-      let ye = L.function_type (ltype_of_typ A.Int) formal_types in
 
 
-      let ret_type = if name = "main" then ye else ftype in
+      let ret_type = ftype in
    (*   if name = "main" then let ret_type = ye in else let ret_type = ftype in *)
 
       StringMap.add name (L.define_function name ret_type  the_module, fdecl) m in
@@ -213,6 +213,8 @@ let translate (globals, camFunctions, classes) =
       | SNoexpr     -> L.const_int i32_t 0
      
       | SArrayAccess(a, e, l) -> let valu = (expr builder e) in
+
+
      
 
 
@@ -223,6 +225,9 @@ let translate (globals, camFunctions, classes) =
 
 
       L.dump_value(haw); *)
+
+   (* match valu with
+   float_t -> *)
     
      let pointer = L.build_alloca float_t (L.value_name (valu)) builder in L.dump_value(pointer);
      let test = L.build_store (L.const_float float_t 32.3) pointer builder in L.dump_value(test);
