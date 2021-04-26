@@ -1,7 +1,7 @@
 Shape: circle ID: QoMNUck
 x: 500 y: 500
 n: 0 r: 100
-w: 0 h: -2147483648
+w: 0 h: 0
 b: 0 s: 0
 x1: 0 y1: 0
 x2: 0 y2: 0
@@ -10,7 +10,7 @@ fill: 0.2 0.2 0.2
 Shape: circle ID: QoMNUck
 x: 500 y: 500
 n: 0 r: 100
-w: 0 h: -2147483648
+w: 0 h: 0
 b: 0 s: 0
 x1: 0 y1: 0
 x2: 0 y2: 0

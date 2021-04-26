@@ -30,11 +30,9 @@ struct Shape {
     double y1;
     double x2;
     double y2;
-    int num_points;
     char stroke[20];
     double thiccness;
     char fill[20];
-    double points[10][2];
 } Shape;
 
 struct Animation {
@@ -131,7 +129,6 @@ void genId(char *dest, size_t length) {
 char* add_ellipse(double x, double y, double w, double h,  char* stroke, double thiccness, char* fill, char* id) {
 
     struct Shape shape;
-    memset(&shape, 0, sizeof shape);
 
     char* shapeId = malloc(sizeof(char) * 100);
     if(strcmp(id, "") == 0) {
@@ -144,6 +141,16 @@ char* add_ellipse(double x, double y, double w, double h,  char* stroke, double 
         shape.y = y;
         shape.w = w;
         shape.h = h;
+
+        shape.n = 0;
+        shape.r = 0;
+        shape.b = 0;
+        shape.s = 0;
+        shape.x1 = 0;
+        shape.y1 = 0;
+        shape.x2 = 0;
+        shape.y2 = 0;
+
         strcpy(shape.stroke, stroke);
         shape.thiccness = thiccness;
         strcpy(shape.fill, fill);
@@ -230,7 +237,6 @@ char* add_circle(double x, double y, double r, char* stroke, double thiccness, c
     double* fill_arr = str_to_arr(fill);
 
     struct Shape shape;
-    memset(&shape, 0, sizeof shape);
     // fprintf(stderr, "Adding circle ");
     char* shapeId = malloc(sizeof(char) * 100);
     if(strcmp(id, "") == 0) {
@@ -241,6 +247,17 @@ char* add_circle(double x, double y, double r, char* stroke, double thiccness, c
         shape.x = x;
         shape.y = y;
         shape.r = r;
+
+        shape.w = 0;
+        shape.h = 0;
+        shape.n = 0;
+        shape.b = 0;
+        shape.s = 0;
+        shape.x1 = 0;
+        shape.y1 = 0;
+        shape.x2 = 0;
+        shape.y2 = 0;
+
         strcpy(shape.stroke, stroke);
         shape.thiccness = thiccness;
         strcpy(shape.fill, fill);
@@ -308,7 +325,6 @@ char* add_square(double x, double y, double size, char* stroke, double thiccness
     double* fill_arr = str_to_arr(fill);
 
     struct Shape shape;
-    memset(&shape, 0, sizeof shape);
 
     char* shapeId = malloc(sizeof(char) * 100);
     if(strcmp(id, "") == 0) {
@@ -319,6 +335,16 @@ char* add_square(double x, double y, double size, char* stroke, double thiccness
         shape.x = x;
         shape.y = y;
         shape.s = size;
+
+        shape.w = 0;
+        shape.h = 0;
+        shape.n = 0;
+        shape.b = 0;
+        shape.x1 = 0;
+        shape.y1 = 0;
+        shape.x2 = 0;
+        shape.y2 = 0;
+
         strcpy(shape.stroke, stroke);
         shape.thiccness = thiccness;
         strcpy(shape.fill, fill);
@@ -381,7 +407,6 @@ char* add_triangle(double x, double y, double b, double h, char* stroke, double 
     double* fill_arr = str_to_arr(fill);
 
     struct Shape shape;
-    memset(&shape, 0, sizeof shape);
 
     char* shapeId = malloc(sizeof(char) * 100);
     if(strcmp(id, "") == 0) {
@@ -393,6 +418,15 @@ char* add_triangle(double x, double y, double b, double h, char* stroke, double 
         shape.y = y;
         shape.b = b;
         shape.h = h;
+
+        shape.w = 0;
+        shape.n = 0;
+        shape.s = 0;
+        shape.x1 = 0;
+        shape.y1 = 0;
+        shape.x2 = 0;
+        shape.y2 = 0;
+
         strcpy(shape.stroke, stroke);
         shape.thiccness = thiccness;
         strcpy(shape.fill, fill);
@@ -458,7 +492,6 @@ char* add_rectangle(double x, double y, double w, double h, char* stroke, double
     double* fill_arr = str_to_arr(fill);
 
     struct Shape shape;
-    memset(&shape, 0, sizeof shape);
 
     char* shapeId = malloc(sizeof(char) * 100);
     if(strcmp(id, "") == 0) {
@@ -470,6 +503,15 @@ char* add_rectangle(double x, double y, double w, double h, char* stroke, double
         shape.y = y;
         shape.w = w;
         shape.h = h;
+
+        shape.n = 0;
+        shape.b = 0;
+        shape.s = 0;
+        shape.x1 = 0;
+        shape.y1 = 0;
+        shape.x2 = 0;
+        shape.y2 = 0;
+
         strcpy(shape.stroke, stroke);
         shape.thiccness = thiccness;
         strcpy(shape.fill, fill);
@@ -531,7 +573,6 @@ char* add_line(double x1, double y1, double x2, double y2, char* stroke, double 
     double* stroke_arr = str_to_arr(stroke);
 
     struct Shape shape;
-    memset(&shape, 0, sizeof shape);
 
     char* shapeId = malloc(sizeof(char) * 100);
     if(strcmp(id, "") == 0) {
@@ -592,8 +633,6 @@ char* add_regagon(double x, double y, double n_in, double r, char* stroke, doubl
     double a = 2 / (pi * n);
 
     struct Shape shape;
-    memset(&shape, 0, sizeof shape);
-    
     char* shapeId = malloc(sizeof(char) * id_len);
     if(strcmp(id, "") == 0) {
         size_t len = id_len;
