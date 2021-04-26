@@ -17,11 +17,9 @@ rule token = parse
 | '}'      { RBRACE }
 | '['      { LSQBRACKET }
 | ']'      { RSQBRACKET }
-| ':'      { COLON  }
 | ';'      { SEMI   }
 | ','      { COMMA  }
 | '.'      { DOT    }
-| '?'      { QMARK  }
 
 (* Arithmetic Tokens *)
 | '+'      { PLUS   }
@@ -51,25 +49,16 @@ rule token = parse
 (* Control Flow *)
 | "if"     { IF     }
 | "else"   { ELSE   }
-| "elif"   { ELIF   }
 | "for"    { FOR    }
 | "while"  { WHILE  }
 | "return" { RETURN }
-| "continue" { CONTINUE }
-| "break"  { BREAK  }
 
 (* Classes *)
 | "class"  { CLASS  }
 | "constructor" { CONSTRUCTOR }
 | "new"  { NEW }
 
-(* Errors *)
-| "try"    { TRY    }
-| "catch"  { CATCH  }
-| "raise"  { RAISE  }
-
 (* Builtin Types *)
-| "null"   { NULL   }
 | "num"    { NUM    }
 | "bool"   { BOOL   }
 | "void"   { VOID   }
@@ -80,6 +69,8 @@ rule token = parse
 (* Numeric Literal *)
 | digits '.'?  digit* ( ['e' 'E'] ['+' '-']? digits )? as lxm { NUMLIT(lxm) }
 | ['a'-'z' '_' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
+| '~'['a'-'z' '_' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { CLASSID(lxm) }
+
 (* String Literal *)
 |'\"' ([^ '\"' '\n' '\r' '\t' '\b']* as lxm)  '\"' { STRLIT(lxm) }
 

@@ -28,8 +28,9 @@ let translate (globals, camFunctions, classes) =
   let the_module = L.create_module context "Bugsy" in
 
   let convert_int = function
-      A.IntLiteral(i) -> i |
-      A.NumLit(i) -> int_of_string i
+      A.IntLiteral(i) -> i
+      | A.NumLit(i) -> int_of_string i
+      | _ -> raise (Failure "Something went wrong")
   in
 
   (* Get types from the context *)
@@ -55,11 +56,13 @@ let translate (globals, camFunctions, classes) =
     | A.Int -> i32_t
     | A.Array(typ, size) -> (match typ with
           A.Num -> array_t float_t (convert_int size)
+        | _ -> raise (Failure "Error: Not implemented in codegen")
     )
     | A.Object(classTyp) -> L.pointer_type (struct_t (struct_t_to_arr classTyp))
+    | _ -> raise (Failure "Error: Not implemented in codegen")
 
   and struct_t_to_arr classTyp =
-    let varTypes = List.map (fun (_, (t,_)) -> t) (StringMap.bindings classTyp.instanceVars) in
+    let varTypes = List.map (fun (_, (t,_)) -> t) (StringMap.bindings classTyp.A.instanceVars) in
     Array.of_list (List.map ltype_of_typ varTypes)
   in
 
@@ -321,6 +324,7 @@ let translate (globals, camFunctions, classes) =
           | A.PostInc -> ignore(L.build_store eplus  (lookup s) builder); e'
           | A.PreDec  -> ignore(L.build_store eminus (lookup s) builder); eminus
           | A.PostDec -> ignore(L.build_store eminus (lookup s) builder); e'
+          | _ -> raise (Failure "Error: Not implemented in codegen")
           )
 
       | SBinop ((A.Num,_ ) as e1, op, e2) ->
@@ -339,6 +343,7 @@ let translate (globals, camFunctions, classes) =
 	  | A.Geq     -> L.build_fcmp L.Fcmp.Oge
 	  | A.And | A.Or ->
 	      raise (Failure "internal error: semant should have rejected and/or on float")
+    | _ -> raise (Failure "Error: Not implemented in codegen")
 	  ) e1' e2' "tmp" builder
       | SBinop (e1, op, e2) ->
 	  let e1' = expr builder e1
@@ -356,6 +361,7 @@ let translate (globals, camFunctions, classes) =
 	  | A.Leq     -> L.build_icmp L.Icmp.Sle
 	  | A.Greater -> L.build_icmp L.Icmp.Sgt
 	  | A.Geq     -> L.build_icmp L.Icmp.Sge
+    | _ -> raise (Failure "Error: Not implemented in codegen")
 	  ) e1' e2' "tmp" builder
       | SUnop(op, ((t, _) as e)) ->
           let e' = expr builder e in
@@ -424,17 +430,19 @@ let translate (globals, camFunctions, classes) =
     | SCall ("init_canvas", []) ->
       L.build_call init_canvas_func [| |]
       "init_canvas" builder
+    | _ -> raise (Failure "Error: Not implemented in codegen")
     | SCall (f, args) ->
-         let (fdef, fdecl) = StringMap.find f function_decls in
-	 let llargs = List.rev (List.map (expr builder) (List.rev args)) in
-	 let result = (match fdecl.styp with
+      let (fdef, fdecl) = StringMap.find f function_decls in
+	    let llargs = List.rev (List.map (expr builder) (List.rev args)) in
+	    let result = (match fdecl.styp with
                         A.Void -> ""
                       | _ -> f ^ "_result") in
          L.build_call fdef (Array.of_list llargs) result builder
-    and 
-    get_address a el builder = begin (*print_endline(L.string_of_llvalue(lookup a)); *) L.build_gep (lookup a) end
-    [| (L.const_float float_t 0.0); (expr builder el) |] a builder 
-    in
+      and 
+      get_address a el builder = begin (*print_endline(L.string_of_llvalue(lookup a)); *) L.build_gep (lookup a) end
+      [| (L.const_float float_t 0.0); (expr builder el) |] a builder 
+    
+      in
 
     (* LLVM insists each basic block end with exactly one "terminator"
        instruction that transfers control.  This function runs "instr builder"

@@ -79,6 +79,7 @@ let rec string_of_sexpr (t, e) =
   | SArrayAssign(a, e1, e2) -> a ^ "[" ^ string_of_sexpr e1 ^ "] = " ^ string_of_sexpr e2
 
   | SNoexpr -> ""
+  | _ -> raise (Failure "something was not implemented to print...")
 				  ) ^ ")"
 
 let rec add_slevel (listy, level) = match listy with
@@ -96,6 +97,7 @@ let rec string_of_sstmt (stmt,level) = match stmt with
   | SFor(e1, e2, e3, s) -> "for (" ^ string_of_sexpr e1  ^ " ; " ^ string_of_sexpr e2 ^ " ; " ^
       string_of_sexpr e3  ^ ") " ^ string_of_sstmt (s, (level+1))
   | SWhile(e, s) -> "while (" ^ string_of_sexpr e ^ ") " ^ string_of_sstmt (s, (level+1))
+  | _ -> raise (Failure "something was not implemented to print...")
 
 let string_of_svdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 

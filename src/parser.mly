@@ -8,17 +8,16 @@ let trd  (_,_,tr)=tr
 %}
 
 %token CONSTRUCTOR CLASS NEW
-%token CONTINUE BREAK TRY CATCH RAISE
 %token LPAREN RPAREN LBRACE RBRACE LSQBRACKET RSQBRACKET
-%token COLON SEMI COMMA QMARK DOT
+%token SEMI COMMA DOT
 %token PLUS MINUS MULT DIV ASSIGN MODULO
 %token INCREMENT DECREMENT
 %token PLUSEQ MINUSEQ MULTEQ DIVEQ
-%token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR NOT
-%token RETURN IF ELIF ELSE FOR WHILE
-%token BOOL VOID STRING CHAR NUM NULL
+%token EQ NEQ LT LEQ GT GEQ AND OR NOT
+%token RETURN IF ELSE FOR WHILE
+%token BOOL VOID STRING NUM
 %token <bool> BLIT
-%token <string> ID NUMLIT STRLIT
+%token <string> ID NUMLIT STRLIT CLASSID
 %token EOF
 
 %nonassoc NOELSE
@@ -96,16 +95,16 @@ formal_list:
   | formal_list COMMA typ ID { ($3,$4) :: $1 }
 
 typ:
-    NUM     { Num  }
-  | BOOL    { Bool }
-  | VOID    { Void }
-  | STRING  { String }
-  | array_t { $1 }
-  | ID { Object({
+    NUM      { Num  }
+  | BOOL     { Bool }
+  | VOID     { Void }
+  | STRING   { String }
+  | array_t  { $1 }
+  | CLASSID  { Object({
                 className = $1;
                 instanceVars = StringMap.empty;
               })
-            }
+             }
 
 array_t:
   typ LSQBRACKET expr RSQBRACKET { Array($1, $3) }
@@ -134,12 +133,12 @@ expr_opt:
 
 expr:
     ID               { Id($1) }
-  | ID DOT ID        { Access($1, $3) }
+  | CLASSID DOT ID        { Access($1, $3) }
   | literal          { $1 }
   | bool_expr        { $1 }
   | arithmetic       { $1 }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
-  | ID DOT ID LPAREN actuals_opt RPAREN { ClassCall($1, $3, $5) }
+  | CLASSID DOT ID LPAREN actuals_opt RPAREN { ClassCall($1, $3, $5) }
   | NEW ID LPAREN actuals_opt RPAREN { Construct($2, $4) }
   | ID ASSIGN expr                   { Assign($1, $3) }
   | ID LSQBRACKET expr RSQBRACKET ASSIGN expr           { ArrayAssign($1, $3, $6) }

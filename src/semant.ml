@@ -271,12 +271,14 @@ let check (globals, functions, classes) =
       | s -> if not (String.equal s
         (
         match rvaluet with
-          Object(o) -> match o with
+          Object(o) -> (match o with
                 {className; instanceVars} -> className
-              | _ -> raise ( Failure ("Something went horribly wrong."))
+              | _ -> raise ( Failure ("Something went horribly wrong.")))
           | _ -> ""
+
           (*if not, then raise an err, otherwise return lvalue*)
         )) then raise (Failure err) else lvaluet
+      | _ -> raise (Failure "Not implemented")
     in
 
     (* Build local symbol table of variables for this function *)
@@ -619,6 +621,7 @@ and check_int e =
                        string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
                        string_of_typ t2 ^ " in " ^ string_of_expr e))
           in (ty, SBinop((t1, e1'), op, (t2, e2')))
+      | _ -> raise (Failure "Not implemented")
     in
 
     let check_bool_expr e =
@@ -697,8 +700,15 @@ and check_int e =
       (*beans bookmark*)
       (* Return a semantically-checked expression, i.e., with a type *)
       let rec expr = function
-              | ArrayLit l -> (Array (Num, IntLiteral(List.length l)), SArrayLiteral(List.map expr l, Array(Num, IntLiteral(List.length l))))
-| ArrayAccess(a, e) -> check_int e; (type_of_identifier a, SArrayAccess(a, expr e, access_type (type_of_identifier a)))
+        | ArrayLit l -> 
+            (Array (Num, IntLiteral(List.length l)), 
+            SArrayLiteral(List.map expr l, 
+            Array(Num, IntLiteral(List.length l))))
+
+        | ArrayAccess(a, e) -> 
+            check_int e; 
+            (type_of_identifier a, 
+            SArrayAccess(a, expr e, access_type (type_of_identifier a)))
 
         | IntLiteral l -> (Num, SIntLiteral l)
         | NumLit l   -> (Num, SNumLit l)
@@ -754,6 +764,7 @@ and check_int e =
                          string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
                          string_of_typ t2 ^ " in " ^ string_of_expr e))
             in (ty, SBinop((t1, e1'), op, (t2, e2')))
+        | _ -> raise (Failure "Error: Semant: Not Implemented")
 
       and check_int e =
          let (t', e') = expr e
@@ -818,6 +829,7 @@ and check_int e =
             | s :: ss         -> check_stmt s :: check_stmt_list ss
             | []              -> []
           in SBlock(check_stmt_list sl)
+      | _ -> raise (Failure "Error: Semant: Not Implemented")
 
     in (* body of check_class *)
 
