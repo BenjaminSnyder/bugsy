@@ -54,9 +54,9 @@ int id_len = 7;
 void printShapes() {
     for(int i = 0; i < count; i++) {
         struct Shape s = shapes[i];
-        printf("\nShape: %s ID: %s\nx: %d y: %d\nn: %d r: %d\n", s.shape, s.shapeId, (int)s.x, (int)s.y, (int)s.n, (int)s.r);
+        printf("Shape: %s ID: %s\nx: %d y: %d\nn: %d r: %d\n", s.shape, s.shapeId, (int)s.x, (int)s.y, (int)s.n, (int)s.r);
         printf("w: %d h: %d\nb: %d s: %d\nx1: %d y1: %d\nx2: %d y2: %d\n", (int)s.w, (int)s.h, (int)s.b, (int)s.s, (int)s.x1, (int)s.y1, (int)s.x2, (int)s.y2);
-        printf("stroke: %s thickness: %d\n:fill %s\n", s.stroke, (int)s.thiccness, s.fill);
+        printf("stroke: %s thickness: %d\nfill: %s\n", s.stroke, (int)s.thiccness, s.fill);
     }
 }
 
@@ -308,7 +308,7 @@ char* add_square(double x, double y, double size, char* stroke, double thiccness
     struct Shape shape;
 
     char* shapeId = malloc(sizeof(char) * 100);
-    if(id == NULL) {
+    if(strcmp(id, "") == 0) {
         size_t len = id_len;
         genId(shapeId, len);
         strcpy(shape.shape, "square");
@@ -378,9 +378,11 @@ char* add_triangle(double x, double y, double b, double h, char* stroke, double 
     double* fill_arr = str_to_arr(fill);
 
     struct Shape shape;
+    fprintf(stderr, "Adding triangle\n ");
 
     char* shapeId = malloc(sizeof(char) * 100);
-    if(id == NULL) {
+    if(strcmp(id, "") == 0) {
+        fprintf(stderr, "Adding triangasdasdle\n ");
         size_t len = id_len;
         genId(shapeId, len);
         strcpy(shape.shape, "triangle");
@@ -397,6 +399,7 @@ char* add_triangle(double x, double y, double b, double h, char* stroke, double 
         count++;
 
     } else {
+        fprintf(stderr, "Addidsdng triangasdasdle\n ");
 
         for(int i = 0; i < count; i++) {
             // struct Shape s = *(shapes + sizeof(struct Shape) * i);
@@ -456,7 +459,7 @@ char* add_rectangle(double x, double y, double w, double h, char* stroke, double
     struct Shape shape;
 
     char* shapeId = malloc(sizeof(char) * 100);
-    if(id == NULL) {
+    if(strcmp(id, "") == 0) {
         size_t len = id_len;
         genId(shapeId, len);
         strcpy(shape.shape, "rectangle");
@@ -528,7 +531,7 @@ char* add_line(double x1, double y1, double x2, double y2, char* stroke, double 
     struct Shape shape;
 
     char* shapeId = malloc(sizeof(char) * 100);
-    if(id == NULL) {
+    if(strcmp(id, "") == 0) {
         size_t len = 100;
         genId(shapeId, len);
         strcpy(shape.shape, "line");
@@ -578,16 +581,16 @@ char* add_line(double x1, double y1, double x2, double y2, char* stroke, double 
     return shapeId;
 }
 
-char* add_regagon(double x, double y, int n, double r, char* stroke, double thiccness, char* fill, char* id) {
+char* add_regagon(double x, double y, double n_in, double r, char* stroke, double thiccness, char* fill, char* id) {
 
     double* stroke_arr = str_to_arr(stroke);
     double* fill_arr = str_to_arr(fill);
-
+    int n = (int)n_in;
     double a = 2 / (pi * n);
 
     struct Shape shape;
     char* shapeId = malloc(sizeof(char) * id_len);
-    if(id == NULL) {
+    if(strcmp(id, "") == 0) {
         size_t len = id_len;
         genId(shapeId, len);
         strcpy(shape.shape, "regagon");

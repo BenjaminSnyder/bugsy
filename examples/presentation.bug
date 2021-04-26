@@ -1,0 +1,81 @@
+num main() {
+    num cx;
+    num cy;
+    num scale;
+    num x;
+    num y;
+    num cw;
+    num ch;
+    num r;
+    num w;
+    num h;
+    num s;
+    num n;
+    num b;
+    cx = 0;
+    cy = 0;
+    cw = 1500;
+    scale = 3;
+    ch = 1000;
+    x = cw / 2;
+    y = ch / 2;
+    r = 100;
+    s = 75;
+    n = 10;
+    b = 60;
+    w = 100;
+    h = 100;
+
+    string stroke;
+    string reg_fill;
+    string tri_fill;
+    string rect_fill;
+    string sq_fill;
+    string cir_fill;
+    string ell_fill;
+
+    stroke = "0.0 0.3 0.5";
+    reg_fill = "0.2 0.2 0.2";
+    cir_fill = "1.0 0.2 0.6";
+    ell_fill = "0.8 0.5 0.5";
+    sq_fill = "0.9 0.9 0.2";
+    tri_fill = "0.7 0.4 0.0";
+    rect_fill = "1.0 0.9 0.6";
+
+    num thickness;
+    thickness = 5;
+    string id;
+    string id2;
+    string id3;
+    string id4;
+    string id5;
+    string id6;
+    id = "";
+    id2 = "";
+    id3 = "";
+    id4 = "";
+    id5 = "";
+    id6 = "";
+
+    add_rectangle(cx-25, cy+75, 225, 75, stroke, 3.0, fill, NULL);
+    add_rectangle(cx-25, cy-75, 225, 75, stroke, 3.0, fill, NULL);
+    add_rectangle(cx+100, cy, 75, 225, stroke, 3.0, fill, NULL);
+    add_rectangle(cx+125, cy-50, 150, 225, stroke, 3.0, fill, NULL);
+
+    add_rectangle(cx+87.5, cy+125, 100, 50, stroke, 5.0, fill, NULL);
+
+    fill = "0.0 0.0 0.0";
+    add_circle(cx+100, cy+125, 15, stroke, 5.0, fill, NULL);
+    fill = "1.0 1.0 1.0";
+    add_circle(cx+100, cy+125, 7.5, stroke, 5.0, fill, "");
+    fill = "0.0 0.25 0.0";
+    add_ellipse(cx-100, h/2+85, 10, 5, stroke, 5.0, fill, NULL);
+
+    fill = "1.0 1.0 1.0";
+    // add_triangle(cx+30, cy-22, 30, 30, stroke, 5.0, fill, NULL);
+    // add_triangle(cx, cy-22, 30, 30, stroke, 5.0, fill, NULL);
+    // add_triangle(cx-30, cy-22, 30, 30, stroke, 5.0, fill, NULL);
+    // add_triangle(cx-60, cy-22, 30, 30, stroke, 5.0, fill, NULL);
+    // add_triangle(cx-90, cy-22, 30, 30, stroke, 5.0, fill, NULL);
+    // add_triangle(cx-120, cy-22, 30, 30, stroke, 5.0, fill, NULL);
+}
