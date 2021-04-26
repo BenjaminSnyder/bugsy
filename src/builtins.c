@@ -910,13 +910,14 @@ void scaleById(char* id, double scale, double speed) {
 void rotateBy(struct Shape shape, double angle, double speed) {
 
     double rotated = 0.0;
-    double inc = 0.01 * (angle / abs(angle)) * speed;
+    double inc = 0.1 * (angle / abs(angle));
 
     double abs_val = angle;
     if(abs_val < 0) {
         abs_val *= -1;
     }
-    double time = (speed * 1000000) / (abs_val / inc);
+    int time = (int) ((speed * 1000000) / (abs_val / abs(inc)));
+    fprintf(stderr, "time: %d\n", time);
     double x_orig = shape.x;
     double y_orig = shape.y;
 

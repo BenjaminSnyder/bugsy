@@ -1,18 +1,19 @@
-Shape: regagon ID: QoMNUck
-x: 750 y: 400
-n: 10 r: 100
-w: 0 h: 0
-b: 0 s: 0
+Shape: triangle ID: QoMNUck
+x: 750 y: 500
+n: 0 r: 0
+w: 0 h: 100
+b: 60 s: 0
 x1: 0 y1: 0
 x2: 0 y2: 0
 stroke: 0.0 0.3 0.5 thickness: 5
-fill: 0.2 0.2 0.2
-Shape: regagon ID: QoMNUck
+fill: 0.7 0.4 0.0
+time: 0
+Shape: triangle ID: QoMNUck
 x: 0 y: 0
-n: 10 r: 100
-w: 0 h: 0
-b: 0 s: 0
+n: 0 r: 0
+w: 0 h: 100
+b: 60 s: 0
 x1: 0 y1: 0
 x2: 0 y2: 0
 stroke: 0.0 0.3 0.5 thickness: 5
-fill: 0.2 0.2 0.2
+fill: 0.7 0.4 0.0

@@ -48,7 +48,8 @@ num main() {
     id = "";
 
     init_canvas();
-    id = add_regagon(x, y-100, n, r, stroke, thickness, reg_fill, id);
+    // id = add_regagon(x, y-100, n, r, stroke, thickness, reg_fill, id);
+    id = add_triangle(x, y, b, h, stroke, thickness, tri_fill, id);
     rotateById(id, 360, 1);
     add_canvas(cw, ch, cx, cy);
 
