@@ -430,19 +430,20 @@ let translate (globals, camFunctions, classes) =
     | SCall ("init_canvas", []) ->
       L.build_call init_canvas_func [| |]
       "init_canvas" builder
-    | _ -> raise (Failure "Error: Not implemented in codegen")
     | SCall (f, args) ->
       let (fdef, fdecl) = StringMap.find f function_decls in
 	    let llargs = List.rev (List.map (expr builder) (List.rev args)) in
 	    let result = (match fdecl.styp with
                         A.Void -> ""
-                      | _ -> f ^ "_result") in
-         L.build_call fdef (Array.of_list llargs) result builder
-      and 
-      get_address a el builder = begin (*print_endline(L.string_of_llvalue(lookup a)); *) L.build_gep (lookup a) end
-      [| (L.const_float float_t 0.0); (expr builder el) |] a builder 
-    
+                      | _ -> f ^ "_result") 
       in
+      L.build_call fdef (Array.of_list llargs) result builder 
+      
+    | _ -> raise (Failure "Error: Not implemented in codegen")
+
+    and get_address a el builder =
+        L.build_gep (lookup a) [| (L.const_float float_t 0.0); (expr builder el) |] a builder
+    in
 
     (* LLVM insists each basic block end with exactly one "terminator"
        instruction that transfers control.  This function runs "instr builder"
