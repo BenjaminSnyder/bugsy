@@ -150,7 +150,7 @@ let rec string_of_typ = function
   | String -> "string"
   | Array(t, e) -> string_of_typ t ^ "[" ^ string_of_expr e ^ "]"
   | Object(clas) -> clas.className
-  | Int | _ -> raise ( Failure ("Not implemented in AST!"))
+  | Int -> raise (Failure "do not print ints")
 
 and string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 

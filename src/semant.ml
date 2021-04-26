@@ -39,8 +39,8 @@ let check (globals, functions, classes) =
 
   (* Add Class Helper *)
   let add_class map cd =
-    let built_in_err = "class " ^ cd.cname ^ " may not be defined"
-    and dup_err = "duplicate class " ^ cd.cname
+    (*let built_in_err = "class " ^ cd.cname ^ " may not be defined"*)
+    let dup_err = "duplicate class " ^ cd.cname
     and make_err er = raise (Failure er)
     and n = cd.cname (* Name of the class *)
     in match cd with (* No duplicate classes or redefinitions of built-ins *)
@@ -254,8 +254,7 @@ let check (globals, functions, classes) =
       let className  =  match lvaluet with
       (* if it's an object, pull out the class name *)
         Object(o) -> (match o with
-              {className; instanceVars} -> className
-            | _ -> raise ( Failure ("Something went horribly wrong."))
+              {className; _} -> className
             )
         | _ -> ""
       in
@@ -272,13 +271,11 @@ let check (globals, functions, classes) =
         (
         match rvaluet with
           Object(o) -> (match o with
-                {className; instanceVars} -> className
-              | _ -> raise ( Failure ("Something went horribly wrong.")))
+                {className; _} -> className)
           | _ -> ""
 
           (*if not, then raise an err, otherwise return lvalue*)
         )) then raise (Failure err) else lvaluet
-      | _ -> raise (Failure "Not implemented")
     in
 
     (* Build local symbol table of variables for this function *)
@@ -361,7 +358,6 @@ let check (globals, functions, classes) =
           let ct = List.nth _class.cdconst 0 in
           let formals = ct.ctformals in
           let param_length = List.length formals in
-          let empty = StringMap.empty in
           if List.length args != param_length then
             raise (Failure ("expecting " ^ string_of_int param_length ^
                             " arguments in " ^ string_of_expr construct ))
@@ -441,7 +437,7 @@ let check (globals, functions, classes) =
 
           (* Find the function in the class *)
           let find_func s =
-            try StringMap.find fname cfuncs
+            try StringMap.find s cfuncs
             with Not_found -> raise (Failure ("unrecognized function " ^ cname ^ "." ^ fname))
           in
           let cf = find_func fname in
@@ -508,7 +504,7 @@ and check_int e =
   (**** Check Classes ****)
 
   (* Collect class declarations for built-in classes: no bodies *)
-
+(*
   let built_in_class_decls =
       let add_bind map (name, _, _) = StringMap.add name {
           cname = name;
@@ -516,14 +512,14 @@ and check_int e =
           cdconst = []; cdfuncs = [] } map
       in List.fold_left add_bind StringMap.empty []
 
-      in
+      in*)
     (*  let add_bind2 map (name) = StringMap.add name {
           cname = name;
           cdvars = [];
           cdconst = []; cdfuncs = [] } map
       in List.fold_left add_bind2 func_map []*)
 
-
+(*
   (* Add class name to symbol table *)
   let add_class map cd =
     let built_in_err = "class " ^ cd.cname ^ " may not be defined"
@@ -535,11 +531,11 @@ and check_int e =
        | _ when StringMap.mem n map -> make_err dup_err
        | _ ->  StringMap.add n cd map
   in
-
+*)
   (* Collect all class names into one symbol table *)
   (* TODO: Fix the unused class_decls here *)
-  let class_decls = List.fold_left add_class built_in_class_decls classes
-  in
+  (*let class_decls = List.fold_left add_class built_in_class_decls classes
+  in*)
 
   (* Return a class from our symbol table *)
   (* let find_class s =
@@ -553,18 +549,18 @@ and check_int e =
     (* Make sure no formals or locals are void or duplicates *)
     check_binds "cdvar" _class.cdvars;
 
-
+(*
     (* Raise an exception if the given rvalue type cannot be assigned to
        the given lvalue type *)
     let check_assign lvaluet rvaluet err =
       if lvaluet = rvaluet then lvaluet else raise (Failure err)
     in
-
+*)
     (* Build local symbol table of variables for this function *)
     let class_symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
 	                StringMap.empty (globals @ _class.cdvars )
     in
-
+(*
     (* Return a variable from our local symbol table *)
     let type_of_identifier s =
       try StringMap.find s class_symbols
@@ -578,10 +574,10 @@ and check_int e =
       | StrLit l   -> (String, SStrLit l)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
-      | Access(obj, var) as ex ->
+      | Access(obj, var) ->
           let ctyp = string_of_typ (type_of_identifier obj) in (* Get class name from object name *)
           let _ = verify_class_name ctyp in (*make sure class exists *)
-          let class_object = get_class ctyp in (*get the class we need to check *)
+          let _ = get_class ctyp in (*get the class we need to check *)
           let vt = type_of_identifier var in
           (vt, SAccess(obj, var))
 
@@ -623,24 +619,27 @@ and check_int e =
           in (ty, SBinop((t1, e1'), op, (t2, e2')))
       | _ -> raise (Failure "Not implemented")
     in
-
+*)
+    (*
     let check_bool_expr e =
       let (t', e') = expr e
       and err = "expected Boolean expression in " ^ string_of_expr e
       in if t' != Bool then raise (Failure err) else (t', e')
     in
+    *)
 
     (**** Check Constructors ****)
 
     (* Collect function declarations for built-in functions: no bodies *)
-
+(*
     let built_in_const_decls =
       let add_bind map (name, _) = StringMap.add name {
         ctformals = [];
         ctlocals = []; ctbody = [] } map
       in List.fold_left add_bind StringMap.empty []
     in
-
+*)
+    (*
     (* Add function name to symbol table *)
     let add_const map ctd =
       let built_in_err = "constructor may not be defined"
@@ -652,11 +651,11 @@ and check_int e =
          | _ when StringMap.mem n map -> make_err dup_err
          | _ ->  StringMap.add n ctd map
     in
-
+*)
     (* Collect all function names into one symbol table *)
-    let constructor_decls = List.fold_left add_const built_in_const_decls _class.cdconst
+    (*let constructor_decls = List.fold_left add_const built_in_const_decls _class.cdconst
     (*let function_decls = List.fold_left add_func functions*)
-    in
+    in*)
 
     (* Return a function from our symbol table *)
     (* let find_const s =
@@ -682,8 +681,8 @@ and check_int e =
 
       (* Return a variable from our local symbol table *)
       let type_of_identifier s =
-        try StringMap.find s (StringMap.merge (fun k xo yo -> match xo,yo with
-        | Some x, Some y -> Some (x)
+        try StringMap.find s (StringMap.merge (fun _ xo yo -> match xo,yo with
+        | Some x, Some _ -> Some (x)
         | None, yo -> yo
         | xo, None -> xo
         ) class_symbols local_symbols)
@@ -808,30 +807,9 @@ and check_int e =
       SBlock(sl) -> sl
         | _ -> raise (Failure ("internal error: block didn't become a block?"))
       }
-    in (globals, List.map check_constructor _class.cdconst);
+    in ignore(globals, List.map check_constructor _class.cdconst);
 
     (* Return a semantically-checked statement i.e. containing sexprs *)
-    let rec check_stmt = function
-        Expr e -> SExpr (expr e)
-      | If(p, b1, b2) -> SIf(check_bool_expr p, check_stmt b1, check_stmt b2)
-      | For(e1, e2, e3, st) ->
-	  SFor(expr e1, check_bool_expr e2, expr e3, check_stmt st)
-      | While(p, s) -> SWhile(check_bool_expr p, check_stmt s)
-
-
-	    (* A block is correct if each statement is correct and nothing
-	       follows any Return statement.  Nested blocks are flattened. *)
-      | Block sl ->
-          let rec check_stmt_list = function
-              [Return _ as s] -> [check_stmt s]
-            | Return _ :: _   -> raise (Failure "nothing may follow a return")
-            | Block sl :: ss  -> check_stmt_list (sl @ ss) (* Flatten blocks *)
-            | s :: ss         -> check_stmt s :: check_stmt_list ss
-            | []              -> []
-          in SBlock(check_stmt_list sl)
-      | _ -> raise (Failure "Error: Semant: Not Implemented")
-
-    in (* body of check_class *)
 
     {
       scname = _class.cname;

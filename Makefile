@@ -9,7 +9,7 @@ all : clean bugsy.native builtins.o
 
 .PHONY: bugsy.native
 bugsy.native :
-	ocamlbuild -I src -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,+a-4 \
+	ocamlbuild -I src -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,+a-4-42 \
 		bugsy.native
 
 builtins.o:
