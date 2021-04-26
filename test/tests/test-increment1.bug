@@ -1,0 +1,8 @@
+num main() {
+    num a;
+    a = 5;
+    print(a);
+    print(a++);
+    print(a);
+    return 0;
+}
