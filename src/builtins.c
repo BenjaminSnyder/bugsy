@@ -917,7 +917,6 @@ void rotateBy(struct Shape shape, double angle, double speed) {
         abs_val *= -1;
     }
     int time = (int) ((speed * 1000000) / (abs_val / abs(inc)));
-    fprintf(stderr, "time: %d\n", time);
     double x_orig = shape.x;
     double y_orig = shape.y;
 
