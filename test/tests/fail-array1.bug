@@ -1,0 +1,9 @@
+num main() {
+    num i;
+    string s;
+    num[2] x;
+    x = [1,2];
+    s = "hello";
+    x[0] = s;
+    return 0.0;
+}
