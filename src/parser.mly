@@ -7,6 +7,7 @@ let snd' (_,sn,_)=sn
 let trd  (_,_,tr)=tr
 %}
 
+/* Declaring the tokens that we used */
 %token CONSTRUCTOR CLASS NEW
 %token LPAREN RPAREN LBRACE RBRACE LSQBRACKET RSQBRACKET
 %token SEMI COMMA DOT
@@ -20,6 +21,7 @@ let trd  (_,_,tr)=tr
 %token <string> ID NUMLIT STRLIT CLASSID
 %token EOF
 
+/* Adding precedence and associativity for tokens */
 %nonassoc NOELSE
 %nonassoc ELSE
 %right ASSIGN
@@ -39,21 +41,25 @@ let trd  (_,_,tr)=tr
 
 %%
 
+/* The entry point for the whole a Bugsy file */
 program:
   decls EOF { $1 }
 
+/* Declarations made in a busgy file */
 decls:
   /* nothing */ { [], [], [] }
   | decls vdecl { ($2 :: fst' $1), snd' $1, trd $1 }
   | decls fdecl { fst' $1, ($2 :: snd' $1), trd $1 }
   | decls cdecl { fst' $1, snd' $1, ( $2 :: trd $1) }
 
+/* Class declarations */
 cddecls:
   /* nothing */ { [], [], [] }
   | cddecls vdecl { ($2 :: fst' $1), snd' $1, trd $1 }
   | cddecls const_decl { fst' $1, ($2 :: snd' $1), trd $1 }
   | cddecls fdecl { fst' $1, snd' $1, ($2 :: trd $1) }
 
+/* Attributes for a class including its name, constructor, attributes, and functions */
 cdecl:
   CLASS ID LBRACE cddecls RBRACE
   { {
@@ -63,6 +69,7 @@ cdecl:
     cdfuncs = trd $4;
   } }
 
+/* Constructor consists of formals, locally declared vars, and the body */
 const_decl:
   CONSTRUCTOR LPAREN formals_opt RPAREN LBRACE body RBRACE
   { {
@@ -71,6 +78,7 @@ const_decl:
     ctbody = List.rev (snd $6);
   } }
 
+/* Function declaration has a return type, name, parameters, and the function body */
 fdecl:
    typ ID LPAREN formals_opt RPAREN LBRACE body RBRACE
   { {
@@ -81,19 +89,23 @@ fdecl:
     fbody = List.rev (snd $7);
   } }
 
+/* Body of a function consists of variable declarations and then statements */
 body:
     /* nothing */   { [], [] }
   | body vdecl { (($2 :: fst $1), snd $1) }
   | body stmt  { (fst $1, ($2 :: snd $1)) }
 
+/* The formal arguments that a function takes */
 formals_opt:
     /* nothing */ { [] }
   | formal_list   { $1 }
 
+/* The Ocaml list of formal arguments */
 formal_list:
     typ ID                   { [($1,$2)]     }
   | formal_list COMMA typ ID { ($3,$4) :: $1 }
 
+/* Built in types for Bugsy such as strings and nums */
 typ:
     NUM      { Num  }
   | BOOL     { Bool }
@@ -106,16 +118,20 @@ typ:
               })
              }
 
+/* Bugsy array type */
 array_t:
   typ LSQBRACKET expr RSQBRACKET { Array($1, $3) }
 
+/* Declaring a variable in Bugsy example: num n; */
 vdecl:
     typ ID SEMI { ($1, $2) }
 
+/* List of statements */
 stmt_list:
     /* nothing */  { [] }
   | stmt_list stmt { $2 :: $1 }
 
+/* Various statments in the Bugsy language such as if statements, or while loops */
 stmt:
     expr SEMI { Expr $1 }
   | RETURN SEMI { Return Noexpr }
@@ -127,10 +143,12 @@ stmt:
      { For($3, $5, $7, $9) }
   | WHILE LPAREN expr RPAREN stmt { While($3, $5) }
 
+/* If the expression is optional */
 expr_opt:
     /* nothing */ { Noexpr }
   | expr          { $1 }
 
+/* Expressions in the Bugsy language */
 expr:
     ID               { Id($1) }
   | CLASSID DOT ID        { Access($1, $3) }
@@ -145,16 +163,19 @@ expr:
   | ID LSQBRACKET expr RSQBRACKET    { ArrayAccess($1, $3) }
   | LPAREN expr RPAREN               { $2 } /* allow parentheses in arithmetic */
 
+/* Built in types like type num or string */
 literal:
     NUMLIT           { NumLit($1)  }
   | STRLIT           { StrLit($1)  }
   | BLIT             { BoolLit($1) }
   | LSQBRACKET arr_contents RSQBRACKET { ArrayLit(List.rev $2) }
 
+/* Generate a list of exprs that make up the array */
 arr_contents:
     expr            { [$1] }
   | arr_contents COMMA expr { $3 :: $1 }
 
+/* Logical expressions that returns boolean values */
 bool_expr:
     expr EQ     expr { Binop($1, Equal, $3) }
   | expr NEQ    expr { Binop($1, Neq,   $3) }
@@ -166,6 +187,7 @@ bool_expr:
   | expr OR     expr { Binop($1, Or,    $3) }
   | NOT expr         { Unop(Not, $2) }
 
+/* Bugsy arithmetic operations on num types */
 arithmetic:
     expr PLUS   expr { Binop($1, Add,   $3) }
   | expr MINUS  expr { Binop($1, Sub,   $3) }
@@ -182,10 +204,12 @@ arithmetic:
   | DECREMENT expr   { Crementop($2, PreDec) }
   | MINUS expr %prec NEG { Unop(Neg, $2) }
 
+/* The actual arguments (values) that you pass into the function */
 actuals_opt:
     /* nothing */ { [] }
   | actuals_list  { List.rev $1 }
 
+/* The Ocaml list of the actual arguments passed into a function call */
 actuals_list:
     expr                    { [$1] }
   | actuals_list COMMA expr { $3 :: $1 }
