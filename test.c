@@ -1,7 +1,7 @@
-double main(){
+int main(){
 
-    int x = 0;
+    char* strs[4] = {"sadf", "asdff", "sadfas", "sadfsdfa"};
 
-    return 0.0;
+    return 0;
 
 }

@@ -1,0 +1,21 @@
+num fact(num n){
+    
+    if (n =? 1) {
+        return n;
+    }
+
+    else {
+    
+    return n * fact(n-1);
+        
+    }
+    }
+
+num main(){
+    num a;
+    a = fact(4);
+   print(a); 
+    
+    
+    return 0;
+    }
