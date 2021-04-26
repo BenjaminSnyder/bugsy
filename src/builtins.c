@@ -54,7 +54,7 @@ int id_len = 7;
 void printShapes() {
     for(int i = 0; i < count; i++) {
         struct Shape s = shapes[i];
-        printf("\nShape: %s ID: %s\nx: %d y: %d\nn: %d r: %d\n", s.shape, s.shapeId, (int)s.x, (int)s.y, (int)s.n, (int)s.r);
+        printf("Shape: %s ID: %s\nx: %d y: %d\nn: %d r: %d\n", s.shape, s.shapeId, (int)s.x, (int)s.y, (int)s.n, (int)s.r);
         printf("w: %d h: %d\nb: %d s: %d\nx1: %d y1: %d\nx2: %d y2: %d\n", (int)s.w, (int)s.h, (int)s.b, (int)s.s, (int)s.x1, (int)s.y1, (int)s.x2, (int)s.y2);
         printf("stroke: %s thickness: %d\nfill: %s\n", s.stroke, (int)s.thiccness, s.fill);
     }

@@ -115,8 +115,8 @@ Check() {
     Run "$BUGSY" "$1" ">" "tmp/${basename}.ll" &&
     Run "$LLC" "-relocation-model=pic" "tmp/${basename}.ll" ">" "tmp/${basename}.s" &&
     #Run "$CC" "-o" "${basename}.exe" "${basename}.s" "printbig.o" &&
-    Run "$CC" "tmp/${basename}.s" "-o" "tmp/${basename}.exe" &&
-    Run "./tmp/${basename}.exe" > "tmp/${basename}.out" &&
+    Run "g++" "tmp/${basename}.s" "_build/builtins.o" "-no-pie" "-lglut" "-lGL" "-lGLU" "-lGLEW" "-o" "tmp/${basename}.exe" &&
+    Run "DEBUG=1 ./tmp/${basename}.exe" > "tmp/${basename}.out" &&
     Compare "test/golden_set/${basename}.out" "tmp/${reffile}.out" "tmp/${basename}.diff"
 
     # Report the status and clean up the generated files
