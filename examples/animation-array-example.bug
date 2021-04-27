@@ -1,0 +1,41 @@
+num main() {
+    num cx;
+    num cy;
+    num scale;
+    num x;
+    num y;
+    num cw;
+    num ch;
+    num r;
+    num w;
+    num h;
+    num s;
+    num n;
+    num b;
+    cx = 0;
+    cy = 0;
+    cw = 1500;
+    ch = 1000;
+    x = cw / 2;
+    y = ch / 2;
+
+
+    string stroke;
+    string cir_fill;
+
+    stroke = "0.0 0.3 0.5";
+    cir_fill = "1.0 0.2 0.6";
+
+    string id;
+    id = "";
+
+    init_canvas();
+
+    num i;
+    for(i = 0; i < 10; i++) {
+        id = add_circle(x+2000, y+2000, 50 + (i * 10), stroke, 5, cir_fill, id);
+        moveById(id, -2000, -2000, 1);
+    }
+
+    add_canvas(cw, ch, cx, cy);
+}
