@@ -128,18 +128,3 @@ let string_of_sprogram (svars, sfuncs, sclasses) =
   String.concat "" (List.map string_of_scdecl (add_level (sclasses, 1))) ^ "\n" ^
   String.concat "\n" (List.map string_of_sfdecl (add_level (sfuncs, 1)))
 
-(*
-let rec string_of_sstmt = function
-    SBlock(stmts) ->
-      "{\n" ^ String.concat "" (List.map string_of_sstmt stmts) ^ "}\n"
-  | SExpr(expr) -> string_of_sexpr expr ^ ";\n";
-  | SReturn(expr) -> "return " ^ string_of_sexpr expr ^ ";\n";
-  | SIf(e, s, SBlock([])) ->
-      "if (" ^ string_of_sexpr e ^ ")\n" ^ string_of_sstmt s
-  | SIf(e, s1, s2) ->  "if (" ^ string_of_sexpr e ^ ")\n" ^
-      string_of_sstmt s1 ^ "else\n" ^ string_of_sstmt s2
-  | SFor(e1, e2, e3, s) ->
-      "for (" ^ string_of_sexpr e1  ^ " ; " ^ string_of_sexpr e2 ^ " ; " ^
-      string_of_sexpr e3  ^ ") " ^ string_of_sstmt s
-  | SWhile(e, s) -> "while (" ^ string_of_sexpr e ^ ") " ^ string_of_sstmt s
-*)

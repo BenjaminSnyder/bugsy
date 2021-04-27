@@ -20,7 +20,7 @@ open Sast
 module StringMap = Map.Make(String)
 
 (* translate : Sast.program -> Llvm.module *)
-let translate (globals, functions', classes) =
+let translate (globals, functions', _) =
   let context    = L.global_context () in
 
   (* Create the LLVM compilation module into which
@@ -56,7 +56,6 @@ let translate (globals, functions', classes) =
         | _ -> raise (Failure "Error: Not implemented in codegen")
     )
     | A.Object(classTyp) -> L.pointer_type (struct_t (struct_t_to_arr classTyp))
-  (*  | _ -> raise (Failure "Error: Not implemented in codegen") *)
 
   and struct_t_to_arr classTyp =
     let varTypes = List.map (fun (_, (t,_)) -> t) (StringMap.bindings classTyp.A.instanceVars) in
@@ -89,11 +88,6 @@ let translate (globals, functions', classes) =
       L.var_arg_function_type float_t [| L.pointer_type i8_t |] in
   let printf_func : L.llvalue =
       L.declare_function "printf" printf_t the_module in
-
-  (* let printbig_t : L.lltype =
-      L.function_type i32_t [| i32_t |] in
-  let printbig_func : L.llvalue =
-      L.declare_function "printbig" printbig_t the_module in *)
 
   let demo_t : L.lltype =
       L.function_type float_t [||] in
@@ -173,18 +167,8 @@ let translate (globals, functions', classes) =
       and formal_types =
 	Array.of_list (List.map (fun (t,_) -> ltype_of_typ t) fdecl.sformals)
       in let ftype = L.function_type (ltype_of_typ fdecl.styp) formal_types in
-      (*if function is equal to main, rather than adding ftype, add int type *)
-    (*  print_endline("ftype is");
-     (* print_endline(ltype_of_typ fdecl.styp); *)
-      print_endline(L.string_of_lltype(ftype););
-      print_endline("tester123");
-      print_endline(L.string_of_lltype(float_t);); *)
-
-      (*beans *)
-
 
       let ret_type = ftype in
-   (*   if name = "main" then let ret_type = ye in else let ret_type = ftype in *)
 
       StringMap.add name (L.define_function name ret_type  the_module, fdecl) m in
 
@@ -192,7 +176,6 @@ let translate (globals, functions', classes) =
 
 
   let find_func s =
-          (*let test_1 = StringMap.update "main" (L.define_function "main" i32_t the_module, fdecl) in *)
 
           try begin StringMap.find s function_decls; end
 
@@ -209,7 +192,6 @@ let translate (globals, functions', classes) =
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder
     and float_format_str = L.build_global_stringptr "%g\n" "fmt" builder
     and string_format_str = L.build_global_stringptr "%s\n" "fmt" builder in
-    (*add string formatting here too stuff like %s *)
     (* Construct the function's "locals": formal arguments and locally
        declared variables.  Allocate each on the stack, initialize their
        value, if appropriate, and remember their values in the "locals" map *)
@@ -250,7 +232,7 @@ let translate (globals, functions', classes) =
      
       | SArrayAccess(a, e, _) -> let valu = (expr builder e) in
      
-    (*  convert nums to ints   *)
+    (*  convert nums to ints  *)
     let truncated = L.build_fptosi (valu) i32_t "trunc" builder in L.dump_value(truncated);
  
     (* get element pointer to element we're accessing *)
@@ -258,17 +240,17 @@ let translate (globals, functions', classes) =
 
 
       | SArrayAssign (s, e1, e2) ->
-              let left_value = (expr builder e1) in
+         let left_value = (expr builder e1) in
 
-               let left_truncated = L.build_fptosi (left_value) i32_t "trunc" builder in
-
-
-               let left_real =  L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t 3 |] s builder in 
+         let _ = L.build_fptosi (left_value) i32_t "trunc" builder in
 
 
-              let right_value = (expr builder e2) in
+         let left_real =  L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t 3 |] s builder in 
 
-              let right_truncated = L.build_fptosi (right_value) i32_t "trunc" builder in 
+
+         let right_value = (expr builder e2) in
+
+         let right_truncated = L.build_fptosi (right_value) i32_t "trunc" builder in 
 
               ignore (L.build_store right_value left_real builder); right_truncated 
 
@@ -346,8 +328,6 @@ let translate (globals, functions', classes) =
 	    "printf" builder
     | SCall ("demo", []) ->
   	  L.build_call demo_func [||] "demo" builder
-    (* | SCall ("printbig", [e]) ->
-	    L.build_call printbig_func [| (expr builder e) |] "printbig" builder *)
     | SCall ("printf", [e]) ->
 	    L.build_call printf_func [| string_format_str ; (expr builder e) |]
 	    "printf" builder
@@ -410,8 +390,6 @@ let translate (globals, functions', classes) =
       
     | _ -> raise (Failure "Error: Not implemented in codegen")
 
-    (* and get_address a el builder =
-        L.build_gep (lookup a) [| (L.const_float float_t 0.0); (expr builder el) |] a builder *)
     in
 
     (* LLVM insists each basic block end with exactly one "terminator"

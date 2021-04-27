@@ -697,7 +697,6 @@ and check_int e =
 
 
 
-      (*beans bookmark*)
       (* Return a semantically-checked expression, i.e., with a type *)
       let rec expr = function
         | ArrayLit l -> 

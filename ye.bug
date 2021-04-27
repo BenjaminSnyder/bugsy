@@ -1,7 +1,0 @@
-num main(){
-    num x;
-    x = 5;
-
-    return 0;
-    
-    }
