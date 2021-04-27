@@ -240,12 +240,26 @@ let translate (globals, functions', _) =
 
 
       | SArrayAssign (s, e1, e2) ->
+        (* let left_value = (expr builder e1) in
+
+         let left_trunc = L.build_fptosi (left_value) i32_t "trunc" builder in
+
+
+         let left_real =  L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t left_trunc |] s builder in 
+
+
+         let right_value = (expr builder e2) in
+
+         let right_truncated = L.build_fptosi (right_value) i32_t "trunc" builder in 
+
+              ignore (L.build_store right_value left_trunc builder); right_truncated *)
+
          let left_value = (expr builder e1) in
 
-         let _ = L.build_fptosi (left_value) i32_t "trunc" builder in
+         let index = L.build_fptosi (left_value) i32_t "trunc" builder in
 
 
-         let left_real =  L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t 3 |] s builder in 
+         let left_real =  L.build_gep (lookup s) [| L.const_int i32_t 0; index |] s builder in 
 
 
          let right_value = (expr builder e2) in
@@ -253,7 +267,6 @@ let translate (globals, functions', _) =
          let right_truncated = L.build_fptosi (right_value) i32_t "trunc" builder in 
 
               ignore (L.build_store right_value left_real builder); right_truncated 
-
       | SId s       -> L.build_load (lookup s) s builder
       | SArrayLiteral (l, t) -> L.const_array (ltype_of_typ t) (Array.of_list (List.map (expr builder) l))
       | SAssign (s, e) -> let e' = expr builder e in

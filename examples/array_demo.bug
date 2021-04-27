@@ -1,0 +1,46 @@
+num main(){
+    num[5] x;
+    num i;
+    num j;
+    num var;
+    num test;
+
+    test = 5.4;
+
+    test = 1.0;
+
+    x = [5.4, 3.4, 6.7, 5.1, 0.6];
+
+
+    printf("The original values of the array:");
+    printf("");
+    for (i = 0; i < 5; i++){
+        printf("element");
+        print(i);
+        printf("is");
+        print(x[i]);
+    }
+
+    printf("Looping through and changing up array values...");
+    printf("");
+    printf("");
+    i = 0;
+    for (j = 0; j < 5; j++){
+        x[j] = j * 2;
+    }
+
+
+    printf("The updated values of the array:");
+    printf("");
+
+
+    for (i = 0; i < 5; i++){
+        printf("element");
+        print(i);
+        printf("is");
+        print(x[i]);
+    }
+    
+
+    return 0;    
+}

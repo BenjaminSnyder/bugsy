@@ -36,13 +36,13 @@ num main() {
    print(x[4]);
 
 
-  /* for (c = 0; c < 4; c++){
+   for (c = 0; c < 4; c++){
     printf("element number");
     print(c);
     printf("is");
     d  = x[e];
     print(d);
-  } */
+  } 
 
 
 
