@@ -5,3 +5,4 @@ bugsy.native
 testall.log
 .*~
 bugsy/
+a.out

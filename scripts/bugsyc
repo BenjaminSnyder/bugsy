@@ -1,0 +1,8 @@
+#!/bin/bash
+filebase=$(echo $1|cut -f1 -d. )
+./bugsy.native $1 > "$filebase.ll"
+llc "$filebase.ll" -o "$filebase.s"
+g++ "$filebase.s" "_build/builtins.o" -no-pie -lglut -lGL -lGLU -lGLEW -o $filebase
+rm "$filebase.ll" "$filebase.s"
+
+echo "$filebase compiled"
