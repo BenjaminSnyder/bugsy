@@ -4,6 +4,4 @@ bugsy.native
 *.ll
 testall.log
 .*~
-
-microc.tar.gz
-microc/
+bugsy/

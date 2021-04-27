@@ -87,7 +87,7 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [(ty, "x")];
       locals = []; fbody = [] } map
-    in let func_map = List.fold_left add_bind StringMap.empty [
+    in let map1 = List.fold_left add_bind StringMap.empty [
 			                         ("printb", Bool);
 			                         ("print", Num);
                                      ("printf", String);
@@ -99,23 +99,15 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [];
       locals = []; fbody = [] } map
-    in let func_map2 = List.fold_left add_bind2 func_map [
+    in let map2 = List.fold_left add_bind2 map1 [
                                         ("demo");]
     in
-(*   let add_bind3 map (name, ty1) = StringMap.add name {
-      typ = Void;
-      fname = name;
-      formals = [(ty1, "point")];
-      locals = []; fbody = [] } map
-    in let func_map3 = List.fold_left add_bind3 func_map2 [
-                            ("add_point", Pt);]
-    in*)
     let add_bind4 map (name, ty1, ty2, ty3) = StringMap.add name {
       typ = Void;
       fname = name;
       formals = [(ty1, "x"); (ty2, "y"); (ty3, "id")];
       locals = []; fbody = [] } map
-    in let func_map4 = List.fold_left add_bind4 func_map2 [
+    in let map4 = List.fold_left add_bind4 map2 [
                             ("add_point_xy", Num, Num, String);]
     in
     let add_bind5 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
@@ -123,7 +115,7 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [(ty1, "x"); (ty2, "y"); (ty3, "r"); (ty4, "stroke"); (ty5, "thickness"); (ty6, "fill"); (ty7, "id")];
       locals = []; fbody = [] } map
-    in let func_map5 = List.fold_left add_bind5 func_map4 [
+    in let map5 = List.fold_left add_bind5 map4 [
                             ("add_circle", Num, Num, Num, String, Num, String, String);]
     in
     let add_bind6 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
@@ -131,7 +123,7 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [(ty1, "x"); (ty2, "y"); (ty3, "size"); (ty4, "stroke"); (ty5, "thickness"); (ty6, "fill"); (ty7, "id")];
       locals = []; fbody = [] } map
-    in let func_map6 = List.fold_left add_bind6 func_map5 [
+    in let map6 = List.fold_left add_bind6 map5 [
                             ("add_square", Num, Num, Num, String, Num, String, String);]
     in
     let add_bind7 map (name, ty1, ty2, ty3, ty4) = StringMap.add name {
@@ -139,7 +131,7 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [(ty1, "id"); (ty2, "translateX"); (ty3, "translateY"); (ty4, "speed")];
       locals = []; fbody = [] } map
-    in let func_map7 = List.fold_left add_bind7 func_map6 [
+    in let map7 = List.fold_left add_bind7 map6 [
                             ("moveById", String, Num, Num, Num);]
     in
     let add_bind8 map (name, ty1, ty2, ty3, ty4) = StringMap.add name {
@@ -147,7 +139,7 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [(ty1, "width"); (ty2, "height"); (ty3, "xOffset"); (ty4, "yOffset")];
       locals = []; fbody = [] } map
-    in let func_map8 = List.fold_left add_bind8 func_map7 [
+    in let map8 = List.fold_left add_bind8 map7 [
                             ("add_canvas", Num, Num, Num, Num);]
     in
     let add_bind9 map (name, ty1, ty2, ty3) = StringMap.add name {
@@ -155,7 +147,7 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [(ty1, "id"); (ty2, "angle"); (ty3, "speed");];
       locals = []; fbody = [] } map
-    in let func_map9 = List.fold_left add_bind9 func_map8 [
+    in let map9 = List.fold_left add_bind9 map8 [
                             ("rotateById", String, Num, Num);]
     in
     let add_bind10 map (name, ty1, ty2, ty3) = StringMap.add name {
@@ -163,7 +155,7 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [(ty1, "id"); (ty2, "scale"); (ty3, "speed")];
       locals = []; fbody = [] } map
-    in let func_map10 = List.fold_left add_bind10 func_map9 [
+    in let map10 = List.fold_left add_bind10 map9 [
                             ("scaleById", String, Num, Num);]
     in
     let add_bind11 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7, ty8) = StringMap.add name {
@@ -171,7 +163,7 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [(ty1, "x"); (ty2, "y"); (ty3, "b"); (ty4, "h"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "fill"); (ty8, "id")];
       locals = []; fbody = [] } map
-    in let func_map11 = List.fold_left add_bind11 func_map10 [
+    in let map11 = List.fold_left add_bind11 map10 [
                             ("add_triangle", Num, Num, Num, Num, String, Num, String, String);]
     in
     let add_bind12 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7, ty8) = StringMap.add name {
@@ -179,7 +171,7 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [(ty1, "x"); (ty2, "y"); (ty3, "w"); (ty4, "h"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "fill"); (ty8, "id")];
       locals = []; fbody = [] } map
-    in let func_map12 = List.fold_left add_bind12 func_map11 [
+    in let map12 = List.fold_left add_bind12 map11 [
                             ("add_rectangle", Num, Num, Num, Num, String, Num, String, String);]
     in
     let add_bind13 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7, ty8) = StringMap.add name {
@@ -187,7 +179,7 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [(ty1, "x"); (ty2, "y"); (ty3, "w"); (ty4, "h"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "fill"); (ty8, "id")];
       locals = []; fbody = [] } map
-    in let func_map13 = List.fold_left add_bind13 func_map12 [
+    in let map13 = List.fold_left add_bind13 map12 [
                             ("add_ellipse", Num, Num, Num, Num, String, Num, String, String);]
     in
     let add_bind14 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7, ty8) = StringMap.add name {
@@ -195,7 +187,7 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [(ty1, "x"); (ty2, "y"); (ty3, "n"); (ty4, "r"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "fill"); (ty8, "id")];
       locals = []; fbody = [] } map
-    in let func_map14 = List.fold_left add_bind14 func_map13 [
+    in let map14 = List.fold_left add_bind14 map13 [
                             ("add_regagon", Num, Num, Num, Num, String, Num, String, String);]
     in
     let add_bind15 map (name) = StringMap.add name {
@@ -203,7 +195,7 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [];
       locals = []; fbody = [] } map
-    in let func_map15 = List.fold_left add_bind15 func_map14 [
+    in let map15 = List.fold_left add_bind15 map14 [
                             ("init_canvas");]
     in
     let add_bind16 map (name, ty1, ty2, ty3, ty4, ty5, ty6, ty7) = StringMap.add name {
@@ -211,7 +203,7 @@ let check (globals, functions, classes) =
       fname = name;
       formals = [(ty1, "x1"); (ty2, "y1"); (ty3, "x2"); (ty4, "y2"); (ty5, "stroke"); (ty6, "thickness"); (ty7, "id")];
       locals = []; fbody = [] } map
-    in List.fold_left add_bind16 func_map15 [
+    in List.fold_left add_bind16 map15 [
                             ("add_line", Num, Num, Num, Num, String, Num, String);]
   in
   (* Add function name to symbol table *)
@@ -699,14 +691,14 @@ and check_int e =
 
       (* Return a semantically-checked expression, i.e., with a type *)
       let rec expr = function
-        | ArrayLit l -> 
-            (Array (Num, IntLiteral(List.length l)), 
-            SArrayLiteral(List.map expr l, 
+        | ArrayLit l ->
+            (Array (Num, IntLiteral(List.length l)),
+            SArrayLiteral(List.map expr l,
             Array(Num, IntLiteral(List.length l))))
 
-        | ArrayAccess(a, e) -> 
-            check_int e; 
-            (type_of_identifier a, 
+        | ArrayAccess(a, e) ->
+            check_int e;
+            (type_of_identifier a,
             SArrayAccess(a, expr e, access_type (type_of_identifier a)))
 
         | IntLiteral l -> (Num, SIntLiteral l)
@@ -769,9 +761,9 @@ and check_int e =
          let (t', e') = expr e
          and err = "expected Int expression in " ^ string_of_expr e
          in if t' != Num then raise (Failure err) else ignore e'
-  
+
       in
- 
+
 
       let check_bool_expr e =
         let (t', e') = expr e

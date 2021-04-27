@@ -132,7 +132,6 @@ char* add_ellipse(double x, double y, double w, double h,  char* stroke, double 
 
     char* shapeId = malloc(sizeof(char) * 100);
     if(strcmp(id, "") == 0) {
-        // fprintf(stderr, "make ellipse\n")
         size_t len = id_len;
         genId(shapeId, len);
         strcpy(shape.shape, "ellipse");
@@ -159,18 +158,13 @@ char* add_ellipse(double x, double y, double w, double h,  char* stroke, double 
         count++;
 
     } else {
-
         for(int i = 0; i < count; i++) {
-
             if(strcmp(shapes[i].shapeId, id) == 0) {
-                // fprintf(stderr, "sdsff: %s %s %f\n", shapes[i].shape, shapes[i].shapeId, shapes[i].w);
                 strcpy(shapes[i].shape, "ellipse");
                 strcpy(shapes[i].shapeId, id);
                 shapes[i].x = x;
                 shapes[i].y = y;
-                // fprintf(stderr, "better be increasing: %f\n", w);
                 shapes[i].w = w;
-                // fprintf(stderr, "frigggg: %f\n", shapes[i].w);
                 shapes[i].h = h;
                 strcpy(shapes[i].stroke, stroke);
                 shapes[i].thiccness = thiccness;
@@ -192,7 +186,7 @@ char* add_ellipse(double x, double y, double w, double h,  char* stroke, double 
     float yi = 0;
 
     float theta = 2 * 3.1415926 / num_segments;
-    float c = cosf(theta);//precalculate the sine and cosine
+    float c = cosf(theta); //precalculate the sine and cosine
     float s = sinf(theta);
 
     float t;
@@ -202,7 +196,7 @@ char* add_ellipse(double x, double y, double w, double h,  char* stroke, double 
         glBegin(GL_TRIANGLE_FAN);
         for(int i = 0; i < num_segments; i++) {
                //apply radius and offset
-               glVertex2f(xi * w + x, yi * h + y);//output vertex
+               glVertex2f(xi * w + x, yi * h + y); //output vertex
 
                //apply the rotation matrix
                t = xi;
@@ -218,7 +212,7 @@ char* add_ellipse(double x, double y, double w, double h,  char* stroke, double 
         glBegin(GL_LINE_LOOP);
         for(int i = 0; i < num_segments; i++) {
                //apply radius and offset
-               glVertex2f(xi * w + x, yi * h + y);//output vertex
+               glVertex2f(xi * w + x, yi * h + y); //output vertex
 
                //apply the rotation matrix
                t = xi;
@@ -232,12 +226,10 @@ char* add_ellipse(double x, double y, double w, double h,  char* stroke, double 
 
 char* add_circle(double x, double y, double r, char* stroke, double thiccness, char* fill, char* id) {
 
-
     double* stroke_arr = str_to_arr(stroke);
     double* fill_arr = str_to_arr(fill);
 
     struct Shape shape;
-    // fprintf(stderr, "Adding circle ");
     char* shapeId = malloc(sizeof(char) * 100);
     if(strcmp(id, "") == 0) {
         size_t len = id_len;
@@ -263,13 +255,11 @@ char* add_circle(double x, double y, double r, char* stroke, double thiccness, c
         strcpy(shape.fill, fill);
         shapes[count] = shape;
         count++;
-        // fprintf(stderr, "with id: %s\n", shape.shapeId);
 
     } else {
 
         for(int i = 0; i < count; i++) {
             if(strcmp(shapes[i].shapeId, id) == 0) {
-                // fprintf(stderr, "update shape: %s\n", id);
                 strcpy(shapes[i].shape, "circle");
                 strcpy(shapes[i].shapeId, id);
                 shapes[i].x = x;
@@ -289,8 +279,6 @@ char* add_circle(double x, double y, double r, char* stroke, double thiccness, c
 
         }
     }
-
-
 
     if(fill_arr[0] >= 0.0) {
 
@@ -437,8 +425,6 @@ char* add_triangle(double x, double y, double b, double h, char* stroke, double 
     } else {
 
         for(int i = 0; i < count; i++) {
-            // struct Shape s = *(shapes + sizeof(struct Shape) * i);
-            // struct Shape* start = shapes;
             struct Shape s = shapes[i];
 
             if(strcmp(shapes[i].shapeId, id) == 0) {
@@ -711,7 +697,6 @@ void scaleBy(struct Shape shape, double scale, double speed) {
         abs_val *= -1;
     }
     double time = (speed * 1000000) / (abs_val / inc);
-    // fprintf(stderr, "time: %f\n", time);
 
     if(scale < 1) {
         scaled = 1.0;
@@ -755,7 +740,6 @@ void scaleBy(struct Shape shape, double scale, double speed) {
         for(int i = 0; i < count; i++) {
             struct Shape s = shapes[i];
             if(strcmp(shapes[i].shapeId, shape.shapeId) != 0) {
-                // fprintf(stderr, "s: %s %s\n", s.shape, s.shapeId);
                 if(strcmp(shapes[i].shape, "ellipse") == 0) {
                     add_ellipse(shapes[i].x,
                                 shapes[i].y, shapes[i].w, shapes[i].h,
@@ -787,12 +771,6 @@ void scaleBy(struct Shape shape, double scale, double speed) {
                                 shapes[i].stroke,
                                 shapes[i].thiccness, shapes[i].fill, shapes[i].shapeId);
                 }
-                // else if(strcmp(s.shape, "line") == 0) {
-                //     add_line(s.start[0],
-                //                 s.start[1], s.end[0], s.end[1],
-                //                 s.stroke,
-                //                 s.thiccness, s.shapeId);
-                // }
             }
         }
 
@@ -801,34 +779,12 @@ void scaleBy(struct Shape shape, double scale, double speed) {
         } else {
             scaled -= inc;
         }
-        // glPushMatrix();
-        // glTranslatef(shape.x, shape.y, 0);
-        // glScalef(scale, scale, 1);
-        //
-        // if(strcmp(shape.shape, "ellipse") == 0) {
-        //     add_ellipse(0, 0, shape.w, shape.h, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
-        // } else if(strcmp(shape.shape, "circle") == 0) {
-        //     add_circle(0, 0, shape.r, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
-        // } else if(strcmp(shape.shape, "square") == 0) {
-        //     add_square(0, 0, shape.s, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
-        // } else if(strcmp(shape.shape, "triangle") == 0) {
-        //     add_triangle(0, 0, shape.b, shape.h, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
-        // } else if(strcmp(shape.shape, "rectangle") == 0) {
-        //     add_rectangle(0, 0, shape.w, shape.h, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
-        // } else if(strcmp(shape.shape, "regagon") == 0) {
-        //     add_regagon(0, 0, shape.n, shape.r, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
-        // }
-        // else if(strcmp(shape.shape, "regagon") == 0) {
-        //     add_line(0, 0, shape.n, shape.r, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
-        // }
 
         if(strcmp(shape.shape, "ellipse") == 0) {
             if(scale >= 1) {
-                // fprintf(stderr, "width: %f\n", wi * (1 + scaled));
                 add_ellipse(shape.x, shape.y,  wi * (1 + scaled), hi * (1 + scaled),
                         shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
             } else {
-                // fprintf(stderr, "width: %f\n", wi * scaled);
                 add_ellipse(shape.x, shape.y,  wi * scaled, hi * scaled,
                         shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
             }
@@ -873,19 +829,7 @@ void scaleBy(struct Shape shape, double scale, double speed) {
                         shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
             }
         }
-        // else if(strcmp(shape.shape, "line") == 0) {
-        //     if(scale >= 1) {
-        //         add_line(shape.start[0] * (1 + scaled), shape.start[1], shape.end[0] * (1 + scaled),
-        //                 shape.end[1],
-        //                 shape.stroke, shape.thiccness, shape.shapeId);
-        //     } else {
-        //         add_line(shape.start[0] - scaled, shape.start[1], shape.end[0] + scaled,
-        //                 shape.end[1],
-        //                 shape.stroke, shape.thiccness, shape.shapeId);
-        //     }
-        //
-        // }
-        // glPopMatrix();
+
         glFlush();
         usleep(time);
     }
@@ -902,7 +846,6 @@ void scaleById(char* id, double scale, double speed) {
             a.speed = speed;
             animations[animationCount] = a;
             animationCount++;
-            //moveBy(shapes[i], translateX, translateY, speed);
         }
     }
 }
@@ -987,22 +930,6 @@ void rotateBy(struct Shape shape, double angle, double speed) {
         glFlush();
         usleep(time);
     }
-
-    // if(strcmp(shape.shape, "ellipse") == 0) {
-    //     add_ellipse(x_orig, y_orig, shape.w, shape.h, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
-    // } else if(strcmp(shape.shape, "circle") == 0) {
-    //     add_circle(x_orig, y_orig, shape.r, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
-    // } else if(strcmp(shape.shape, "square") == 0) {
-    //     add_square(x_orig, y_orig, shape.s, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
-    // } else if(strcmp(shape.shape, "triangle") == 0) {
-    //     add_triangle(x_orig, y_orig, shape.b, shape.h, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
-    // } else if(strcmp(shape.shape, "rectangle") == 0) {
-    //     add_rectangle(x_orig, y_orig, shape.w, shape.h, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
-    // } else if(strcmp(shape.shape, "regagon") == 0) {
-    //     add_regagon(x_orig, y_orig, shape.n, shape.r, shape.stroke, shape.thiccness, shape.fill, shape.shapeId);
-    // }
-    // glFlush();
-
 }
 
 void rotateById(char* id, double angle, double speed) {
@@ -1015,13 +942,11 @@ void rotateById(char* id, double angle, double speed) {
             a.speed = speed;
             animations[animationCount] = a;
             animationCount++;
-            //moveBy(shapes[i], translateX, translateY, speed);
         }
     }
 }
 
 void moveBy(struct Shape shape, double translateX, double translateY, double speed) {
-    // fprintf(stderr, "moveBy\n");
     double movedX = 0.0;
     double movedY = 0.0;
     double incX = 1 * (translateX / abs(translateX));
@@ -1039,7 +964,6 @@ void moveBy(struct Shape shape, double translateX, double translateY, double spe
     }
 
     double time = (speed * 1000000) / (abs_val / abs(incX));
-    // fprintf(stderr, "time: %f\n", time);
     struct Shape* front = shapes;
     while(1) {
         if(translateX < 0) {
@@ -1121,13 +1045,8 @@ void moveBy(struct Shape shape, double translateX, double translateY, double spe
 }
 
 void moveById(char* id, double translateX, double translateY, double speed) {
-    // fprintf(stderr, "moveById: %s\n", id);
     for(int i = 0; i < count; i++) {
-        // fprintf(stderr, "shape id: %s\n", shapes[i].shapeId);
         if(strcmp(shapes[i].shapeId, id) == 0) {
-            // fprintf(stderr, "move shape with id: %s\n", id);
-            // fprintf(stderr, "moveById****\n");
-            // printShapes();
             struct Animation a;
             a.shape = shapes[i];
             strcpy(a.animation, "move");
@@ -1136,7 +1055,6 @@ void moveById(char* id, double translateX, double translateY, double speed) {
             a.speed = speed;
             animations[animationCount] = a;
             animationCount++;
-            //moveBy(shapes[i], translateX, translateY, speed);
         }
     }
 }
@@ -1175,111 +1093,12 @@ void add_canvas(double width, double height, double xOffset, double yOffset) {
 
     myInit();
 
-    // loop through the list of objects and call the add_object functions
-    // for shape in shapes:
-    char* stroke = malloc(100 * sizeof(char));
-    char* fill = malloc(100 * sizeof(char));
-
-    stroke = "-1.0 0.0 0.0";
-    fill = "0.0 0.6 0.1";
-
     glClearColor(0.0, 0.0, 0.0, 0.0);       // black background
     glMatrixMode(GL_PROJECTION);            // setup viewing projection
     glLoadIdentity();                       // start with identity matrix
     glOrtho(0.0, w, 0.0, h, 0.0, 1.0);      // setup a 10x10x2 viewing world
 
-    // add_circle(w/2, h/2-200, 25, stroke, 2.0, fill);
-    // add_square(w/2-100, h/2+100, 50, stroke, 5.0, fill);
-    //
-    // stroke = "0.5 0.0 0.5";
-    // fill = "1.0 0.2 0.2";
-    //
-    // add_triangle(w/2+100, h/2+100, 50, 50, stroke, 5.0, fill);
-    // add_line(w/2-100, h/2+200, w/2+100, h/2+200, stroke, 2.0);
-    // add_ellipse(w/2-100, h/2-100, 50, 25, stroke, 5.0, fill);
-    //
-    // double arr[][2] = { {w/2-50, h/2+50}, {w/2+50, h/2 + 50}, {w/2+70, h/2}, {w/2, h/2-100}, {w/2-70, h/2}};
-    // add_polygon(5, arr, stroke, 2.0, fill);
-    // stroke = "0.5 1.0 0.5";
-    // fill = "1.0 1.0 0.2";
-    // add_regagon(w/2+100, h/2-100, 10, 60, stroke, 3, fill);
-
-    //dino
-
-    //
-    // add_rectangle(cx-25, cy+75, 225, 75, stroke, 3.0, fill, NULL);
-    // add_rectangle(cx-25, cy-75, 225, 75, stroke, 3.0, fill, NULL);
-    // add_rectangle(cx+100, cy, 75, 225, stroke, 3.0, fill, NULL);
-    // add_rectangle(cx+125, cy-50, 150, 225, stroke, 3.0, fill, NULL);
-    //
-    // add_rectangle(cx+87.5, cy+125, 100, 50, stroke, 5.0, fill, NULL);
-    //
-    // fill = "0.0 0.0 0.0";
-    // add_circle(cx+100, cy+125, 15, stroke, 5.0, fill, NULL);
-    // fill = "1.0 1.0 1.0";
-    // add_circle(cx+100, cy+125, 7.5, stroke, 5.0, fill, "");
-    // fill = "0.0 0.25 0.0";
-    // add_ellipse(cx-100, h/2+85, 10, 5, stroke, 5.0, fill, NULL);
-    //
-    // fill = "1.0 1.0 1.0";
-    // add_triangle(cx+30, cy-22, 30, 30, stroke, 5.0, fill, NULL);
-    // add_triangle(cx, cy-22, 30, 30, stroke, 5.0, fill, NULL);
-    // add_triangle(cx-30, cy-22, 30, 30, stroke, 5.0, fill, NULL);
-    // add_triangle(cx-60, cy-22, 30, 30, stroke, 5.0, fill, NULL);
-    // add_triangle(cx-90, cy-22, 30, 30, stroke, 5.0, fill, NULL);
-    // add_triangle(cx-120, cy-22, 30, 30, stroke, 5.0, fill, NULL);
-    //
-    // add_triangle_down(cx+30, cy+22, 30, 30, stroke, 5.0, fill);
-    // add_triangle_down(cx, cy+22, 30, 30, stroke, 5.0, fill);
-    // add_triangle_down(cx-30, cy+22, 30, 30, stroke, 5.0, fill);
-    // add_triangle_down(cx-60, cy+22, 30, 30, stroke, 5.0, fill);
-    // add_triangle_down(cx-90, cy+22, 30, 30, stroke, 5.0, fill);
-    // add_triangle_down(cx-120, cy+22, 30, 30, stroke, 5.0, fill);
-    //
-    // add_ellipse(cx+25, cy, 100, 75, stroke, 5.0, fill, NULL);
-    // fill = "0.5 0.6 0.1";
-    // add_ellipse(cx-100, cy+100, 50, 75, stroke, 5.0, fill, NULL);
-    //
-    // fill = "0.1 0.2 0.4";
-    // add_square(cx-250, cy+75, 50, stroke, 3.0, fill, NULL);
-    //
-    // add_triangle(cx-25, cy, 100, 75, stroke, 3.0, fill, NULL);
-    // fprintf(stderr, "count: %d\n", count);
-    // add_triangle(cx-200, cy, 100, 75, stroke, 3.0, fill, NULL);
-    // for(int i = 0; i < 10; i++) {
-    //     fprintf(stderr, "shape: %s: %s\n", shapes[i].shapeId, shapes[i].shape);
-    // }
-    //
-    // add_regagon(cx, cy+50, 5, 50, stroke, 3.0, fill, NULL);
-    // add_rectangle(cx-30, cy, 100, 2, stroke, 1.0, fill, NULL);
-    //
-    // // scaleBy(shapes[1], 1.2, 1);
-    // stroke = "0.5 0.6 0.1";
-    // add_line(cx-100, cy+200, cx+50, cy+200, stroke, 3.0, NULL);
-    //
-    // for(int i = 0; i < 10; i++) {
-    //     fprintf(stderr, "shape: %s\n", shapes[i].shape);
-    // }
-    // rotateBy(shapes[0], 360, 5);
-    // moveBy(shapes[0], 300, 300, 2);
-
-    // scaleBy(shapes[0], 1.5, 5);
-    // scaleBy(shapes[1], 1.5, 5);
-    // scaleBy(shapes[2], 1.5, 5);
-    // scaleBy(shapes[3], 1.5, 5);
-    // scaleBy(shapes[4], 1.5, 5);
-
-    // moveBy(shapes[0], 100, 300, 5);
-    // moveBy(shapes[1], 30, 30, 1);
-    // sleep(5);
-    // exit(0);
-
-    // for(int i = 0; i < 5; i++) {
-    //     scaleBy(shapes[i], 1.2, 1);
-    // }
     printShapes();
-    //
-    // // while(1) {
     for(int i = 0; i < count; i++) {
         struct Shape s = shapes[i];
         if(strcmp(s.shape, "ellipse") == 0) {
@@ -1323,168 +1142,24 @@ void add_canvas(double width, double height, double xOffset, double yOffset) {
     for(int i = 0; i < animationCount; i++) {
 
         if(strcmp(animations[i].animation, "move") == 0) {
-            // fprintf(stderr, "start move \n");
-            // printShapes();
             moveBy(animations[i].shape, animations[i].translateX, animations[i].translateY, animations[i].speed);
-            // printShapes();
-            // fprintf(stderr, "end move \n");
         }
         else if(strcmp(animations[i].animation, "rotate") == 0) {
             rotateBy(animations[i].shape, animations[i].angle, animations[i].speed);
-            // printShapes();
         }
         else if(strcmp(animations[i].animation, "scale") == 0) {
-            // fprintf(stderr, "scale \n");
             scaleBy(animations[i].shape, animations[i].scale, animations[i].speed);
-            // printShapes();
         }
     }
-
-    // }
 
     printShapes();
 
     glFlush();
-    // fprintf(stderr, "%s\n", getenv("DEBUG"));
     if(strcmp(getenv("DEBUG"), "1") != 0) {
         glutMainLoop();
     }
 
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-// void add_circle(double x, double y, double r) {
-//
-//     printf("x: %.2f, y: %.2f, r: %.2f\n", x, y, r);
-//     int c = 0;
-//     char ** args;
-//
-//     glutInit(&c, args);
-//
-//     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-//
-//
-//     // giving window size in X- and Y- direction
-//
-//     glutInitWindowSize(1366, 768);
-//
-//     glutInitWindowPosition(0, 0);
-//
-//
-//
-//     // Giving name to widouble x = 0.0;ndow
-//
-//     glutCreateWindow("Circle Drawing");
-//
-//     myInit();
-//
-//     glBegin(GL_POINTS);
-//     for (float i = 0; i < (2 * pi); i += 0.001) {
-//         float a = r * cos(i) + x;
-//         float b = r * sin(i) + y;
-//         glVertex2i(a, b);
-//     }
-//
-//
-//     glEnd();
-//     glFlush();
-//
-//     glutMainLoop();
-//
-// }
-
-
-// void printbig(float c)
-// {
-//   int index = 0;
-//   int col, data;
-//   if (c >= '0' && c <= '9') index = 8 + (c - '0') * 8;
-//   else if (c >= 'A' && c <= 'Z') index = 88 + (c - 'A') * 8;
-//   do {
-//     data = font[index++];
-//     for (col = 0 ; col < 8 ; data <<= 1, col++) {
-//       char d = data & 0x80 ? 'X' : ' ';
-//       putchar(d); putchar(d);
-//     }
-//     putchar('\n');
-//   } while (index & 0x7);
-// }
-
-void keyPressed (unsigned char key, int x, int y) {
-    if(key == 'g') {
-        l += 0.05;
-        glutPostRedisplay();
-    }
-
-    if(key == 's') {
-        l -= 0.05;
-
-        glutPostRedisplay();
-    }
-
-    if(key == 'w') {
-        s += 0.05;
-        glutPostRedisplay();
-    }
-
-    if(key == 'q') {
-        s -= 0.05;
-
-        glutPostRedisplay();
-    }
-}
-
-void demo ()
-
-{
-
-    int c = 0;
-    char ** args;
-
-    glutInit(&c, args);
-
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-
-
-
-    // giving window size in X- and Y- direction
-
-    glutInitWindowSize(1366, 768);
-
-    glutInitWindowPosition(0, 0);
-
-
-
-    // Giving name to widouble x = 0.0;ndow
-
-    glutCreateWindow("Circle Drawing");
-
-    myInit();
-
-    glutKeyboardFunc(keyPressed);
-
-    //glutDisplayFunc(display);
-
-    glutMainLoop();
-    //
-    // double *x = malloc(sizeof(double));
-    //
-    // return x;
-
-}
-
-
 
 #ifdef BUILD_TEST
 int main()
