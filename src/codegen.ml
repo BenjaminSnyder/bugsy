@@ -233,7 +233,7 @@ let translate (globals, functions', _) =
       | SArrayAccess(a, e, _) -> let valu = (expr builder e) in
      
     (*  convert nums to ints  *)
-    let truncated = L.build_fptosi (valu) i32_t "trunc" builder in L.dump_value(truncated);
+    let truncated = L.build_fptosi (valu) i32_t "trunc" builder in 
  
     (* get element pointer to element we're accessing *)
     let result =  L.build_in_bounds_gep (lookup a) [| L.const_int i32_t 0; truncated |] a builder in L.build_load result a builder 
