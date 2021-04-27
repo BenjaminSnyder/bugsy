@@ -20,7 +20,7 @@ open Sast
 module StringMap = Map.Make(String)
 
 (* translate : Sast.program -> Llvm.module *)
-let translate (globals, camFunctions, _) =
+let translate (globals, functions', _) =
   let context    = L.global_context () in
 
   (* Create the LLVM compilation module into which
@@ -56,7 +56,6 @@ let translate (globals, camFunctions, _) =
         | _ -> raise (Failure "Error: Not implemented in codegen")
     )
     | A.Object(classTyp) -> L.pointer_type (struct_t (struct_t_to_arr classTyp))
-  (*  | _ -> raise (Failure "Error: Not implemented in codegen") *)
 
   and struct_t_to_arr classTyp =
     let varTypes = List.map (fun (_, (t,_)) -> t) (StringMap.bindings classTyp.A.instanceVars) in
@@ -73,7 +72,7 @@ let translate (globals, camFunctions, _) =
 
   (*go through all functions, find main, and change main to return int *)
   (*let functions = List.map (fun x -> (x.styp <- A.Int); x) camFunctions in *)
-  let functions = List.map (fun x -> if x.sfname = "main" then ((x.styp <- A.Int); x) else x) camFunctions in
+  let functions = List.map (fun x -> if x.sfname = "main" then ((x.styp <- A.Int); x) else x) functions' in
 
 
   (* Create a map of global variables after creating each *)
@@ -89,11 +88,6 @@ let translate (globals, camFunctions, _) =
       L.var_arg_function_type float_t [| L.pointer_type i8_t |] in
   let printf_func : L.llvalue =
       L.declare_function "printf" printf_t the_module in
-
-  (* let printbig_t : L.lltype =
-      L.function_type i32_t [| i32_t |] in
-  let printbig_func : L.llvalue =
-      L.declare_function "printbig" printbig_t the_module in *)
 
   let demo_t : L.lltype =
       L.function_type float_t [||] in
@@ -173,19 +167,8 @@ let translate (globals, camFunctions, _) =
       and formal_types =
 	Array.of_list (List.map (fun (t,_) -> ltype_of_typ t) fdecl.sformals)
       in let ftype = L.function_type (ltype_of_typ fdecl.styp) formal_types in
-      (*if function is equal to main, rather than adding ftype, add int type *)
-    (*  print_endline("ftype is");
-     (* print_endline(ltype_of_typ fdecl.styp); *)
-      print_endline(L.string_of_lltype(ftype););
-      print_endline("tester123");
-      print_endline(L.string_of_lltype(float_t);); *)
 
-      (*beans *)
-      let ye = L.function_type (ltype_of_typ A.Int) formal_types in
-
-
-      let ret_type = if name = "main" then ye else ftype in
-   (*   if name = "main" then let ret_type = ye in else let ret_type = ftype in *)
+      let ret_type = ftype in
 
       StringMap.add name (L.define_function name ret_type  the_module, fdecl) m in
 
@@ -193,7 +176,6 @@ let translate (globals, camFunctions, _) =
 
 
   let find_func s =
-          (*let test_1 = StringMap.update "main" (L.define_function "main" i32_t the_module, fdecl) in *)
 
           try begin StringMap.find s function_decls; end
 
@@ -210,7 +192,6 @@ let translate (globals, camFunctions, _) =
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder
     and float_format_str = L.build_global_stringptr "%g\n" "fmt" builder
     and string_format_str = L.build_global_stringptr "%s\n" "fmt" builder in
-    (*add string formatting here too stuff like %s *)
     (* Construct the function's "locals": formal arguments and locally
        declared variables.  Allocate each on the stack, initialize their
        value, if appropriate, and remember their values in the "locals" map *)
@@ -240,15 +221,6 @@ let translate (globals, camFunctions, _) =
                    with Not_found -> raise (Failure ("ur sus"))
     in
 
-   (* let conversion x = L.int64_of_const x in *)
-   (* ayy *)
-    let conversion x =
-            match x with
-            _ -> L.const_fptosi x i32_t
-          (*  | _ -> raise(Failure "failure") *)
-    
-
-    in 
    
     (* Construct code for an expression; return its value *)
     let rec expr builder ((_, e) : sexpr) = match e with
@@ -260,46 +232,28 @@ let translate (globals, camFunctions, _) =
      
       | SArrayAccess(a, e, _) -> let valu = (expr builder e) in
      
+    (*  convert nums to ints  *)
+    let truncated = L.build_fptosi (valu) i32_t "trunc" builder in 
+ 
+    (* get element pointer to element we're accessing *)
+    let result =  L.build_in_bounds_gep (lookup a) [| L.const_int i32_t 0; truncated |] a builder in L.build_load result a builder 
 
 
-   (*  let test = L.build_ptrtoint valu float_t "a" builder in
-       L.dump_value(test);
-
-       let haw = L.build_fptosi (test) float_t "a" builder  in
-
-
-      L.dump_value(haw); *)
-    
-     let pointer = L.build_alloca float_t (L.value_name (valu)) builder in L.dump_value(pointer);
-     let test = L.build_store (L.const_float float_t 32.3) pointer builder in L.dump_value(test);
-     (* let tester = L.build_sitofp (L.const_float float_t 2.0) float_t "aa" builder in *)
-     let loaded = L.build_load pointer (L.value_name (valu)) builder  in L.dump_value(loaded);
-    let aha = L.build_fptosi (valu) i32_t "aasf" builder in L.dump_value(aha);
-     (* let  yeye = L.build_fptosi aha i32_t "a" builder in L.dump_value(yeye); 
-     let pointer_two = L.build_alloca i32_t "ff" builder in L.dump_value(pointer_two);
-     let bugsy = L.build_store yeye pointer_two builder in let hoo = L.build_load pointer_two "asdf" builder in  L.dump_value(bugsy);  *)
-
-   (* let haw = valu in
-    L.set_volatile true haw; 
-   let yeye = L.const_fptosi (haw) i32_t in  *) 
-   
-    let beans =  L.build_in_bounds_gep (lookup a) [| L.const_int i32_t 0; aha |] a builder in L.build_load beans a builder;  
-
-
-    
-
-
-      (* | SArrayAccess(a, e, l) -> let yeye = match e with (expr builder e)
-    in (match e with  
-    
-    float_t  -> let beans =  L.build_in_bounds_gep (lookup a) [| L.const_int i32_t 0; conversion (yeye) |] a builder in L.dump_value (beans); L.build_load beans a builder 
-
-      | _ -> raise(Failure "failed"); ) *)
-
-
-      (* | SArrayAccess(a, e, l) -> let yeye = conversion (expr builder e)  in L.build_load (L.build_gep (lookup a) [| L.const_int i32_t 0; yeye |] a builder) a builder  *) 
       | SArrayAssign (s, e1, e2) ->
-              let left = let yeye = conversion (expr builder e1) in L.build_gep (lookup s) [| L.const_int i32_t 0; yeye |] s builder in let right = expr builder e2 in ignore (L.build_store right left builder); right
+         let left_value = (expr builder e1) in
+
+         let _ = L.build_fptosi (left_value) i32_t "trunc" builder in
+
+
+         let left_real =  L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t 3 |] s builder in 
+
+
+         let right_value = (expr builder e2) in
+
+         let right_truncated = L.build_fptosi (right_value) i32_t "trunc" builder in 
+
+              ignore (L.build_store right_value left_real builder); right_truncated 
+
       | SId s       -> L.build_load (lookup s) s builder
       | SArrayLiteral (l, t) -> L.const_array (ltype_of_typ t) (Array.of_list (List.map (expr builder) l))
       | SAssign (s, e) -> let e' = expr builder e in
@@ -374,8 +328,6 @@ let translate (globals, camFunctions, _) =
 	    "printf" builder
     | SCall ("demo", []) ->
   	  L.build_call demo_func [||] "demo" builder
-    (* | SCall ("printbig", [e]) ->
-	    L.build_call printbig_func [| (expr builder e) |] "printbig" builder *)
     | SCall ("printf", [e]) ->
 	    L.build_call printf_func [| string_format_str ; (expr builder e) |]
 	    "printf" builder
@@ -438,8 +390,6 @@ let translate (globals, camFunctions, _) =
       
     | _ -> raise (Failure "Error: Not implemented in codegen")
 
-    (* and get_address a el builder =
-        L.build_gep (lookup a) [| (L.const_float float_t 0.0); (expr builder el) |] a builder *)
     in
 
     (* LLVM insists each basic block end with exactly one "terminator"

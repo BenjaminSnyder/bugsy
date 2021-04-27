@@ -7,8 +7,6 @@ type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
 
 type uop = Neg | Not
 
-(* type arr = typ * literal *)
-
 
 type expr =
     NumLit of string
@@ -55,6 +53,7 @@ type construct_decl = {
 }
 
 type func_decl = {
+    (* make type mutable for modification in codegen *)
     mutable typ : typ;
     fname : string;
     formals : bind list;
@@ -120,7 +119,7 @@ let rec string_of_expr = function
   | Assign(v, e) -> v ^ " = " ^ string_of_expr e
   | Construct(a, e) -> "new " ^ a ^ "(" ^ String.concat ", " (List.map string_of_expr e) ^ ")"
   | ArrayAccess(a, e) -> a ^ "[" ^ string_of_expr e ^ "]"
-  | ArrayAssign(a, e1, e2) -> begin a ^ "[" ^ string_of_expr e1 ^ "] = " ^ string_of_expr e2; end
+  | ArrayAssign(a, left, right) -> begin a ^ "[" ^ string_of_expr left ^ "] = " ^ string_of_expr right; end
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | ClassCall(c, f, el) ->

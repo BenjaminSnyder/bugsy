@@ -1,8 +1,0 @@
-num main() {
-
-    num x;
-    x = 10;
-
-
-    return 0;
-}

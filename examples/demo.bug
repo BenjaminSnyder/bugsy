@@ -1,6 +1,0 @@
-num main() {
-    num a;
-    a = 5;
-    print(a);
-    return 0.0;
-}

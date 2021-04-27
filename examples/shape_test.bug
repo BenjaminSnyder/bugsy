@@ -68,7 +68,5 @@ num main() {
     add_triangle(x, y+100, b, h, stroke, thickness, tri_fill, id5);
 
     add_canvas(cw, ch, cx, cy);
-
-//push
     return 0;
 }
