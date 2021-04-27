@@ -1,0 +1,74 @@
+num main() {
+    num cx;
+    num cy;
+    num scale;
+    num x;
+    num y;
+    num cw;
+    num ch;
+    num r;
+    num w;
+    num h;
+    num s;
+    num n;
+    num b;
+    cx = 0;
+    cy = 0;
+    cw = 1500;
+    scale = 3;
+    ch = 1000;
+    x = cw / 2;
+    y = ch / 2;
+    r = 100;
+    s = 75;
+    n = 10;
+    b = 60;
+    w = 100;
+    h = 100;
+
+    string stroke;
+    string reg_fill;
+    string tri_fill;
+    string rect_fill;
+    string sq_fill;
+    string cir_fill;
+    string ell_fill;
+
+    stroke = "0.0 0.3 0.5";
+    reg_fill = "0.2 0.2 0.2";
+    cir_fill = "1.0 0.2 0.6";
+    ell_fill = "0.8 0.5 0.5";
+    sq_fill = "0.9 0.9 0.2";
+    tri_fill = "0.7 0.4 0.0";
+    rect_fill = "1.0 0.9 0.6";
+
+    num thickness;
+    thickness = 5;
+    string id;
+    string id2;
+    string id3;
+    string id4;
+    string id5;
+    string id6;
+    id = "";
+    id2 = "";
+    id3 = "";
+    id4 = "";
+    id5 = "";
+    id6 = "";
+
+
+    init_canvas();
+
+    add_ellipse(x+300, y, w, h*2, stroke, thickness, ell_fill, id6);
+    add_circle(x-300, y, r, stroke, thickness, cir_fill, id);
+    add_square(x, y+300, s, stroke, thickness, sq_fill, id2);
+    add_rectangle(x, y-300, w*2, h, stroke, thickness, rect_fill, id3);
+    add_regagon(x, y-100, n, r, stroke, thickness, reg_fill, id4);
+    add_triangle(x, y+100, b, h, stroke, thickness, tri_fill, id5);
+
+    add_canvas(cw, ch, cx, cy);
+
+//push
+    return 0;
+}
