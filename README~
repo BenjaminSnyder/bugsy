@@ -1,5 +1,3 @@
-SOME CHANGE FOR ADVANCED SWE
-
 The bugsy compiler
 
 Coded in OCaml, takes a c like, graphics language, bugsy, and compiles it into LLVM IR.
